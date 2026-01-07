@@ -1,0 +1,139 @@
+import std.algorithm.searching;
+import std.algorithm.mutation;
+import scenegraph.vk.vulkan;
+
+class SimpleVulkanAllocator {
+public:
+  struct Allocation {
+    VkDeviceMemory memory;
+    VkDeviceSize offset;
+    VkDeviceSize size;
+    uint memoryTypeIndex;
+    void* mappedPtr;
+  };
+
+  this(VkPhysicalDevice physicalDevice, VkDevice device) {
+    m_physicalDevice = physicalDevice;
+    m_device = device;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &m_memProperties);
+  }
+
+  ~this() {
+    foreach (ref block; m_blocks) {
+      vkFreeMemory(m_device, block.memory, null);
+    }
+    m_blocks.length = 0;
+  }
+
+  uint findMemoryType(uint typeFilter, VkMemoryPropertyFlags properties) {
+    for (uint i = 0; i < m_memProperties.memoryTypeCount; i++) {
+      if (
+        (typeFilter & (1 << i)) && 
+        (m_memProperties.memoryTypes[i].propertyFlags & properties) == properties
+      ) {
+        return i;
+      }
+    }
+    throw new Exception("Failed to allocate Vulkan memory!");
+  }
+
+  Allocation allocate(VkDeviceSize size, uint memoryTypeIndex) {
+    auto allocInfo = VkMemoryAllocateInfo();
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = size;
+    allocInfo.memoryTypeIndex = memoryTypeIndex;
+    
+    VkDeviceMemory memory;
+    VkResult result = vkAllocateMemory(m_device, &allocInfo, null, &memory);
+    if (result != VK_SUCCESS) {
+      throw new Exception("Failed to allocate Vulkan memory!");
+    }
+    
+    MemoryBlock block;
+    block.memory = memory;
+    block.size = size;
+    block.memoryTypeIndex = memoryTypeIndex;
+    block.usedRegions ~= true;
+    block.usedSize = size;
+    
+    m_blocks ~= block;
+    
+    Allocation allocation;
+    allocation.memory = memory;
+    allocation.offset = 0;
+    allocation.size = size;
+    allocation.memoryTypeIndex = memoryTypeIndex;
+    allocation.mappedPtr = null;
+    
+    return allocation;
+  }
+  
+  Allocation allocateForBuffer(VkBuffer buffer, VkMemoryPropertyFlags properties) {
+    VkMemoryRequirements memRequirements;
+    vkGetBufferMemoryRequirements(m_device, buffer, &memRequirements);
+    
+    uint memoryTypeIndex = findMemoryType(
+      memRequirements.memoryTypeBits, 
+      properties
+    );
+    
+    return allocate(memRequirements.size, memoryTypeIndex);
+  }
+  
+  Allocation allocateForImage(VkImage image, VkMemoryPropertyFlags properties) {
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(m_device, image, &memRequirements);
+    
+    uint32_t memoryTypeIndex = findMemoryType(
+      memRequirements.memoryTypeBits, 
+      properties
+    );
+    
+    return allocate(memRequirements.size, memoryTypeIndex);
+  }
+
+  void free(in Allocation allocation) {
+    auto index = m_blocks.countUntil!(
+      (in block) => block.memory == allocation.memory
+    );
+
+    if (index != -1) {
+      vkFreeMemory(m_device, m_blocks[index].memory, null);
+      m_blocks = m_blocks.remove(index);
+    }
+  }
+
+  void* map(ref Allocation allocation) {
+    void* data;
+
+    vkMapMemory(
+      m_device,
+      allocation.memory,
+      allocation.offset, 
+      allocation.size,
+      0,
+      &data
+    );
+
+    return data;
+  }
+  
+  void unmap(ref Allocation allocation) {
+    vkUnmapMemory(m_device, allocation.memory);
+  }
+
+private:
+  VkPhysicalDevice m_physicalDevice;
+  VkDevice m_device;
+  VkPhysicalDeviceMemoryProperties m_memProperties;
+  
+  struct MemoryBlock {
+    VkDeviceMemory memory;
+    VkDeviceSize size;
+    uint memoryTypeIndex;
+    bool[] usedRegions;
+    VkDeviceSize usedSize;
+  };
+  
+  MemoryBlock[] m_blocks;
+};
