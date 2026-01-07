@@ -1,7 +1,7 @@
-import lsg.vk.vulkan;
-import lsg.vk.Device;
-import lsg.app.Viewer;
-import lsg.threading.Latch;
+import scenegraph.vk.vulkan;
+import scenegraph.vk.Device;
+import scenegraph.app.Viewer;
+import scenegraph.threading.Latch;
 
 void main() {
   auto deviceIDPool = DeviceIDPool();

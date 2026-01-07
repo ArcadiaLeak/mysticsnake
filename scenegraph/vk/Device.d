@@ -1,4 +1,4 @@
-import lsg.vk.vulkan;
+import scenegraph.vk.vulkan;
 
 class Device {
   @disable this();
