@@ -15,10 +15,12 @@ import vulkan;
 import cube_renderer;
 
 debug {
-  const bool enableValidationLayers = true;
+  static const bool enableValidationLayers = true;
 } else {
-  const bool enableValidationLayers = false;
+  static const bool enableValidationLayers = false;
 }
+
+static const int MAX_FRAMES_IN_FLIGHT = 2;
 
 static const char*[] validationLayers = [
   "VK_LAYER_KHRONOS_validation"
@@ -60,13 +62,13 @@ private:
 
   VkRenderPass m_renderPass;
   VkPipelineCache m_pipelineCache;
-  VkFramebuffer m_swapChainFramebuffers;
-  VkCommandBuffer m_commandBuffers;
+  VkFramebuffer[] m_swapChainFramebuffers;
+  VkCommandBuffer[] m_commandBuffers;
   VkCommandPool m_commandPool;
 
-  VkSemaphore m_imageAvailableSemaphores;
-  VkSemaphore m_renderFinishedSemaphores;
-  VkFence m_inFlightFences;
+  VkSemaphore[] m_imageAvailableSemaphores;
+  VkSemaphore[] m_renderFinishedSemaphores;
+  VkFence[] m_inFlightFences;
   uint m_currentFrame = 0;
 
   CubeRenderer m_cubeRenderer;
@@ -90,6 +92,84 @@ private:
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    createRenderPass();
+    createFramebuffers();
+    createCommandPool();
+    createCommandBuffers();
+    createSyncObjects();
+  }
+
+  void createCommandBuffers() {
+    m_commandBuffers.length = MAX_FRAMES_IN_FLIGHT;
+    
+    VkCommandBufferAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = cast(uint) m_commandBuffers.length;
+    
+    if (vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.ptr) != VK_SUCCESS) {
+      throw new Exception("Failed to allocate command buffers!");
+    }
+  }
+
+  void createSyncObjects() {
+    m_imageAvailableSemaphores.length = MAX_FRAMES_IN_FLIGHT;
+    m_renderFinishedSemaphores.length = MAX_FRAMES_IN_FLIGHT;
+    m_inFlightFences.length = MAX_FRAMES_IN_FLIGHT;
+    
+    VkSemaphoreCreateInfo semaphoreInfo;
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    
+    VkFenceCreateInfo fenceInfo;
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      if (
+        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+        vkCreateFence(m_device, &fenceInfo, null, &m_inFlightFences[i]) != VK_SUCCESS
+      ) {
+        throw new Exception("Failed to create synchronization objects for a frame!");
+      }
+    }
+  }
+
+  void createCommandPool() {
+    QueueFamilyIndices queueFamilyIndices = findQueueFamilies(m_physicalDevice);
+    
+    VkCommandPoolCreateInfo poolInfo;
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.get;
+    
+    if (vkCreateCommandPool(m_device, &poolInfo, null, &m_commandPool) != VK_SUCCESS) {
+      throw new Exception("Failed to create command pool!");
+    }
+  }
+
+  void createFramebuffers() {
+    m_swapChainFramebuffers.length = m_swapchainImageViews.length;
+    
+    for (size_t i = 0; i < m_swapchainImageViews.length; i++) {
+      VkImageView[1] attachments = [
+        m_swapchainImageViews[i]
+      ];
+      
+      VkFramebufferCreateInfo framebufferInfo;
+      framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+      framebufferInfo.renderPass = m_renderPass;
+      framebufferInfo.attachmentCount = 1;
+      framebufferInfo.pAttachments = attachments.ptr;
+      framebufferInfo.width = m_swapchainExtent.width;
+      framebufferInfo.height = m_swapchainExtent.height;
+      framebufferInfo.layers = 1;
+      
+      if (vkCreateFramebuffer(m_device, &framebufferInfo, null, &m_swapChainFramebuffers[i]) != VK_SUCCESS) {
+        throw new Exception("Failed to create framebuffer!");
+      }
+    }
   }
 
   const(char*)[] getRequiredExtensions() {
@@ -513,10 +593,10 @@ private:
   void createImageViews() {
     m_swapchainImageViews.length = m_swapchainImages.length;
     
-    foreach (ref swapchainImageTup; zip(m_swapchainImages, m_swapchainImageViews)) {
+    for (size_t i = 0; i < m_swapchainImages.length; i++) {
       VkImageViewCreateInfo createInfo;
       createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      createInfo.image = swapchainImageTup[0];
+      createInfo.image = m_swapchainImages[i];
       createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
       createInfo.format = m_swapchainImageFormat;
       
@@ -531,9 +611,51 @@ private:
       createInfo.subresourceRange.baseArrayLayer = 0;
       createInfo.subresourceRange.layerCount = 1;
       
-      if (vkCreateImageView(m_device, &createInfo, null, &swapchainImageTup[1]) != VK_SUCCESS) {
+      if (vkCreateImageView(m_device, &createInfo, null, &m_swapchainImageViews[i]) != VK_SUCCESS) {
         throw new Exception("Failed to create image views!");
       }
+    }
+  }
+
+  void createRenderPass() {
+    VkAttachmentDescription colorAttachment;
+    colorAttachment.format = m_swapchainImageFormat;
+    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    
+    VkAttachmentReference colorAttachmentRef;
+    colorAttachmentRef.attachment = 0;
+    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    
+    VkSubpassDescription subpass;
+    subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+    
+    VkSubpassDependency dependency;
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    
+    VkRenderPassCreateInfo renderPassInfo;
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+    renderPassInfo.attachmentCount = 1;
+    renderPassInfo.pAttachments = &colorAttachment;
+    renderPassInfo.subpassCount = 1;
+    renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
+    
+    if (vkCreateRenderPass(m_device, &renderPassInfo, null, &m_renderPass) != VK_SUCCESS) {
+      throw new Exception("Failed to create render pass!");
     }
   }
 
