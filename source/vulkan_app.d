@@ -3,6 +3,9 @@ import std.string;
 import std.algorithm.iteration;
 import std.stdio;
 import std.array;
+import std.typecons;
+import std.range.primitives;
+import std.container.rbtree;
 
 import glfw;
 import vulkan;
@@ -17,6 +20,10 @@ debug {
 
 const string[] validationLayers = [
   "VK_LAYER_KHRONOS_validation"
+];
+
+const string[] deviceExtensions = [
+  VK_KHR_SWAPCHAIN_EXTENSION_NAME.idup
 ];
 
 class VulkanApp {
@@ -75,6 +82,9 @@ private:
 
   void initVulkan() {
     createInstance();
+    setupDebugMessenger();
+    createSurface();
+    pickPhysicalDevice();
   }
 
   const(char*)[] getRequiredExtensions() {
@@ -112,8 +122,27 @@ private:
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void* pUserData
   ) {
-    stderr.writef("Validation layer: %s\n", pCallbackData.pMessage.fromStringz);
+    debug stderr.writef("Validation layer: %s\n", pCallbackData.pMessage.fromStringz);
     return VK_FALSE;
+  }
+
+  void setupDebugMessenger() {
+    if (!enableValidationLayers) return;
+    
+    VkDebugUtilsMessengerCreateInfoEXT createInfo;
+    populateDebugMessengerCreateInfo(createInfo);
+    
+    auto func = cast(PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+      m_instance,
+      "vkCreateDebugUtilsMessengerEXT"
+    );
+    if (func != null) {
+      if (func(m_instance, &createInfo, null, &m_debugMessenger) != VK_SUCCESS) {
+        throw new Exception("Failed to set up debug messenger!");
+      }
+    } else {
+      throw new Exception("Failed to load vkCreateDebugUtilsMessengerEXT!");
+    }
   }
 
   void createInstance() {
@@ -159,9 +188,11 @@ private:
     auto availableExtensions = new VkExtensionProperties[extensionCount];
     vkEnumerateInstanceExtensionProperties(null, &extensionCount, availableExtensions.ptr);
 
-    writeln("Available extensions:");
-    foreach (extension; availableExtensions) {
-      writeln("\t", extension.extensionName);
+    debug {
+      writeln("Available extensions:");
+      foreach (extension; availableExtensions) {
+        writeln("\t", extension.extensionName);
+      }
     }
   }
 
@@ -186,6 +217,139 @@ private:
     }
     
     return true;
+  }
+
+  void createSurface() {
+    if (glfwCreateWindowSurface(m_instance, m_window, null, &m_surface) != VK_SUCCESS) {
+      throw new Exception("Failed to create window surface!");
+    }
+  }
+
+  void pickPhysicalDevice() {
+    uint deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, null);
+    
+    if (deviceCount == 0) {
+      throw new Exception("Failed to find GPUs with Vulkan support!");
+    }
+    
+    auto devices = new VkPhysicalDevice[deviceCount];
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.ptr);
+    
+    foreach (ref device; devices) {
+      if (isDeviceSuitable(device)) {
+        m_physicalDevice = device;
+        break;
+      }
+    }
+    
+    if (m_physicalDevice == VK_NULL_HANDLE) {
+      throw new Exception("Failed to find a suitable GPU!");
+    }
+    
+    debug {
+      VkPhysicalDeviceProperties deviceProperties;
+      vkGetPhysicalDeviceProperties(m_physicalDevice, &deviceProperties);
+      writef("Selected GPU: %s\n", deviceProperties.deviceName.fromStringz);
+    }
+  }
+
+  struct QueueFamilyIndices {
+    Nullable!size_t graphicsFamily;
+    Nullable!size_t presentFamily;
+      
+    bool isComplete() {
+      return !graphicsFamily.isNull && !presentFamily.isNull;
+    }
+  };
+  
+  struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    VkSurfaceFormatKHR[] formats;
+    VkPresentModeKHR[] presentModes;
+  };
+
+  bool isDeviceSuitable(VkPhysicalDevice device) {
+    QueueFamilyIndices indices = findQueueFamilies(device);
+    
+    bool extensionsSupported = checkDeviceExtensionSupport(device);
+
+    bool swapChainAdequate = false;
+    if (extensionsSupported) {
+      SwapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+      swapChainAdequate = (
+        !swapChainSupport.formats.empty && 
+        !swapChainSupport.presentModes.empty
+      );
+    }
+    
+    return indices.isComplete && extensionsSupported && swapChainAdequate;
+}
+
+  QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+    QueueFamilyIndices indices;
+    
+    uint queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, null);
+
+    auto queueFamilies = new VkQueueFamilyProperties[queueFamilyCount];
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.ptr);
+
+    foreach (i, const ref queueFamily; queueFamilies) {
+      if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        indices.graphicsFamily = i;
+      }
+      
+      VkBool32 presentSupport = false;
+      vkGetPhysicalDeviceSurfaceSupportKHR(device, cast(uint) i, m_surface, &presentSupport);
+      if (presentSupport) {
+        indices.presentFamily = i;
+      }
+      
+      if (indices.isComplete) {
+        break;
+      }
+    }
+
+    return indices;
+  }
+
+  bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    uint extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, null, &extensionCount, null);
+    
+    auto availableExtensions = new VkExtensionProperties[extensionCount];
+    vkEnumerateDeviceExtensionProperties(device, null, &extensionCount, availableExtensions.ptr);
+    
+    auto requiredExtensions = redBlackTree(deviceExtensions);
+    
+    foreach (const ref ext; availableExtensions) {
+      requiredExtensions.removeKey(ext.extensionName.fromStringz.idup);
+    }
+    
+    return requiredExtensions.empty;
+  }
+
+  SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device) {
+    SwapChainSupportDetails details;
+    
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
+    
+    uint formatCount;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, null);
+    if (formatCount != 0) {
+      details.formats.length = formatCount;
+      vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &formatCount, details.formats.ptr);
+    }
+    
+    uint presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, null);
+    if (presentModeCount != 0) {
+      details.presentModes.length = presentModeCount;
+      vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, details.presentModes.ptr);
+    }
+    
+    return details;
   }
 
   void mainLoop() {
