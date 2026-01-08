@@ -18,12 +18,12 @@ debug {
   const bool enableValidationLayers = false;
 }
 
-const string[] validationLayers = [
+static const char*[] validationLayers = [
   "VK_LAYER_KHRONOS_validation"
 ];
 
-const string[] deviceExtensions = [
-  VK_KHR_SWAPCHAIN_EXTENSION_NAME.idup
+static const char*[] deviceExtensions = [
+  VK_KHR_SWAPCHAIN_EXTENSION_NAME.ptr
 ];
 
 class VulkanApp {
@@ -85,6 +85,7 @@ private:
     setupDebugMessenger();
     createSurface();
     pickPhysicalDevice();
+    createLogicalDevice();
   }
 
   const(char*)[] getRequiredExtensions() {
@@ -169,7 +170,7 @@ private:
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (enableValidationLayers) {
       createInfo.enabledLayerCount = cast(uint) validationLayers.length;
-      createInfo.ppEnabledLayerNames = validationLayers.map!(l => l.toStringz).array.ptr;
+      createInfo.ppEnabledLayerNames = validationLayers.ptr;
       
       populateDebugMessengerCreateInfo(debugCreateInfo);
       createInfo.pNext = &debugCreateInfo;
@@ -206,7 +207,7 @@ private:
     foreach (layerName; validationLayers) {
       bool layerFound = false;
       foreach (layerProperties; availableLayers) {
-        if (strcmp(layerName.toStringz, layerProperties.layerName.ptr) == 0) {
+        if (strcmp(layerName, layerProperties.layerName.ptr) == 0) {
           layerFound = true;
           break;
         }
@@ -321,10 +322,10 @@ private:
     auto availableExtensions = new VkExtensionProperties[extensionCount];
     vkEnumerateDeviceExtensionProperties(device, null, &extensionCount, availableExtensions.ptr);
     
-    auto requiredExtensions = redBlackTree(deviceExtensions);
+    auto requiredExtensions = redBlackTree(deviceExtensions.map!(fromStringz));
     
     foreach (const ref ext; availableExtensions) {
-      requiredExtensions.removeKey(ext.extensionName.fromStringz.idup);
+      requiredExtensions.removeKey(ext.extensionName.fromStringz);
     }
     
     return requiredExtensions.empty;
@@ -350,6 +351,50 @@ private:
     }
     
     return details;
+  }
+
+  void createLogicalDevice() {
+    QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+    
+    VkDeviceQueueCreateInfo[] queueCreateInfos;
+    auto uniqueQueueFamilies = redBlackTree!size_t(
+      indices.graphicsFamily.get,
+      indices.presentFamily.get
+    );
+    
+    float queuePriority = 1.0f;
+    foreach (queueFamily; uniqueQueueFamilies) {
+      VkDeviceQueueCreateInfo queueCreateInfo;
+      queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+      queueCreateInfo.queueFamilyIndex = cast(uint) queueFamily;
+      queueCreateInfo.queueCount = 1;
+      queueCreateInfo.pQueuePriorities = &queuePriority;
+      queueCreateInfos ~= queueCreateInfo;
+    }
+    
+    VkPhysicalDeviceFeatures deviceFeatures;
+    
+    VkDeviceCreateInfo createInfo;
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.queueCreateInfoCount = cast(uint) queueCreateInfos.length;
+    createInfo.pQueueCreateInfos = queueCreateInfos.ptr;
+    createInfo.pEnabledFeatures = &deviceFeatures;
+    createInfo.enabledExtensionCount = cast(uint) deviceExtensions.length;
+    createInfo.ppEnabledExtensionNames = deviceExtensions.ptr;
+    
+    if (enableValidationLayers) {
+      createInfo.enabledLayerCount = cast(uint) validationLayers.length;
+      createInfo.ppEnabledLayerNames = validationLayers.ptr;
+    } else {
+      createInfo.enabledLayerCount = 0;
+    }
+    
+    if (vkCreateDevice(m_physicalDevice, &createInfo, null, &m_device) != VK_SUCCESS) {
+      throw new Exception("Failed to create logical device!");
+    }
+    
+    vkGetDeviceQueue(m_device, cast(uint) indices.graphicsFamily.get, 0u, &m_graphicsQueue);
+    vkGetDeviceQueue(m_device, cast(uint) indices.presentFamily.get, 0u, &m_presentQueue);
   }
 
   void mainLoop() {
