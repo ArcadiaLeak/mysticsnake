@@ -1,0 +1,10 @@
+{
+	"authors": [
+		"evgeniik"
+	],
+	"copyright": "Copyright © 2026, evgeniik",
+	"description": "A minimal D application.",
+	"license": "MIT",
+	"name": "heurig",
+	"libs": ["vulkan", "glfw"]
+}
