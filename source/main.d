@@ -1,6 +1,7 @@
-import std.stdio;
+import vulkan_app;
 
-void main()
-{
-	writeln("Edit source/app.d to start your project.");
+void main() {
+  auto app = new VulkanApp();
+
+  app.run();
 }
