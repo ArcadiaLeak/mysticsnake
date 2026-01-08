@@ -284,7 +284,7 @@ private:
     }
     
     return indices.isComplete && extensionsSupported && swapChainAdequate;
-}
+  }
 
   QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
