@@ -1,6 +1,7 @@
 import core.stdc.string;
 import std.algorithm.mutation;
 
+import poor_man_glm;
 import simple_vulkan_allocator;
 import shader_compiler;
 import vulkan;
@@ -70,7 +71,6 @@ public:
     VkDevice device, 
     VkPhysicalDevice physicalDevice,
     VkRenderPass renderPass,
-    VkPipelineCache pipelineCache,
     VkCommandPool commandPool,
     uint width,
     uint height
@@ -78,49 +78,346 @@ public:
     m_device = device;
     m_physicalDevice = physicalDevice;
     m_renderPass = renderPass;
-    m_pipelineCache = pipelineCache;
     m_commandPool = commandPool;
     m_width = width;
     m_height = height;
-    m_rotationAngle = 0.0f;
-    m_rotationAxis = [0.0f, 1.0f, 0.5f];
 
     m_allocator = new SimpleVulkanAllocator(physicalDevice, device);
-    m_imagesInFlight.length = MAX_FRAMES_IN_FLIGHT;
-    m_imagesInFlight.fill(null);
 
     m_vertices = CUBE_VERTICES.dup;
     m_indices = CUBE_INDICES.dup;
 
-    createFramesData();
     createVertexBuffer();
     createIndexBuffer();
+    createUniformBuffers();
     createDescriptorSetLayout();
     createDescriptorPool();
     createDescriptorSets();
     createGraphicsPipeline();
+    createCommandBuffers();
+    createSyncObjects();
   }
 
   ~this() {
-    m_allocator.destroy();
+    cleanupSwapchain();
 
     vkDestroyPipeline(m_device, m_graphicsPipeline, null);
     vkDestroyPipelineLayout(m_device, m_pipelineLayout, null);
-    vkDestroyDescriptorPool(m_device, m_descriptorPool, null);
     vkDestroyDescriptorSetLayout(m_device, m_descriptorSetLayout, null);
+    vkDestroyDescriptorPool(m_device, m_descriptorPool, null);
     
     vkDestroyBuffer(m_device, m_vertexBuffer, null);
     vkDestroyBuffer(m_device, m_indexBuffer, null);
     
-    foreach (ref frame; m_frames) {
-      vkDestroySemaphore(m_device, frame.imageAvailableSemaphore, null);
-      vkDestroySemaphore(m_device, frame.renderFinishedSemaphore, null);
-      vkDestroyFence(m_device, frame.inFlightFence, null);
-      vkDestroyBuffer(m_device, frame.uniformBuffer, null);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      vkDestroyBuffer(m_device, m_uniformBuffers[i], null);
     }
+
+    m_allocator.destroy();
+  }
+
+  void update(float deltaTime) {
+    m_rotationAngle += deltaTime * 45.0f;
+    if (m_rotationAngle >= 360.0f) {
+      m_rotationAngle -= 360.0f;
+    }
+    
+    updateUniformBuffer(m_currentFrame);
+  }
+
+  void drawFrame(
+    VkSwapchainKHR swapchain, 
+    ref VkFramebuffer[] swapchainFramebuffers,
+    VkQueue graphicsQueue, 
+    VkQueue presentQueue
+  ) {
+    vkWaitForFences(m_device, 1, &m_inFlightFences[m_currentFrame], VK_TRUE, ulong.max);
+    
+    uint imageIndex;
+    VkResult result = vkAcquireNextImageKHR(
+      m_device,
+      swapchain,
+      ulong.max,
+      m_imageAvailableSemaphores[m_currentFrame],
+      null,
+      &imageIndex
+    );
+    
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+      return;
+    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+      throw new Exception("Failed to acquire swapchain image");
+    }
+
+    vkResetFences(m_device, 1, &m_inFlightFences[m_currentFrame]);
+    
+    updateUniformBuffer(m_currentFrame);
+    recordCommandBuffer(
+      m_commandBuffers[m_currentFrame],
+      imageIndex,
+      swapchainFramebuffers[imageIndex]
+    );
+    
+    VkSubmitInfo submitInfo;
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    
+    VkSemaphore[1] waitSemaphores = [m_imageAvailableSemaphores[m_currentFrame]];
+    VkPipelineStageFlags[1] waitStages = [VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT];
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores.ptr;
+    submitInfo.pWaitDstStageMask = waitStages.ptr;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &m_commandBuffers[m_currentFrame];
+    
+    VkSemaphore[1] signalSemaphores = [m_renderFinishedSemaphores[m_currentFrame]];
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores.ptr;
+    
+    if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, m_inFlightFences[m_currentFrame]) != VK_SUCCESS) {
+      throw new Exception("Failed to submit draw command buffer");
+    }
+    
+    VkPresentInfoKHR presentInfo;
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores.ptr;
+    
+    VkSwapchainKHR[1] swapchains = [swapchain];
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapchains.ptr;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = null;
+    
+    result = vkQueuePresentKHR(presentQueue, &presentInfo);
+    
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+      // Swapchain needs recreation
+    } else if (result != VK_SUCCESS) {
+      throw new Exception("Failed to present swapchain image");
+    }
+    
+    m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
 private:
+  void createUniformBuffers() {
+    VkDeviceSize bufferSize = UniformBufferObject.sizeof;
+    
+    VkBufferCreateInfo bufferInfo;
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = bufferSize;
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      if (vkCreateBuffer(m_device, &bufferInfo, null, &m_uniformBuffers[i]) != VK_SUCCESS) {
+        throw new Exception("Failed to create uniform buffer");
+      }
+      
+      m_uniformBufferAllocations[i] = m_allocator.allocateForBuffer(
+        m_uniformBuffers[i],
+        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
+          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+      );
+      
+      vkBindBufferMemory(
+        m_device,
+        m_uniformBuffers[i],
+        m_uniformBufferAllocations[i].memory,
+        m_uniformBufferAllocations[i].offset
+      );
+    }
+  }
+
+  void createDescriptorPool() {
+    VkDescriptorPoolSize poolSize;
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = MAX_FRAMES_IN_FLIGHT;
+    
+    VkDescriptorPoolCreateInfo poolInfo;
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = MAX_FRAMES_IN_FLIGHT;
+    
+    if (vkCreateDescriptorPool(m_device, &poolInfo, null, &m_descriptorPool) != VK_SUCCESS) {
+      throw new Exception("Failed to create descriptor pool");
+    }
+  }
+
+  void createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding uboLayoutBinding;
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.pImmutableSamplers = null;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo;
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, null, &m_descriptorSetLayout) != VK_SUCCESS) {
+      throw new Exception("Failed to create descriptor set layout");
+    }
+  }
+
+  void createDescriptorSets() {
+    VkDescriptorSetLayout[MAX_FRAMES_IN_FLIGHT] layouts;
+    layouts[].fill(m_descriptorSetLayout);
+    
+    VkDescriptorSetAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = m_descriptorPool;
+    allocInfo.descriptorSetCount = MAX_FRAMES_IN_FLIGHT;
+    allocInfo.pSetLayouts = layouts.ptr;
+    
+    if (vkAllocateDescriptorSets(m_device, &allocInfo, m_descriptorSets.ptr) != VK_SUCCESS) {
+      throw new Exception("Failed to allocate descriptor sets");
+    }
+    
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      VkDescriptorBufferInfo bufferInfo;
+      bufferInfo.buffer = m_uniformBuffers[i];
+      bufferInfo.offset = 0;
+      bufferInfo.range = UniformBufferObject.sizeof;
+      
+      VkWriteDescriptorSet descriptorWrite;
+      descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptorWrite.dstSet = m_descriptorSets[i];
+      descriptorWrite.dstBinding = 0;
+      descriptorWrite.dstArrayElement = 0;
+      descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      descriptorWrite.descriptorCount = 1;
+      descriptorWrite.pBufferInfo = &bufferInfo;
+      
+      vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, null);
+    }
+  }
+
+  void createCommandBuffers() {
+    VkCommandBufferAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = MAX_FRAMES_IN_FLIGHT;
+    
+    if (vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.ptr) != VK_SUCCESS) {
+      throw new Exception("Failed to allocate command buffers");
+    }
+  }
+
+  void createSyncObjects() {
+    VkSemaphoreCreateInfo semaphoreInfo;
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    
+    VkFenceCreateInfo fenceInfo;
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      if (
+        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
+        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
+        vkCreateFence(m_device, &fenceInfo, null, &m_inFlightFences[i]) != VK_SUCCESS
+      ) {
+        throw new Exception("Failed to create synchronization objects");
+      }
+    }
+  }
+
+  void updateUniformBuffer(size_t frameIndex) {
+    UniformBufferObject ubo;
+    
+    mat4_identity(ubo.model.ptr);
+    mat4_rotate(ubo.model.ptr, m_rotationAngle, m_rotationAxis.ptr);
+    
+    float[3] eye = [2.0f, 2.0f, 2.0f];
+    float[3] center = [0.0f, 0.0f, 0.0f];
+    float[3] up = [0.0f, 0.0f, 1.0f];
+    mat4_lookAt(ubo.view.ptr, eye.ptr, center.ptr, up.ptr);
+    
+    float aspect = cast(float) m_width / cast(float) m_height;
+    mat4_perspective(ubo.proj.ptr, 45.0f, aspect, 0.1f, 10.0f);
+
+    ubo.proj[1][1] *= -1;
+    
+    void* data = m_allocator.map(m_uniformBufferAllocations[frameIndex]);
+    memcpy(data, &ubo, UniformBufferObject.sizeof);
+    m_allocator.unmap(m_uniformBufferAllocations[frameIndex]);
+  }
+
+  void recordCommandBuffer(
+    VkCommandBuffer commandBuffer, 
+    uint imageIndex,
+    VkFramebuffer framebuffer
+  ) {
+    VkCommandBufferBeginInfo beginInfo;
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+      throw new Exception("Failed to begin recording command buffer");
+    }
+    
+    VkRenderPassBeginInfo renderPassInfo;
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = m_renderPass;
+    renderPassInfo.framebuffer = framebuffer;
+    renderPassInfo.renderArea.offset = VkOffset2D(0, 0);
+    renderPassInfo.renderArea.extent = VkExtent2D(m_width, m_height);
+    
+    VkClearValue clearColor = VkClearValue(
+      VkClearColorValue([0.0f, 0.0f, 0.0f, 1.0f])
+    );
+    renderPassInfo.clearValueCount = 1;
+    renderPassInfo.pClearValues = &clearColor;
+    
+    vkCmdBeginRenderPass(
+      commandBuffer,
+      &renderPassInfo, 
+      VK_SUBPASS_CONTENTS_INLINE
+    );
+    
+    vkCmdBindPipeline(
+      commandBuffer,
+      VK_PIPELINE_BIND_POINT_GRAPHICS, 
+      m_graphicsPipeline
+    );
+    
+    VkBuffer[1] vertexBuffers = [m_vertexBuffer];
+    VkDeviceSize[1] offsets = [0];
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers.ptr, offsets.ptr);
+    
+    vkCmdBindIndexBuffer(commandBuffer, m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    
+    vkCmdBindDescriptorSets(
+      commandBuffer, 
+      VK_PIPELINE_BIND_POINT_GRAPHICS,
+      m_pipelineLayout, 
+      0, 
+      1, 
+      &m_descriptorSets[m_currentFrame],
+      0, 
+      null
+    );
+    
+    vkCmdDrawIndexed(
+      commandBuffer,
+      cast(uint) m_indices.length, 
+      1,
+      0,
+      0,
+      0
+    );
+    
+    vkCmdEndRenderPass(commandBuffer);
+    
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+      throw new Exception("Failed to record command buffer");
+    }
+  }
+
   void createGraphicsPipeline() {
     string vertexShaderSource =
       "#version 310 es\n" ~
@@ -288,7 +585,7 @@ private:
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = null;
     
-    if (vkCreateGraphicsPipelines(m_device, m_pipelineCache, 1, &pipelineInfo, null, &m_graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(m_device, null, 1, &pipelineInfo, null, &m_graphicsPipeline) != VK_SUCCESS) {
       throw new Exception("Failed to create graphics pipeline");
     }
     
@@ -354,130 +651,24 @@ private:
     m_allocator.unmap(m_indexBufferAllocation);
   }
 
-  void createFramesData() {
-    m_frames.length = MAX_FRAMES_IN_FLIGHT;
-    
-    VkSemaphoreCreateInfo semaphoreInfo;
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    
-    VkFenceCreateInfo fenceInfo;
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    
-    VkCommandBufferAllocateInfo allocInfo;
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = m_commandPool;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
-    
-    foreach (ref frame; m_frames) {
-      createUniformBuffer(frame);
-      
-      vkCreateSemaphore(m_device, &semaphoreInfo, null, &frame.imageAvailableSemaphore);
-      vkCreateSemaphore(m_device, &semaphoreInfo, null, &frame.renderFinishedSemaphore);
-      vkCreateFence(m_device, &fenceInfo, null, &frame.inFlightFence);
-      
-      vkAllocateCommandBuffers(m_device, &allocInfo, &frame.commandBuffer);
-    }
-  }
-    
-  void createUniformBuffer(ref FrameData frame) {
-    VkDeviceSize bufferSize = UniformBufferObject.sizeof;
-    
-    VkBufferCreateInfo bufferInfo;
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = bufferSize;
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    
-    vkCreateBuffer(m_device, &bufferInfo, null, &frame.uniformBuffer);
-    
-    frame.uniformBufferAllocation = m_allocator.allocateForBuffer(
-      frame.uniformBuffer,
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-    );
-    
-    vkBindBufferMemory(
-      m_device,
-      frame.uniformBuffer,
-      frame.uniformBufferAllocation.memory,
-      frame.uniformBufferAllocation.offset
-    );
-  }
-
-  void createDescriptorSetLayout() {
-    VkDescriptorSetLayoutBinding uboLayoutBinding;
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-    uboLayoutBinding.pImmutableSamplers = null;
-    
-    VkDescriptorSetLayoutCreateInfo layoutInfo;
-    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-    layoutInfo.bindingCount = 1;
-    layoutInfo.pBindings = &uboLayoutBinding;
-    
-    if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, null, &m_descriptorSetLayout) != VK_SUCCESS) {
-      throw new Exception("Failed to create descriptor set layout");
-    }
-  }
-
-  void createDescriptorPool() {
-    VkDescriptorPoolSize[1] poolSizes;
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = cast(uint) m_frames.length;
-    
-    VkDescriptorPoolCreateInfo poolInfo;
-    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = cast(uint) poolSizes.length;
-    poolInfo.pPoolSizes = poolSizes.ptr;
-    poolInfo.maxSets = cast(uint) m_frames.length;
-    
-    if (vkCreateDescriptorPool(m_device, &poolInfo, null, &m_descriptorPool) != VK_SUCCESS) {
-      throw new Exception("Failed to create descriptor pool");
-    }
-  }
-
-  void createDescriptorSets() {
-    VkDescriptorSetLayout[MAX_FRAMES_IN_FLIGHT] layouts;
-    layouts[].fill(m_descriptorSetLayout);
-    
-    VkDescriptorSetAllocateInfo allocInfo;
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = m_descriptorPool;
-    allocInfo.descriptorSetCount = MAX_FRAMES_IN_FLIGHT;
-    allocInfo.pSetLayouts = layouts.ptr;
-    
-    VkDescriptorSet[MAX_FRAMES_IN_FLIGHT] descriptorSets;
-    vkAllocateDescriptorSets(m_device, &allocInfo, descriptorSets.ptr);
-    
+  void cleanupSwapchain() {
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-      m_frames[i].descriptorSet = descriptorSets[i];
-      
-      VkDescriptorBufferInfo bufferInfo;
-      bufferInfo.buffer = m_frames[i].uniformBuffer;
-      bufferInfo.offset = 0;
-      bufferInfo.range = UniformBufferObject.sizeof;
-      
-      VkWriteDescriptorSet descriptorWrite;
-      descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      descriptorWrite.dstSet = m_frames[i].descriptorSet;
-      descriptorWrite.dstBinding = 0;
-      descriptorWrite.dstArrayElement = 0;
-      descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-      descriptorWrite.descriptorCount = 1;
-      descriptorWrite.pBufferInfo = &bufferInfo;
-      
-      vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, null);
+      vkDestroySemaphore(m_device, m_renderFinishedSemaphores[i], null);
+      vkDestroySemaphore(m_device, m_imageAvailableSemaphores[i], null);
+      vkDestroyFence(m_device, m_inFlightFences[i], null);
     }
+    
+    vkFreeCommandBuffers(
+      m_device,
+      m_commandPool, 
+      cast(uint) m_commandBuffers.length, 
+      m_commandBuffers.ptr
+    );
   }
 
   VkDevice m_device;
   VkPhysicalDevice m_physicalDevice;
   VkRenderPass m_renderPass;
-  VkPipelineCache m_pipelineCache;
   VkCommandPool m_commandPool;
   uint m_width, m_height;
   
@@ -489,31 +680,26 @@ private:
   Vertex[] m_vertices;
   ushort[] m_indices;
   
-  SimpleVulkanAllocator.Allocation m_vertexBufferAllocation;
-  SimpleVulkanAllocator.Allocation m_indexBufferAllocation;
-  SimpleVulkanAllocator.Allocation[] m_uniformBufferAllocations;
-  
   VkBuffer m_vertexBuffer;
   VkBuffer m_indexBuffer;
+  VkBuffer[MAX_FRAMES_IN_FLIGHT] m_uniformBuffers;
+
+  SimpleVulkanAllocator.Allocation m_vertexBufferAllocation;
+  SimpleVulkanAllocator.Allocation m_indexBufferAllocation;
+  SimpleVulkanAllocator.Allocation[MAX_FRAMES_IN_FLIGHT] m_uniformBufferAllocations;
   
   VkDescriptorPool m_descriptorPool;
-  VkDescriptorSet[] m_descriptorSets;
   VkDescriptorSetLayout m_descriptorSetLayout;
-  
-  float m_rotationAngle;
-  float[3] m_rotationAxis;
+  VkDescriptorSet[MAX_FRAMES_IN_FLIGHT] m_descriptorSets;
 
-  struct FrameData {
-    VkBuffer uniformBuffer;
-    SimpleVulkanAllocator.Allocation uniformBufferAllocation;
-    VkDescriptorSet descriptorSet;
-    VkCommandBuffer commandBuffer;
-    VkSemaphore imageAvailableSemaphore;
-    VkSemaphore renderFinishedSemaphore;
-    VkFence inFlightFence;
-  };
+  VkCommandBuffer[MAX_FRAMES_IN_FLIGHT] m_commandBuffers;
+
+  VkSemaphore[MAX_FRAMES_IN_FLIGHT] m_imageAvailableSemaphores;
+  VkSemaphore[MAX_FRAMES_IN_FLIGHT] m_renderFinishedSemaphores;
+  VkFence[MAX_FRAMES_IN_FLIGHT] m_inFlightFences;
+
+  uint m_currentFrame = 0;
   
-  FrameData[] m_frames;
-  
-  VkFence[] m_imagesInFlight;
+  float m_rotationAngle = 0.0f;
+  float[3] m_rotationAxis = [0.0f, 1.0f, 0.5f];
 }

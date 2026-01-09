@@ -8,6 +8,7 @@ import std.typecons;
 import std.range;
 import std.range.primitives;
 import std.container.rbtree;
+import std.datetime;
 
 import glfw;
 import vulkan;
@@ -44,6 +45,8 @@ private:
   const uint m_height = 600;
   const string m_appName = "Vulkan Cube";
 
+  MonoTime m_lastTime;
+
   VkInstance m_instance;
   VkDebugUtilsMessengerEXT m_debugMessenger;
   VkSurfaceKHR m_surface;
@@ -60,12 +63,11 @@ private:
   VkExtent2D m_swapchainExtent;
 
   VkRenderPass m_renderPass;
-  VkPipelineCache m_pipelineCache;
   VkFramebuffer[] m_swapChainFramebuffers;
-  VkCommandBuffer[] m_commandBuffers;
   VkCommandPool m_commandPool;
 
   CubeRenderer m_cubeRenderer;
+  uint m_swapchainImageCount;
 
   void initWindow() {
     glfwInit();
@@ -89,9 +91,8 @@ private:
     createSwapChain();
     createImageViews();
     createRenderPass();
-    createFramebuffers();
     createCommandPool();
-    createCommandBuffers();
+    createFramebuffers();
 
     ShaderCompiler.Initialize();
 
@@ -100,27 +101,12 @@ private:
       m_device,
       m_physicalDevice,
       m_renderPass,
-      m_pipelineCache,
       m_commandPool,
       m_width,
       m_height
     );
     
     writeln("Vulkan initialization complete!");
-  }
-
-  void createCommandBuffers() {
-    m_commandBuffers.length = MAX_FRAMES_IN_FLIGHT;
-    
-    VkCommandBufferAllocateInfo allocInfo;
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = m_commandPool;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = cast(uint) m_commandBuffers.length;
-    
-    if (vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.ptr) != VK_SUCCESS) {
-      throw new Exception("Failed to allocate command buffers!");
-    }
   }
 
   void createCommandPool() {
@@ -477,18 +463,18 @@ private:
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
-    uint imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    m_swapchainImageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (
       swapChainSupport.capabilities.maxImageCount > 0 && 
-      imageCount > swapChainSupport.capabilities.maxImageCount
+      m_swapchainImageCount > swapChainSupport.capabilities.maxImageCount
     ) {
-      imageCount = swapChainSupport.capabilities.maxImageCount;
+      m_swapchainImageCount = swapChainSupport.capabilities.maxImageCount;
     }
 
     VkSwapchainCreateInfoKHR createInfo;
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.surface = m_surface;
-    createInfo.minImageCount = imageCount;
+    createInfo.minImageCount = m_swapchainImageCount;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
@@ -521,12 +507,14 @@ private:
       throw new Exception("Failed to create swap chain!");
     }
     
-    vkGetSwapchainImagesKHR(m_device, m_swapchain, &imageCount, null);
-    m_swapchainImages.length = imageCount;
-    vkGetSwapchainImagesKHR(m_device, m_swapchain, &imageCount, m_swapchainImages.ptr);
+    vkGetSwapchainImagesKHR(m_device, m_swapchain, &m_swapchainImageCount, null);
+    m_swapchainImages.length = m_swapchainImageCount;
+    vkGetSwapchainImagesKHR(m_device, m_swapchain, &m_swapchainImageCount, m_swapchainImages.ptr);
     
     m_swapchainImageFormat = surfaceFormat.format;
     m_swapchainExtent = extent;
+
+    debug writef("Swapchain created with %d images\n", m_swapchainImageCount);
   }
 
   VkSurfaceFormatKHR chooseSwapSurfaceFormat(in VkSurfaceFormatKHR[] availableFormats) {
@@ -647,10 +635,31 @@ private:
   }
 
   void mainLoop() {
+    m_lastTime = MonoTime.currTime;
+
     while (!glfwWindowShouldClose(m_window)) {
       glfwPollEvents();
+      drawFrame();
     }
+
+    vkDeviceWaitIdle(m_device);
   }
+
+  void drawFrame() {
+    auto currentTime = MonoTime.currTime;
+    float deltaTime = (currentTime - m_lastTime).total!"hnsecs" / 1e7;
+    m_lastTime = currentTime;
+
+    m_cubeRenderer.update(deltaTime);
+    
+    m_cubeRenderer.drawFrame(
+      m_swapchain,
+      m_swapChainFramebuffers,
+      m_graphicsQueue,
+      m_presentQueue
+    );
+  }
+
 
   void cleanupSwapChain() {
     foreach (framebuffer; m_swapChainFramebuffers) {
@@ -670,7 +679,6 @@ private:
     cleanupSwapChain();
     
     vkDestroyRenderPass(m_device, m_renderPass, null);
-    vkDestroyPipelineCache(m_device, m_pipelineCache, null);
     
     vkDestroyCommandPool(m_device, m_commandPool, null);
     vkDestroyDevice(m_device, null);

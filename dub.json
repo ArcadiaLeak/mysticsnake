@@ -6,5 +6,6 @@
 	"description": "A minimal D application.",
 	"license": "MIT",
 	"name": "heurig",
-	"libs": ["vulkan", "glfw", "stdc++", "glslang", "glslang-default-resource-limits", "SPIRV-Tools"]
+	"libs": ["vulkan", "glfw", "stdc++", "glslang", "glslang-default-resource-limits", "SPIRV-Tools"],
+	"sourceFiles": ["source/poor_man_glm.c"]
 }
