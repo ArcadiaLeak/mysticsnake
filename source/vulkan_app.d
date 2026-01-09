@@ -85,6 +85,8 @@ private:
   }
 
   void initVulkan() {
+    debug writeln("Initializing Vulkan...");
+
     createInstance();
     setupDebugMessenger();
     createSurface();
@@ -97,6 +99,18 @@ private:
     createCommandPool();
     createCommandBuffers();
     createSyncObjects();
+
+    writeln("Creating cube renderer...");
+    m_cubeRenderer = new CubeRenderer(
+      m_device,
+      m_physicalDevice,
+      m_renderPass,
+      m_pipelineCache,
+      m_width,
+      m_height
+    );
+    
+    writeln("Vulkan initialization complete!");
   }
 
   void createCommandBuffers() {
