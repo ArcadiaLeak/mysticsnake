@@ -10,7 +10,7 @@ const int MAX_FRAMES_IN_FLIGHT = 2;
 
 class CubeRenderer {
 public:
-  static const Vertex[] CUBE_VERTICES = [
+  static immutable Vertex[] s_vertices = [
     // Front face
     Vertex([-0.5f, -0.5f,  0.5f]), // 0
     Vertex([ 0.5f, -0.5f,  0.5f]), // 1
@@ -48,7 +48,7 @@ public:
     Vertex([-0.5f, -0.5f,  0.5f]), // 23 (0)
   ];
 
-  static const ushort[] CUBE_INDICES = [
+  static immutable ushort[] s_indices = [
     0, 1, 2,  2, 3, 0,    // Front face
     4, 5, 6,  6, 7, 4,    // Back face
     8, 9, 10, 10, 11, 8,  // Left face
@@ -83,9 +83,6 @@ public:
     m_height = height;
 
     m_allocator = new SimpleVulkanAllocator(physicalDevice, device);
-
-    m_vertices = CUBE_VERTICES.dup;
-    m_indices = CUBE_INDICES.dup;
 
     createVertexBuffer();
     createIndexBuffer();
@@ -404,7 +401,7 @@ private:
     
     vkCmdDrawIndexed(
       commandBuffer,
-      cast(uint) m_indices.length, 
+      cast(uint) s_indices.length, 
       1,
       0,
       0,
@@ -594,7 +591,7 @@ private:
   }
 
   void createVertexBuffer() {
-    VkDeviceSize bufferSize = Vertex.sizeof * m_vertices.length;
+    VkDeviceSize bufferSize = Vertex.sizeof * s_vertices.length;
     
     VkBufferCreateInfo bufferInfo;
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -618,12 +615,12 @@ private:
     );
 
     void* data = m_allocator.map(m_vertexBufferAllocation);
-    memcpy(data, m_vertices.ptr, bufferSize);
+    memcpy(data, s_vertices.ptr, bufferSize);
     m_allocator.unmap(m_vertexBufferAllocation);
   }
 
   void createIndexBuffer() {
-    VkDeviceSize bufferSize = ushort.sizeof * m_indices.length;
+    VkDeviceSize bufferSize = ushort.sizeof * s_indices.length;
     
     VkBufferCreateInfo bufferInfo;
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -647,7 +644,7 @@ private:
     );
     
     void* data = m_allocator.map(m_indexBufferAllocation);
-    memcpy(data, m_indices.ptr, bufferSize);
+    memcpy(data, s_indices.ptr, bufferSize);
     m_allocator.unmap(m_indexBufferAllocation);
   }
 
@@ -676,9 +673,6 @@ private:
   
   VkPipelineLayout m_pipelineLayout;
   VkPipeline m_graphicsPipeline;
-  
-  Vertex[] m_vertices;
-  ushort[] m_indices;
   
   VkBuffer m_vertexBuffer;
   VkBuffer m_indexBuffer;
