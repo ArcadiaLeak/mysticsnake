@@ -13,6 +13,7 @@ import glfw;
 import vulkan;
 
 import cube_renderer;
+import shader_compiler;
 
 debug {
   static const bool enableValidationLayers = true;
@@ -97,6 +98,8 @@ private:
     createCommandPool();
     createCommandBuffers();
     createSyncObjects();
+
+    ShaderCompiler.Initialize();
 
     writeln("Creating cube renderer...");
     m_cubeRenderer = new CubeRenderer(
@@ -679,6 +682,8 @@ private:
   }
 
   void cleanup() {
+    m_cubeRenderer.destroy();
+    ShaderCompiler.Finalize();
     glfwDestroyWindow(m_window);
     glfwTerminate();
   }

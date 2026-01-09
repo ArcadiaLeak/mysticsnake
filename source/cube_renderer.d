@@ -98,6 +98,7 @@ public:
     createDescriptorSetLayout();
     createDescriptorPool();
     createDescriptorSets();
+    createGraphicsPipeline();
   }
 
   ~this() {
@@ -115,6 +116,45 @@ public:
   }
 
 private:
+  void createGraphicsPipeline() {
+    string vertexShaderSource =
+      "#version 310 es\n" ~
+      "precision highp float;\n" ~
+      "\n" ~
+      "layout(location = 0) in vec3 inPosition;\n" ~
+      "\n" ~
+      "layout(std140, binding = 0) uniform UniformBufferObject {\n" ~
+      "  mat4 model;\n" ~
+      "  mat4 view;\n" ~
+      "  mat4 proj;\n" ~
+      "} ubo;\n" ~
+      "\n" ~
+      "void main() {\n" ~
+      "  gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);\n" ~
+      "}\n";
+    
+    string fragmentShaderSource =
+      "#version 310 es\n" ~
+      "precision highp float;\n" ~
+      "\n" ~
+      "layout(location = 0) out vec4 outColor;\n" ~
+      "\n" ~
+      "void main() {\n" ~
+      "  outColor = vec4(1.0, 0.5, 0.2, 1.0);\n" ~
+      "}\n";
+    
+    auto vertShaderCode = ShaderCompiler.CompileGLSLtoSPIRV(
+      vertexShaderSource,
+      "cube.vert",
+      true
+    );
+    auto fragShaderCode = ShaderCompiler.CompileGLSLtoSPIRV(
+      fragmentShaderSource,
+      "cube.frag",
+      false
+    );
+  }
+
   void createVertexBuffer() {
     VkDeviceSize bufferSize = Vertex.sizeof * m_vertices.length;
     
