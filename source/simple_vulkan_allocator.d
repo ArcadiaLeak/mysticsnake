@@ -23,8 +23,8 @@ public:
   }
 
   ~this() {
-    foreach (ref block; m_blocks) {
-      vkFreeMemory(m_device, block.memory, null);
+    foreach (block; m_blocks) {
+      vkFreeMemory(m_device, block, null);
     }
     m_blocks.length = 0;
   }
@@ -54,19 +54,11 @@ public:
     allocInfo.memoryTypeIndex = memoryTypeIndex;
     
     VkDeviceMemory memory;
-    VkResult result = vkAllocateMemory(m_device, &allocInfo, null, &memory);
-    if (result != VK_SUCCESS) {
+    if (vkAllocateMemory(m_device, &allocInfo, null, &memory) == VK_SUCCESS) {
+      m_blocks ~= memory;
+    } else {
       throw new Exception("Failed to allocate Vulkan memory!");
     }
-    
-    MemoryBlock block;
-    block.memory = memory;
-    block.size = size;
-    block.memoryTypeIndex = memoryTypeIndex;
-    block.usedRegions ~= true;
-    block.usedSize = size;
-    
-    m_blocks ~= block;
     
     Allocation allocation;
     allocation.memory = memory;
@@ -115,14 +107,6 @@ private:
   VkPhysicalDevice m_physicalDevice;
   VkDevice m_device;
   VkPhysicalDeviceMemoryProperties m_memProperties;
-
-  struct MemoryBlock {
-    VkDeviceMemory memory;
-    VkDeviceSize size;
-    uint memoryTypeIndex;
-    bool[] usedRegions;
-    VkDeviceSize usedSize;
-  };
     
-  MemoryBlock[] m_blocks;
+  VkDeviceMemory[] m_blocks;
 };
