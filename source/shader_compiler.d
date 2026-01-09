@@ -1,4 +1,5 @@
 import glslang;
+import vulkan;
 
 import std.stdio;
 import std.string;
@@ -116,10 +117,29 @@ public:
       debug writef("SPIR-V messages for %s: %s\n", filename, spirvMessages);
     }
     
+    auto spirv = spirvCode[0..spirvSize].dup;
+
     glslang_program_delete(program);
     glslang_shader_delete(shader);
 
-    return spirvCode[0..spirvSize];
+    return spirv;
+  }
+
+  static VkShaderModule CreateShaderModule(
+    VkDevice device,
+    in uint[] spirvCode
+  ) {
+    VkShaderModuleCreateInfo createInfo;
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = spirvCode.length * uint.sizeof;
+    createInfo.pCode = spirvCode.ptr;
+    
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device, &createInfo, null, &shaderModule) != VK_SUCCESS) {
+      throw new Exception("Failed to create shader module");
+    }
+    
+    return shaderModule;
   }
 
 private:

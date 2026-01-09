@@ -65,11 +65,6 @@ private:
   VkCommandBuffer[] m_commandBuffers;
   VkCommandPool m_commandPool;
 
-  VkSemaphore[] m_imageAvailableSemaphores;
-  VkSemaphore[] m_renderFinishedSemaphores;
-  VkFence[] m_inFlightFences;
-  uint m_currentFrame = 0;
-
   CubeRenderer m_cubeRenderer;
 
   void initWindow() {
@@ -97,7 +92,6 @@ private:
     createFramebuffers();
     createCommandPool();
     createCommandBuffers();
-    createSyncObjects();
 
     ShaderCompiler.Initialize();
 
@@ -126,29 +120,6 @@ private:
     
     if (vkAllocateCommandBuffers(m_device, &allocInfo, m_commandBuffers.ptr) != VK_SUCCESS) {
       throw new Exception("Failed to allocate command buffers!");
-    }
-  }
-
-  void createSyncObjects() {
-    m_imageAvailableSemaphores.length = MAX_FRAMES_IN_FLIGHT;
-    m_renderFinishedSemaphores.length = MAX_FRAMES_IN_FLIGHT;
-    m_inFlightFences.length = MAX_FRAMES_IN_FLIGHT;
-    
-    VkSemaphoreCreateInfo semaphoreInfo;
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    
-    VkFenceCreateInfo fenceInfo;
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-    
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-      if (
-        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_imageAvailableSemaphores[i]) != VK_SUCCESS ||
-        vkCreateSemaphore(m_device, &semaphoreInfo, null, &m_renderFinishedSemaphores[i]) != VK_SUCCESS ||
-        vkCreateFence(m_device, &fenceInfo, null, &m_inFlightFences[i]) != VK_SUCCESS
-      ) {
-        throw new Exception("Failed to create synchronization objects for a frame!");
-      }
     }
   }
 
@@ -681,10 +652,48 @@ private:
     }
   }
 
+  void cleanupSwapChain() {
+    foreach (framebuffer; m_swapChainFramebuffers) {
+      vkDestroyFramebuffer(m_device, framebuffer, null);
+    }
+    
+    foreach (imageView; m_swapchainImageViews) {
+      vkDestroyImageView(m_device, imageView, null);
+    }
+    
+    vkDestroySwapchainKHR(m_device, m_swapchain, null);
+  }
+
   void cleanup() {
     m_cubeRenderer.destroy();
-    ShaderCompiler.Finalize();
+
+    cleanupSwapChain();
+    
+    vkDestroyRenderPass(m_device, m_renderPass, null);
+    vkDestroyPipelineCache(m_device, m_pipelineCache, null);
+    
+    vkDestroyCommandPool(m_device, m_commandPool, null);
+    vkDestroyDevice(m_device, null);
+    
+    if (enableValidationLayers) {
+      auto func = cast(PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+        m_instance,
+        "vkDestroyDebugUtilsMessengerEXT"
+      );
+
+      if (func != null) {
+        func(m_instance, m_debugMessenger, null);
+      }
+    }
+    
+    vkDestroySurfaceKHR(m_instance, m_surface, null);
+    vkDestroyInstance(m_instance, null);
+    
     glfwDestroyWindow(m_window);
     glfwTerminate();
+
+    ShaderCompiler.Finalize();
+    
+    debug writeln("Cleanup complete!");
   }
 }
