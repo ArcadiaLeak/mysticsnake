@@ -1,7 +1,11 @@
 import core.stdc.string;
+import std.algorithm.mutation;
 
 import simple_vulkan_allocator;
+import shader_compiler;
 import vulkan;
+
+const int MAX_FRAMES_IN_FLIGHT = 2;
 
 class CubeRenderer {
 public:
@@ -67,6 +71,7 @@ public:
     VkPhysicalDevice physicalDevice,
     VkRenderPass renderPass,
     VkPipelineCache pipelineCache,
+    VkCommandPool commandPool,
     uint width,
     uint height
   ) {
@@ -74,18 +79,25 @@ public:
     m_physicalDevice = physicalDevice;
     m_renderPass = renderPass;
     m_pipelineCache = pipelineCache;
+    m_commandPool = commandPool;
     m_width = width;
     m_height = height;
     m_rotationAngle = 0.0f;
     m_rotationAxis = [0.0f, 1.0f, 0.5f];
 
     m_allocator = new SimpleVulkanAllocator(physicalDevice, device);
+    m_imagesInFlight.length = MAX_FRAMES_IN_FLIGHT;
+    m_imagesInFlight.fill(null);
 
     m_vertices = CUBE_VERTICES.dup;
     m_indices = CUBE_INDICES.dup;
 
+    createFramesData();
     createVertexBuffer();
     createIndexBuffer();
+    createDescriptorSetLayout();
+    createDescriptorPool();
+    createDescriptorSets();
   }
 
   ~this() {
@@ -97,8 +109,8 @@ public:
     vkDestroyBuffer(m_device, m_vertexBuffer, null);
     vkDestroyBuffer(m_device, m_indexBuffer, null);
     
-    foreach (ref buffer; m_uniformBuffers) {
-      vkDestroyBuffer(m_device, buffer, null);
+    foreach (ref frame; m_frames) {
+      vkDestroyBuffer(m_device, frame.uniformBuffer, null);
     }
   }
 
@@ -161,10 +173,131 @@ private:
     m_allocator.unmap(m_indexBufferAllocation);
   }
 
+  void createFramesData() {
+    m_frames.length = MAX_FRAMES_IN_FLIGHT;
+    
+    VkSemaphoreCreateInfo semaphoreInfo;
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    
+    VkFenceCreateInfo fenceInfo;
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+    
+    VkCommandBufferAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+    
+    foreach (ref frame; m_frames) {
+      createUniformBuffer(frame);
+      
+      vkCreateSemaphore(m_device, &semaphoreInfo, null, &frame.imageAvailableSemaphore);
+      vkCreateSemaphore(m_device, &semaphoreInfo, null, &frame.renderFinishedSemaphore);
+      vkCreateFence(m_device, &fenceInfo, null, &frame.inFlightFence);
+      
+      vkAllocateCommandBuffers(m_device, &allocInfo, &frame.commandBuffer);
+    }
+  }
+    
+  void createUniformBuffer(ref FrameData frame) {
+    VkDeviceSize bufferSize = UniformBufferObject.sizeof;
+    
+    VkBufferCreateInfo bufferInfo;
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = bufferSize;
+    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    
+    vkCreateBuffer(m_device, &bufferInfo, null, &frame.uniformBuffer);
+    
+    frame.uniformBufferAllocation = m_allocator.allocateForBuffer(
+      frame.uniformBuffer,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
+        VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+    );
+    
+    vkBindBufferMemory(
+      m_device,
+      frame.uniformBuffer,
+      frame.uniformBufferAllocation.memory,
+      frame.uniformBufferAllocation.offset
+    );
+  }
+
+  void createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding uboLayoutBinding;
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.pImmutableSamplers = null;
+    
+    VkDescriptorSetLayoutCreateInfo layoutInfo;
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &uboLayoutBinding;
+    
+    if (vkCreateDescriptorSetLayout(m_device, &layoutInfo, null, &m_descriptorSetLayout) != VK_SUCCESS) {
+      throw new Exception("Failed to create descriptor set layout");
+    }
+  }
+
+  void createDescriptorPool() {
+    VkDescriptorPoolSize[1] poolSizes;
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSizes[0].descriptorCount = cast(uint) m_frames.length;
+    
+    VkDescriptorPoolCreateInfo poolInfo;
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = cast(uint) poolSizes.length;
+    poolInfo.pPoolSizes = poolSizes.ptr;
+    poolInfo.maxSets = cast(uint) m_frames.length;
+    
+    if (vkCreateDescriptorPool(m_device, &poolInfo, null, &m_descriptorPool) != VK_SUCCESS) {
+      throw new Exception("Failed to create descriptor pool");
+    }
+  }
+
+  void createDescriptorSets() {
+    VkDescriptorSetLayout[MAX_FRAMES_IN_FLIGHT] layouts;
+    layouts[].fill(m_descriptorSetLayout);
+    
+    VkDescriptorSetAllocateInfo allocInfo;
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = m_descriptorPool;
+    allocInfo.descriptorSetCount = MAX_FRAMES_IN_FLIGHT;
+    allocInfo.pSetLayouts = layouts.ptr;
+    
+    VkDescriptorSet[MAX_FRAMES_IN_FLIGHT] descriptorSets;
+    vkAllocateDescriptorSets(m_device, &allocInfo, descriptorSets.ptr);
+    
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+      m_frames[i].descriptorSet = descriptorSets[i];
+      
+      VkDescriptorBufferInfo bufferInfo;
+      bufferInfo.buffer = m_frames[i].uniformBuffer;
+      bufferInfo.offset = 0;
+      bufferInfo.range = UniformBufferObject.sizeof;
+      
+      VkWriteDescriptorSet descriptorWrite;
+      descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptorWrite.dstSet = m_frames[i].descriptorSet;
+      descriptorWrite.dstBinding = 0;
+      descriptorWrite.dstArrayElement = 0;
+      descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      descriptorWrite.descriptorCount = 1;
+      descriptorWrite.pBufferInfo = &bufferInfo;
+      
+      vkUpdateDescriptorSets(m_device, 1, &descriptorWrite, 0, null);
+    }
+  }
+
   VkDevice m_device;
   VkPhysicalDevice m_physicalDevice;
   VkRenderPass m_renderPass;
   VkPipelineCache m_pipelineCache;
+  VkCommandPool m_commandPool;
   uint m_width, m_height;
   
   SimpleVulkanAllocator m_allocator;
@@ -181,7 +314,6 @@ private:
   
   VkBuffer m_vertexBuffer;
   VkBuffer m_indexBuffer;
-  VkBuffer[] m_uniformBuffers;
   
   VkDescriptorPool m_descriptorPool;
   VkDescriptorSet[] m_descriptorSets;
@@ -189,4 +321,20 @@ private:
   
   float m_rotationAngle;
   float[3] m_rotationAxis;
+
+  struct FrameData {
+    VkBuffer uniformBuffer;
+    SimpleVulkanAllocator.Allocation uniformBufferAllocation;
+    VkDescriptorSet descriptorSet;
+    VkCommandBuffer commandBuffer;
+    VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;
+    VkFence inFlightFence;
+  };
+  
+  FrameData[] m_frames;
+  
+  VkFence[] m_imagesInFlight;
+  size_t m_currentFrame = 0;
+  uint m_imageIndex = 0;
 }

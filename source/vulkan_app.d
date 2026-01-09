@@ -20,8 +20,6 @@ debug {
   static const bool enableValidationLayers = false;
 }
 
-static const int MAX_FRAMES_IN_FLIGHT = 2;
-
 static const char*[] validationLayers = [
   "VK_LAYER_KHRONOS_validation"
 ];
@@ -48,7 +46,7 @@ private:
   VkInstance m_instance;
   VkDebugUtilsMessengerEXT m_debugMessenger;
   VkSurfaceKHR m_surface;
-  VkPhysicalDevice m_physicalDevice = cast(VkPhysicalDevice) VK_NULL_HANDLE;
+  VkPhysicalDevice m_physicalDevice = null;
   VkDevice m_device;
 
   VkQueue m_graphicsQueue;
@@ -106,6 +104,7 @@ private:
       m_physicalDevice,
       m_renderPass,
       m_pipelineCache,
+      m_commandPool,
       m_width,
       m_height
     );
@@ -252,10 +251,10 @@ private:
     VkApplicationInfo appInfo;
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = m_appName.toStringz;
-    appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
+    appInfo.applicationVersion = 1u << 22u;
     appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
-    appInfo.apiVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
+    appInfo.engineVersion = 1u << 22u;
+    appInfo.apiVersion = 1u << 22u;
 
     VkInstanceCreateInfo createInfo;
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -342,7 +341,7 @@ private:
       }
     }
     
-    if (m_physicalDevice == VK_NULL_HANDLE) {
+    if (m_physicalDevice == null) {
       throw new Exception("Failed to find a suitable GPU!");
     }
     
@@ -542,7 +541,7 @@ private:
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
-    createInfo.oldSwapchain = cast(VkSwapchainKHR) VK_NULL_HANDLE;
+    createInfo.oldSwapchain = null;
 
     if (vkCreateSwapchainKHR(m_device, &createInfo, null, &m_swapchain) != VK_SUCCESS) {
       throw new Exception("Failed to create swap chain!");
@@ -652,7 +651,7 @@ private:
     subpass.pColorAttachments = &colorAttachmentRef;
     
     VkSubpassDependency dependency;
-    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.srcSubpass = uint.max;
     dependency.dstSubpass = 0;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dependency.srcAccessMask = 0;
