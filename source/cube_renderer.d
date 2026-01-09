@@ -82,7 +82,7 @@ public:
     m_width = width;
     m_height = height;
 
-    m_allocator = new SimpleVulkanAllocator(physicalDevice, device);
+    m_allocator = SimpleVulkanAllocator(physicalDevice, device);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -109,8 +109,6 @@ public:
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
       vkDestroyBuffer(m_device, m_uniformBuffers[i], null);
     }
-
-    m_allocator.destroy();
   }
 
   void update(float deltaTime) {

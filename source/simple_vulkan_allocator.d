@@ -1,6 +1,6 @@
 import vulkan;
 
-class SimpleVulkanAllocator {
+struct SimpleVulkanAllocator {
 public:
   struct Allocation {
     VkDeviceMemory memory;
@@ -9,6 +9,8 @@ public:
     uint memoryTypeIndex;
     void* mappedPtr;
   };
+
+  @disable this();
 
   this(
     VkPhysicalDevice physicalDevice, 
