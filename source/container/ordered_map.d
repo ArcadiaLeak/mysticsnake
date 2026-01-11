@@ -1,16 +1,13 @@
 module container.ordered_map;
 
-@safe class OrderedMap(Key, Value) {
+import std.typecons;
+
+@safe struct OrderedMap(Key, Value) {
 private:
   enum Color { RED, BLACK };
 
   class Node {
-    struct Pair {
-      const Key key;
-      Value value;
-    }
-
-    Pair data;
+    Entry data;
     Node left;
     Node right;
     Node parent;
@@ -24,11 +21,65 @@ private:
       Node l = null,
       Node r = null
     ) {
-      data = Pair(k, v);
+      data = Entry(k, v);
       left = l;
       right = r;
       parent = p;
       color = c;
+    }
+
+    Node successor() {
+      Node node = this;
+
+      if (node.right !is null) {
+        node = node.right;
+        while (node.left !is null) {
+          node = node.left;
+        }
+        return node;
+      }
+      
+      Node parent = node.parent;
+      while (parent !is null && node is parent.right) {
+        node = parent;
+        parent = parent.parent;
+      }
+      return parent;
+    }
+    
+    Node predecessor() {
+      Node node = this;
+
+      if (node.left !is null) {
+        node = node.left;
+        while (node.right !is null) {
+          node = node.right;
+        }
+        return node;
+      }
+        
+      Node parent = node.parent;
+      while (parent !is null && node is parent.left) {
+        node = parent;
+        parent = parent.parent;
+      }
+      return parent;
+    }
+
+    Node minimum() {
+      Node node = this;
+      while (node.left !is null) {
+        node = node.left;
+      }
+      return node;
+    }
+
+    Node maximum() {
+      Node node = this;
+      while (node.right !is null) {
+        node = node.right;
+      }
+      return node;
     }
   }
 
@@ -199,20 +250,6 @@ private:
     }
   }
 
-  Node minimum(Node node) inout {
-    while (node.left !is null) {
-      node = node.left;
-    }
-    return node;
-  }
-
-  Node maximum(Node node) inout {
-    while (node.right !is null) {
-      node = node.right;
-    }
-    return node;
-  }
-
   Node copy(Node node, Node parent) {
     if (node is null) return null;
     
@@ -227,98 +264,64 @@ private:
     return new_node;
   }
 
-  inout(Node) findNode(in Key key) inout {
-    inout(Node)* current = &root;
-    while (*current !is null) {
+  Node findNode(in Key key) {
+    Node current = root;
+    while (current !is null) {
       if (key < current.data.key) {
-        current = &current.left;
+        current = current.left;
       } else if (key > current.data.key) {
-        current = &current.right;
+        current = current.right;
       } else {
-        return *current;
+        return current;
       }
     }
     return null;
   }
 
 public:
-  struct Cursor {
-  private:
-    Node current = null;
-    
-    Node successor(Node node) {
-      if (node.right !is null) {
-        node = node.right;
-        while (node.left !is null) {
-          node = node.left;
-        }
-        return node;
-      }
-      
-      Node parent = node.parent;
-      while (parent !is null && node is parent.right) {
-        node = parent;
-        parent = parent.parent;
-      }
-      return parent;
-    }
-    
-    Node predecessor(Node node) {
-      if (node.left !is null) {
-        node = node.left;
-        while (node.right !is null) {
-          node = node.right;
-        }
-        return node;
-      }
-        
-      Node parent = node.parent;
-      while (parent !is null && node is parent.left) {
-        node = parent;
-        parent = parent.parent;
-      }
-      return parent;
-    }
+  struct Entry {
+    const Key key;
+    Value value;
+  }
 
-  public:
-    this(Node node) {
-      current = node;
+  struct Cursor {
+    private Node current;
+    
+    Entry data() inout {
+      return current.data;
     }
     
-    inout(Node.Pair)* ptr() inout {
-      return &current.data;
+    Cursor inc() {
+      return Cursor(current.successor);
     }
     
-    Cursor opUnary(string s : "++")() {
-      current = successor(current);
-      return this;
-    }
-    
-    Cursor opUnary(string s : "--")() {
-      current = predecessor(current);
-      return this;
+    Cursor dec() {
+      return Cursor(current.predecessor);
     }
       
-    bool opEquals(in Cursor other) inout {
+    bool opEquals(in Cursor other) {
       return current is other.current;
     }
   };
 
-  size_t size() inout {
+  size_t size() {
     return size_;
   }
 
-  bool empty() inout {
+  bool empty() {
     return size_ == 0;
   }
 
-  Cursor begin() {
-    if (root is null) return end();
-    return Cursor(minimum(root));
+  Nullable!Cursor minimum() {
+    if (root is null) return Nullable!Cursor.init;
+
+    return Cursor(root.minimum).nullable;
   }
   
-  Cursor end() {
-    return Cursor(null);
+  Nullable!Cursor maximum() {
+    if (root is null) return Nullable!Cursor.init;
+
+    return Cursor(root.maximum).nullable;
   }
 
   struct InsertRet {
@@ -358,21 +361,23 @@ public:
 
   Value opIndex(in Key key) {
     auto result = insert(key, Value.init);
-    return result.cursor.ptr.value;
+    return result.cursor.current.data.value;
   }
 
   Value opIndexAssign(in Value value, in Key key) {
     auto result = insert(key, Value.init);
-    result.cursor.ptr.value = value;
+    result.cursor.current.data.value = value;
 
-    return result.cursor.ptr.value;
+    return result.cursor.current.data.value;
   }
 
-  Cursor find(in Key key) {
-    return Cursor(findNode(key));
+  Nullable!Cursor find(in Key key) {
+    auto node = findNode(key);
+
+    return node ? Cursor(node).nullable : Nullable!Cursor.init;
   }
 
-  bool contains(in Key key) const {
+  bool contains(in Key key) {
     return findNode(key) !is null;
   }
 
@@ -402,7 +407,7 @@ public:
       transplant(z, z.left);
       x_parent = z.parent;
     } else {
-      y = minimum(z.right);
+      y = z.right.minimum;
       original_color = y.color;
       x = y.right;
       
@@ -433,19 +438,19 @@ public:
 }
 
 unittest {
-  auto map = new OrderedMap!(int, string);
+  OrderedMap!(int, string) map;
   assert(map.empty);
   assert(map.size == 0);
-  assert(map.begin == map.end);
+  assert(map.minimum == map.maximum);
 }
 
 unittest {
-  auto map = new OrderedMap!(int, string);
+  OrderedMap!(int, string) map;
   
   auto result1 = map.insert(10, "ten");
   assert(result1.didInsert);
-  assert(result1.cursor.ptr.key == 10);
-  assert(result1.cursor.ptr.value == "ten");
+  assert(result1.cursor.data.key == 10);
+  assert(result1.cursor.data.value == "ten");
   assert(map.size == 1);
   assert(!map.empty);
 
@@ -455,12 +460,12 @@ unittest {
 
   auto result3 = map.insert(10, "ten_again");
   assert(!result3.didInsert);
-  assert(result3.cursor.ptr.value == "ten");
+  assert(result3.cursor.data.value == "ten");
   assert(map.size == 2);
 }
 
 unittest {
-  auto map = new OrderedMap!(int, string);
+  OrderedMap!(int, string) map;
   
   map[5] = "five";
   assert(map.size == 1);
@@ -480,19 +485,19 @@ unittest {
 }
 
 unittest {
-  auto map = new OrderedMap!(int, string);
+  OrderedMap!(int, string) map;
 
   map.insert(10, "ten");
   map.insert(20, "twenty");
   map.insert(30, "thirty");
 
   auto it1 = map.find(20);
-  assert(it1 != map.end());
-  assert(it1.ptr.key == 20);
-  assert(it1.ptr.value == "twenty");
+  assert(!it1.isNull());
+  assert(it1.get.data.key == 20);
+  assert(it1.get.data.value == "twenty");
 
   auto it2 = map.find(999);
-  assert(it2 == map.end());
+  assert(it2.isNull());
 
   assert(map.contains(10));
   assert(map.contains(20));
