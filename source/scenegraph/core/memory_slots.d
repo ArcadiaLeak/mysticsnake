@@ -107,3 +107,62 @@ private:
     ])
   );
 }
+
+@safe unittest {
+  MemorySlots slots = MemorySlots(64);
+
+  slots.insertAvailableSlot(64, 128);
+  slots.insertAvailableSlot(192, 256);
+  
+  assert(slots._offsetSizes.at!MapT(0) == 64);
+  assert(slots._offsetSizes.at!MapT(64) == 128);
+  assert(slots._offsetSizes.at!MapT(192) == 256);
+
+  auto range = slots._availableMemory
+    .keyRange!MultimapT(64);
+  assert(range.front.value == 0);
+
+  range = slots._availableMemory
+    .keyRange!MultimapT(128);
+  assert(range.front.value == 64);
+
+  range = slots._availableMemory
+    .keyRange!MultimapT(256);
+  assert(range.front.value == 192);
+
+  slots.removeAvailableSlot(64, 128);
+  assert(!slots._offsetSizes.contains!MapT(64));
+
+  range = slots._availableMemory
+    .keyRange!MultimapT(128);
+  assert(range.empty);
+}
+
+@safe unittest {
+  MemorySlots slots = MemorySlots(1024);
+  slots.removeAvailableSlot(0, 1024);
+
+  slots.removeAvailableSlot(999, 999);
+
+  slots.insertAvailableSlot(0, 100);
+  assert(slots._offsetSizes.at!MapT(0) == 100);
+}
+
+@safe unittest {
+  MemorySlots slots = MemorySlots(1024);
+  slots.removeAvailableSlot(0, 1024);
+  
+  assert(slots._offsetSizes.empty);
+  assert(slots._availableMemory.empty);
+  
+  slots.insertAvailableSlot(0, 100);
+  slots.insertAvailableSlot(100, 200);
+  
+  assert(slots._offsetSizes.length == 2);
+  assert(slots._availableMemory.length == 2);
+  
+  slots.removeAvailableSlot(0, 100);
+  
+  assert(slots._offsetSizes.length == 1);
+  assert(slots._availableMemory.length == 1);
+}
