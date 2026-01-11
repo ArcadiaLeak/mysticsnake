@@ -66,7 +66,7 @@ private:
       return parent;
     }
 
-    Node minimum() {
+    Node front() {
       Node node = this;
       while (node.left !is null) {
         node = node.left;
@@ -74,7 +74,7 @@ private:
       return node;
     }
 
-    Node maximum() {
+    Node back() {
       Node node = this;
       while (node.right !is null) {
         node = node.right;
@@ -312,16 +312,16 @@ public:
     return size_ == 0;
   }
 
-  Nullable!Cursor minimum() {
+  Nullable!Cursor front() {
     if (root is null) return Nullable!Cursor.init;
 
-    return Cursor(root.minimum).nullable;
+    return Cursor(root.front).nullable;
   }
   
-  Nullable!Cursor maximum() {
+  Nullable!Cursor back() {
     if (root is null) return Nullable!Cursor.init;
 
-    return Cursor(root.maximum).nullable;
+    return Cursor(root.back).nullable;
   }
 
   struct InsertRet {
@@ -381,7 +381,7 @@ public:
     return findNode(key) !is null;
   }
 
-  size_t erase(in Key key) {
+  bool erase(in Key key) {
     Node node = findNode(key);
     if (node is null) return 0;
     
@@ -407,7 +407,7 @@ public:
       transplant(z, z.left);
       x_parent = z.parent;
     } else {
-      y = z.right.minimum;
+      y = z.right.front;
       original_color = y.color;
       x = y.right;
       
@@ -441,7 +441,7 @@ unittest {
   TreeMap!(int, string) map;
   assert(map.empty);
   assert(map.size == 0);
-  assert(map.minimum == map.maximum);
+  assert(map.front == map.back);
 }
 
 unittest {
@@ -505,4 +505,37 @@ unittest {
 
   assert(!map.contains(0));
   assert(!map.contains(999));
+}
+
+unittest {
+  TreeMap!(int, string) map;
+
+ map.insert(10, "ten");
+  map.insert(20, "twenty");
+  map.insert(30, "thirty");
+  map.insert(40, "forty");
+
+  assert(map.size == 4);
+
+  bool erased = map.erase(20);
+  assert(erased == true);
+  assert(map.size == 3);
+  assert(!map.contains(20));
+
+  erased = map.erase(999);
+  assert(erased == false);
+  assert(map.size == 3);
+
+  erased = map.erase(10);
+  assert(erased == true);
+  assert(map.size == 2);
+
+  erased = map.erase(40);
+  assert(erased == true);
+  assert(map.size == 1);
+
+  erased = map.erase(30);
+  assert(erased == true);
+  assert(map.size == 0);
+  assert(map.empty);
 }
