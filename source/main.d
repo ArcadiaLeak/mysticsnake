@@ -1,7 +1,9 @@
 import vulkan_app;
+import scenegraph.core.memory_slots;
 
 void main() {
-  auto app = new VulkanApp();
+  MemorySlots memorySlots;
 
+  auto app = new VulkanApp();
   app.run();
 }
