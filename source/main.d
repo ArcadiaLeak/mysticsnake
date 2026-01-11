@@ -1,8 +1,8 @@
-import container.ordered_map;
+import container.tree_map;
 import vulkan_app;
 
 void main() {
-  OrderedMap!(int, string) map;
+  TreeMap!(int, string) map;
 
   auto app = new VulkanApp();
 

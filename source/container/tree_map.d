@@ -1,8 +1,8 @@
-module container.ordered_map;
+module container.tree_map;
 
 import std.typecons;
 
-@safe struct OrderedMap(Key, Value) {
+@safe struct TreeMap(Key, Value) {
 private:
   enum Color { RED, BLACK };
 
@@ -438,14 +438,14 @@ public:
 }
 
 unittest {
-  OrderedMap!(int, string) map;
+  TreeMap!(int, string) map;
   assert(map.empty);
   assert(map.size == 0);
   assert(map.minimum == map.maximum);
 }
 
 unittest {
-  OrderedMap!(int, string) map;
+  TreeMap!(int, string) map;
   
   auto result1 = map.insert(10, "ten");
   assert(result1.didInsert);
@@ -465,7 +465,7 @@ unittest {
 }
 
 unittest {
-  OrderedMap!(int, string) map;
+  TreeMap!(int, string) map;
   
   map[5] = "five";
   assert(map.size == 1);
@@ -485,7 +485,7 @@ unittest {
 }
 
 unittest {
-  OrderedMap!(int, string) map;
+  TreeMap!(int, string) map;
 
   map.insert(10, "ten");
   map.insert(20, "twenty");
