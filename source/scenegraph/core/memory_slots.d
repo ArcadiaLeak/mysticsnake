@@ -88,10 +88,22 @@ private:
 }
 
 @safe unittest {
-  import std.stdio;
+  MemorySlots slots = MemorySlots(100);
 
-  MemorySlots slots1 = MemorySlots(1024);
+  slots.insertAvailableSlot(100, 100);
+  slots.insertAvailableSlot(200, 100);
+  
+  slots.removeAvailableSlot(100, 100);
 
-  auto range = slots1._availableMemory.keyRange!MultimapT(100);
-  writeln(range.array);
+  assert(slots._offsetSizes.at!MapT(0) == 100);
+  assert(!slots._offsetSizes.contains!MapT(100));
+  assert(slots._offsetSizes.at!MapT(200) == 100);
+
+  auto range = slots._availableMemory.keyRange!MultimapT(100);
+  assert(
+    range.equal([
+      MultimapT.Entry(100, 0),
+      MultimapT.Entry(100, 200),
+    ])
+  );
 }
