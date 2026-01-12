@@ -10,14 +10,15 @@ static alias MultimapT = OrderedMap!(size_t, size_t, true);
 static alias MapT = OrderedMap!(size_t, size_t);
 
 @safe struct MemorySlots {
-private:
-  MultimapT.Entries _availableMemory;
-  MapT.Entries _offsetSizes;
-  MapT.Entries _reservedMemory;
+  private {
+    MultimapT.Entries _availableMemory;
+    MapT.Entries _offsetSizes;
+    MapT.Entries _reservedMemory;
 
-  size_t _totalMemorySize;
+    size_t _totalMemorySize;
+  }
 
-  this(size_t availableMemorySize) {
+  private this(size_t availableMemorySize) {
     _availableMemory = new MultimapT.Entries;
     _offsetSizes = new MapT.Entries;
     _reservedMemory = new MapT.Entries;
@@ -27,12 +28,12 @@ private:
     _totalMemorySize = availableMemorySize;
   }
 
-  void insertAvailableSlot(size_t offset, size_t size) {
+  private void insertAvailableSlot(size_t offset, size_t size) {
     _offsetSizes.insertAt!MapT(offset, size);
     _availableMemory.insertAt!MultimapT(size, offset);
   }
 
-  void removeAvailableSlot(size_t offset, size_t size) {
+  private void removeAvailableSlot(size_t offset, size_t size) {
     _offsetSizes.removeAt!MapT(offset);
     
     auto needle = _availableMemory
@@ -42,7 +43,6 @@ private:
     _availableMemory.remove(needle);
   }
 
-public:
   bool full() const {
     return _availableMemory[].empty;
   }

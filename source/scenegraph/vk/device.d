@@ -8,7 +8,7 @@ import scenegraph.vk.instance;
 import scenegraph.vk.fence;
 import scenegraph.vk.vulkan;
 
-static shared class Queue {
+shared class Queue {
   private VkQueue _vkQueue;
 
   immutable VkQueueFlags queueFlags;
