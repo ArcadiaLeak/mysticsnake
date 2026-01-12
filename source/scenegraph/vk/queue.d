@@ -3,38 +3,38 @@ module scenegraph.vk.queue;
 import scenegraph.vk.fence;
 import scenegraph.vk.vulkan;
 
-synchronized class Queue {
-  private {
-    VkQueue _vkQueue;
-    VkQueueFlags _queueFlags;
-    uint32_t _queueFamilyIndex;
-    uint32_t _queueIndex;
-  }
+class Queue {
+  private VkQueue _vkQueue;
 
-  package this(
+  immutable VkQueueFlags queueFlags;
+  immutable uint queueFamilyIndex;
+  immutable uint queueIndex;
+
+  private this(
     VkQueue queue,
-    VkQueueFlags queueFlags,
-    uint queueFamilyIndex,
-    uint queueIndex
+    VkQueueFlags in_queueFlags,
+    uint in_queueFamilyIndex,
+    uint in_queueIndex
   ) {
-    _vkQueue = cast(shared) queue;
-    _queueFlags = queueFlags;
-    _queueFamilyIndex = queueFamilyIndex;
-    _queueIndex = queueIndex;
+    _vkQueue = queue;
+
+    queueFlags = in_queueFlags;
+    queueFamilyIndex = in_queueFamilyIndex;
+    queueIndex = in_queueIndex;
   }
 
-  VkResult waitIdle() {
+  synchronized VkResult waitIdle() shared {
     return vkQueueWaitIdle(cast(VkQueue) _vkQueue);
   }
 
-  VkResult present(ref VkPresentInfoKHR info) {
+  synchronized VkResult present(ref VkPresentInfoKHR info) shared {
     return vkQueuePresentKHR(cast(VkQueue) _vkQueue, &info);
   }
 
-  VkResult submit(
+  synchronized VkResult submit(
     ref VkSubmitInfo submitInfo,
     shared(Fence) fence = null
-  ) {
+  ) shared {
     return vkQueueSubmit(
       cast(VkQueue) _vkQueue,
       1,
@@ -43,7 +43,7 @@ synchronized class Queue {
     );
   }
 
-  VkResult submit(
+  synchronized VkResult submit(
     VkSubmitInfo[] submitInfos,
     shared(Fence) fence = null
   ) shared {

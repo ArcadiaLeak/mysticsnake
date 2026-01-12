@@ -2,8 +2,8 @@ module scenegraph.vk.fence;
 
 import scenegraph.vk.vulkan;
 
-synchronized class Fence {
+class Fence {
   private VkFence _vkFence;
 
-  shared(VkFence) vk() { return _vkFence; }
+  shared(VkFence) vk() shared { return _vkFence; }
 }
