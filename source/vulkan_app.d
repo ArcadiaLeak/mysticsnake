@@ -194,7 +194,7 @@ private:
       m_instance,
       "vkCreateDebugUtilsMessengerEXT"
     );
-    if (func != null) {
+    if (func !is null) {
       if (func(m_instance, &createInfo, null, &m_debugMessenger) != VK_SUCCESS) {
         throw new Exception("Failed to set up debug messenger!");
       }
@@ -301,7 +301,7 @@ private:
       }
     }
     
-    if (m_physicalDevice == null) {
+    if (m_physicalDevice is null) {
       throw new Exception("Failed to find a suitable GPU!");
     }
     
@@ -689,7 +689,7 @@ private:
         "vkDestroyDebugUtilsMessengerEXT"
       );
 
-      if (func != null) {
+      if (func !is null) {
         func(m_instance, m_debugMessenger, null);
       }
     }

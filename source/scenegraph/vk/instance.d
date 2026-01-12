@@ -4,6 +4,7 @@ import std.array;
 import std.conv;
 import std.stdio;
 import std.string;
+import std.logger.core;
 import std.algorithm.iteration;
 import std.algorithm.searching;
 
@@ -50,6 +51,27 @@ VkExtensionProperties[] enumerateInstanceExtensionProperties(
   return extensionProperties;
 }
 
+extern (C) static VkBool32 debugUtilsMessengerCallback(
+  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+  VkDebugUtilsMessageTypeFlagsEXT messageType,
+  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+  void* pUserData
+) {
+  LogLevel level = LogLevel.all;
+  if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) != 0)
+    level = LogLevel.error;
+  else if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) != 0)
+    level = LogLevel.warning;
+  else if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) != 0)
+    level = LogLevel.info;
+  else if ((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) != 0)
+    level = LogLevel.trace;
+
+  log(level, "[Vulkan] " ~ pCallbackData.pMessage.fromStringz);
+
+  return VK_FALSE;
+}
+
 bool isExtensionSupported(
   string extensionName,
   string layerName = ""
@@ -66,6 +88,7 @@ class Instance {
     VkInstance _instance;
     PhysicalDevice[] _physicalDevices;
     InstanceExtensions _extensions;
+    VkDebugUtilsMessengerEXT _debugUtilsMessenger;
   }
 
   this(
@@ -155,14 +178,33 @@ class Instance {
           VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
           VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        // debugUtilsMessengerCreateInfo.pfnUserCallback =
-        //  debugUtilsMessengerCallback;
-        // result = _extensions.vkCreateDebugUtilsMessengerEXT(
-        //  instance,
-        //  &debugUtilsMessengerCreateInfo,
-        //  null,
-        //  &_debugUtilsMessenger
-        // );
+        debugUtilsMessengerCreateInfo.pfnUserCallback =
+          &debugUtilsMessengerCallback;
+        result = _extensions.vkCreateDebugUtilsMessengerEXT(
+          instance,
+          &debugUtilsMessengerCreateInfo,
+          null,
+          &_debugUtilsMessenger
+        );
+    }
+  }
+
+  ~this() {
+    _physicalDevices.length = 0;
+
+    if (_instance) {
+      if (
+        _debugUtilsMessenger !is null &&
+        _extensions.vkDestroyDebugUtilsMessengerEXT !is null
+      ) {
+        _extensions.vkDestroyDebugUtilsMessengerEXT(
+          _instance,
+          _debugUtilsMessenger,
+          null
+        );
+      }
+
+      vkDestroyInstance(_instance, null);
     }
   }
 

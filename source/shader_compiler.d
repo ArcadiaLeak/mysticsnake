@@ -104,7 +104,7 @@ public:
     size_t spirvSize = glslang_program_SPIRV_get_size(program);
     const uint* spirvCode = glslang_program_SPIRV_get_ptr(program);
     
-    if (spirvSize == 0 || spirvCode == null) {
+    if (spirvSize == 0 || spirvCode is null) {
       debug stderr.writef("Failed to generate SPIR-V for: %s\n", filename);
 
       glslang_program_delete(program);
