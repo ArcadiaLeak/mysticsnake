@@ -1,10 +1,14 @@
 module scenegraph.vk.instance;
 
+import std.array;
 import std.conv;
 import std.stdio;
 import std.string;
+import std.algorithm.iteration;
 import std.algorithm.searching;
 
+import scenegraph.vk.instance_extensions;
+import scenegraph.vk.physical_device;
 import scenegraph.vk.vulkan;
 
 VkExtensionProperties[] enumerateInstanceExtensionProperties(
@@ -48,7 +52,7 @@ VkExtensionProperties[] enumerateInstanceExtensionProperties(
 
 bool isExtensionSupported(
   string extensionName,
-  string layerName
+  string layerName = ""
 ) {
   auto extProps = enumerateInstanceExtensionProperties(layerName);
   auto compare = (in VkExtensionProperties rhs) => extensionName == rhs.extensionName.fromStringz;
@@ -58,13 +62,18 @@ bool isExtensionSupported(
 class Instance {
   immutable uint apiVersion = 1u << 22u;
 
-  private VkInstance _instance;
+  private {
+    VkInstance _instance;
+    PhysicalDevice[] _physicalDevices;
+    InstanceExtensions _extensions;
+  }
 
   this(
-    string[] instanceExtensions,
-    string[] layers,
+    immutable string[] in_instanceExtensions,
+    immutable string[] layers,
     uint vulkanApiVersion
   ) {
+    string[] instanceExtensions = in_instanceExtensions.dup;
     apiVersion = vulkanApiVersion;
 
     VkApplicationInfo appInfo;
@@ -80,7 +89,80 @@ class Instance {
     createInfo.flags = 0;
 
     version (Apple) {
+      if (
+        isExtensionSupported(
+          VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+        )
+      ) {
+        instanceExtensions ~= VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+        createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+      }
+    }
 
+    createInfo.enabledExtensionCount = cast(uint) instanceExtensions.length;
+    createInfo.ppEnabledExtensionNames = instanceExtensions.empty
+      ? null
+      : instanceExtensions
+          .map!(toStringz)
+          .array
+          .ptr;
+
+    createInfo.enabledLayerCount = cast(uint) layers.length;
+    createInfo.ppEnabledLayerNames = layers.empty
+      ? null
+      : layers
+        .map!(toStringz)
+        .array
+        .ptr;
+
+    createInfo.pNext = null;
+
+    VkInstance instance;
+    VkResult result = vkCreateInstance(&createInfo, null, &instance);
+    if (result == VK_SUCCESS) {
+        _instance = instance;
+
+        uint deviceCount = 0;
+        vkEnumeratePhysicalDevices(instance, &deviceCount, null);
+
+        VkPhysicalDevice[] devices;
+        devices.length = deviceCount;
+
+        vkEnumeratePhysicalDevices(instance, &deviceCount, devices.ptr);
+        foreach (device; devices) {
+          _physicalDevices ~= new PhysicalDevice(this, device);
+        }
+    } else {
+      throw new Exception(
+        "Failed to create VkInstance: " ~ result.to!string
+      );
+    }
+
+    _extensions = new InstanceExtensions(this);
+    if (
+      isExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME.fromStringz) &&
+      _extensions.vkCreateDebugUtilsMessengerEXT !is null
+    ) {
+        VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfo;
+        debugUtilsMessengerCreateInfo.sType =
+          VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        debugUtilsMessengerCreateInfo.messageSeverity =
+          VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+          VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+          VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
+          VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
+        debugUtilsMessengerCreateInfo.messageType =
+          VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+          VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+          VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        // debugUtilsMessengerCreateInfo.pfnUserCallback =
+        //  debugUtilsMessengerCallback;
+        // result = _extensions.vkCreateDebugUtilsMessengerEXT(
+        //  instance,
+        //  &debugUtilsMessengerCreateInfo,
+        //  null,
+        //  &_debugUtilsMessenger
+        // );
     }
   }
 
