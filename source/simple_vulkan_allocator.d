@@ -1,4 +1,4 @@
-import vulkan;
+import scenegraph.vk.vulkan;
 
 struct SimpleVulkanAllocator {
 public:
