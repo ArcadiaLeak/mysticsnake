@@ -4,16 +4,12 @@ import container.ordered_map;
 import std.algorithm.comparison;
 import std.algorithm.searching;
 import std.range;
+import std.typecons;
 
 static alias MultimapT = OrderedMap!(size_t, size_t, true);
 static alias MapT = OrderedMap!(size_t, size_t);
 
 @safe struct MemorySlots {
-public:
-  bool full() const {
-    return _availableMemory[].empty;
-  }
-
 private:
   MultimapT.Entries _availableMemory;
   MapT.Entries _offsetSizes;
@@ -44,6 +40,90 @@ private:
       .find!(entry => entry.value == offset)
       .take(1);
     _availableMemory.remove(needle);
+  }
+
+public:
+  bool full() const {
+    return _availableMemory[].empty;
+  }
+
+  Nullable!size_t reserve(size_t size, size_t alignment) {
+    if (full()) return Nullable!size_t.init;
+
+    auto eligibleSlots = _availableMemory.keyrangeGte!MultimapT(size);
+    foreach (slot; eligibleSlots) {
+      size_t slotSize = slot.key;
+      size_t slotStart = slot.value;
+      size_t slotEnd = slotStart + slotSize;
+      size_t alignedStart = ((slotStart + alignment - 1) / alignment) * alignment;
+      size_t alignedEnd = alignedStart + size;
+      if (alignedEnd <= slotEnd) {
+        removeAvailableSlot(slotStart, slotSize);
+
+        if (slotStart < alignedStart) {
+          insertAvailableSlot(slotStart, alignedStart - slotStart);
+        }
+
+        if (alignedEnd < slotEnd) {
+          slotStart = alignedEnd;
+          insertAvailableSlot(slotStart, slotEnd - slotStart);
+        }
+
+        _reservedMemory.insertAt!MapT(alignedStart, size);
+
+        return alignedStart.nullable;
+      }
+    }
+
+    return Nullable!size_t.init;
+  }
+
+  bool release(size_t offset) {
+    auto slotRange = _reservedMemory.keyrangeEq!MapT(offset);
+    if (slotRange.empty) {
+      return false;
+    }
+    auto size = slotRange.front.value;
+
+    _reservedMemory.removeAt!MapT(offset);
+
+    if (_offsetSizes.empty) {
+      insertAvailableSlot(offset, size);
+      return true;
+    }
+
+    size_t slotStart = offset;
+    size_t slotEnd = offset + size;
+
+    auto prevSlotRange = _offsetSizes.keyrangeLt!MapT(slotStart);
+    auto nextSlotRange = _offsetSizes.keyrangeGte!MapT(slotStart);
+    if (!nextSlotRange.empty) {
+      if (!prevSlotRange.empty) {
+        auto prevSlotEntry = prevSlotRange.back;
+
+        size_t prevSlotEnd = prevSlotEntry.key + prevSlotEntry.value;
+        if (prevSlotEnd == slotStart) {
+          slotStart = prevSlotEntry.key;
+          removeAvailableSlot(prevSlotEntry.key, prevSlotEntry.value);
+        }
+      }
+
+      auto nextSlotEntry = nextSlotRange.front;
+      if (nextSlotEntry.key == slotEnd) {
+        slotEnd = nextSlotEntry.key + nextSlotEntry.value;
+        removeAvailableSlot(nextSlotEntry.key, nextSlotEntry.value);
+      }
+    } else {
+      auto prevSlotEntry = prevSlotRange.back;
+      size_t prevSlotEnd = prevSlotEntry.key + prevSlotEntry.value;
+      if (prevSlotEnd == slotStart) {
+        slotStart = prevSlotEntry.key;
+        removeAvailableSlot(prevSlotEntry.key, prevSlotEntry.value);
+      }
+    }
+
+    insertAvailableSlot(slotStart, slotEnd - slotStart);
+    return true;
   }
 }
 

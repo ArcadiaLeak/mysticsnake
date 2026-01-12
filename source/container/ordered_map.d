@@ -19,6 +19,14 @@ template OrderedMap(K, V, bool allowDuplicates = false) {
   alias ValueT = V;
 }
 
+auto keyrangeLt(alias TMap)(
+  TMap.Entries entries,
+  const TMap.KeyT key
+) { 
+  auto needle = TMap.Entry(key, TMap.ValueT.init);
+  return entries.lowerBound(needle);
+}
+
 auto keyrangeEq(alias TMap)(
   TMap.Entries entries,
   const TMap.KeyT key
