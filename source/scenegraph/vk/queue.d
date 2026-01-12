@@ -3,7 +3,7 @@ module scenegraph.vk.queue;
 import scenegraph.vk.fence;
 import scenegraph.vk.vulkan;
 
-class Queue {
+shared class Queue {
   private VkQueue _vkQueue;
 
   immutable VkQueueFlags queueFlags;
@@ -16,25 +16,25 @@ class Queue {
     uint in_queueFamilyIndex,
     uint in_queueIndex
   ) {
-    _vkQueue = queue;
+    _vkQueue = cast(shared) queue;
 
     queueFlags = in_queueFlags;
     queueFamilyIndex = in_queueFamilyIndex;
     queueIndex = in_queueIndex;
   }
 
-  synchronized VkResult waitIdle() shared {
+  synchronized VkResult waitIdle() {
     return vkQueueWaitIdle(cast(VkQueue) _vkQueue);
   }
 
-  synchronized VkResult present(ref VkPresentInfoKHR info) shared {
+  synchronized VkResult present(ref VkPresentInfoKHR info) {
     return vkQueuePresentKHR(cast(VkQueue) _vkQueue, &info);
   }
 
   synchronized VkResult submit(
     ref VkSubmitInfo submitInfo,
     shared(Fence) fence = null
-  ) shared {
+  ) {
     return vkQueueSubmit(
       cast(VkQueue) _vkQueue,
       1,
@@ -46,7 +46,7 @@ class Queue {
   synchronized VkResult submit(
     VkSubmitInfo[] submitInfos,
     shared(Fence) fence = null
-  ) shared {
+  ) {
     return vkQueueSubmit(
       cast(VkQueue) _vkQueue,
       cast(uint) submitInfos.length,
