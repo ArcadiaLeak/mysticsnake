@@ -1,5 +1,6 @@
-module scenegraph.vk.queue;
+module scenegraph.vk.device;
 
+import scenegraph.vk.instance_extensions;
 import scenegraph.vk.fence;
 import scenegraph.vk.vulkan;
 
