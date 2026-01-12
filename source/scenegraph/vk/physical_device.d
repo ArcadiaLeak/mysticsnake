@@ -8,4 +8,8 @@ class PhysicalDevice {
     Instance instance,
     VkPhysicalDevice device
   ) {}
+
+  bool supportsDeviceExtension(string extensionName) {
+    return false;
+  }
 }
