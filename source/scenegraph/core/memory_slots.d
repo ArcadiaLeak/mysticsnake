@@ -40,7 +40,7 @@ private:
     _offsetSizes.removeAt!MapT(offset);
     
     auto needle = _availableMemory
-      .keyRange!MultimapT(size)
+      .keyrangeEq!MultimapT(size)
       .find!(entry => entry.value == offset)
       .take(1);
     _availableMemory.remove(needle);
@@ -55,7 +55,7 @@ private:
   slots.insertAvailableSlot(100, 50);
   assert(slots._offsetSizes.at!MapT(100) == 50);
 
-  auto range = slots._availableMemory.keyRange!MultimapT(50);
+  auto range = slots._availableMemory.keyrangeEq!MultimapT(50);
   assert(
     range.equal([
       MultimapT.Entry(50, 100)
@@ -77,7 +77,7 @@ private:
   assert(slots._offsetSizes.at!MapT(100) == 100);
   assert(slots._offsetSizes.at!MapT(200) == 100);
 
-  auto range = slots._availableMemory.keyRange!MultimapT(100);
+  auto range = slots._availableMemory.keyrangeEq!MultimapT(100);
   assert(
     range.equal([
       MultimapT.Entry(100, 0),
@@ -99,7 +99,7 @@ private:
   assert(!slots._offsetSizes.contains!MapT(100));
   assert(slots._offsetSizes.at!MapT(200) == 100);
 
-  auto range = slots._availableMemory.keyRange!MultimapT(100);
+  auto range = slots._availableMemory.keyrangeEq!MultimapT(100);
   assert(
     range.equal([
       MultimapT.Entry(100, 0),
@@ -119,22 +119,22 @@ private:
   assert(slots._offsetSizes.at!MapT(192) == 256);
 
   auto range = slots._availableMemory
-    .keyRange!MultimapT(64);
+    .keyrangeEq!MultimapT(64);
   assert(range.front.value == 0);
 
   range = slots._availableMemory
-    .keyRange!MultimapT(128);
+    .keyrangeEq!MultimapT(128);
   assert(range.front.value == 64);
 
   range = slots._availableMemory
-    .keyRange!MultimapT(256);
+    .keyrangeEq!MultimapT(256);
   assert(range.front.value == 192);
 
   slots.removeAvailableSlot(64, 128);
   assert(!slots._offsetSizes.contains!MapT(64));
 
   range = slots._availableMemory
-    .keyRange!MultimapT(128);
+    .keyrangeEq!MultimapT(128);
   assert(range.empty);
 }
 

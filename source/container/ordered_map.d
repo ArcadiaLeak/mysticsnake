@@ -19,7 +19,7 @@ template OrderedMap(K, V, bool allowDuplicates = false) {
   alias ValueT = V;
 }
 
-auto keyRange(alias TMap)(
+auto keyrangeEq(alias TMap)(
   TMap.Entries entries,
   const TMap.KeyT key
 ) { 
@@ -27,8 +27,19 @@ auto keyRange(alias TMap)(
   return entries.equalRange(needle);
 }
 
+auto keyrangeGte(alias TMap)(
+  TMap.Entries entries,
+  const TMap.KeyT key
+) { 
+  auto needle = TMap.Entry(key, TMap.ValueT.init);
+  return chain(
+    entries.equalRange(needle),
+    entries.upperBound(needle)
+  );
+}
+
 TMap.ValueT at(alias TMap)(TMap.Entries entries, const TMap.KeyT key) {
-  return entries.keyRange!TMap(key).front.value;
+  return entries.keyrangeEq!TMap(key).front.value;
 }
 
 TMap.ValueT insertAt(alias TMap)(
@@ -44,11 +55,11 @@ TMap.ValueT insertAt(alias TMap)(
 
 bool removeAt(alias TMap)(TMap.Entries entries, const TMap.KeyT key) {
   auto removed = entries.remove(
-    entries.keyRange!TMap(key)
+    entries.keyrangeEq!TMap(key)
   );
   return !removed.empty;
 }
 
 bool contains(alias TMap)(TMap.Entries entries, const TMap.KeyT key) {
-  return !entries.keyRange!TMap(key).empty;
+  return !entries.keyrangeEq!TMap(key).empty;
 }
