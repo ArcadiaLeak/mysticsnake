@@ -18,7 +18,7 @@ static alias MapT = OrderedMap!(size_t, size_t);
     size_t _totalMemorySize;
   }
 
-  private this(size_t availableMemorySize) {
+  package this(size_t availableMemorySize) {
     _availableMemory = new MultimapT.Entries;
     _offsetSizes = new MapT.Entries;
     _reservedMemory = new MapT.Entries;
