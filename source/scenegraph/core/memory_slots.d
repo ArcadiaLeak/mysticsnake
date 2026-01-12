@@ -130,6 +130,16 @@ private:
     .keyrangeEq!MultimapT(256);
   assert(range.front.value == 192);
 
+  auto chained = slots._availableMemory
+    .keyrangeGte!MultimapT(64);
+  assert(
+    chained.equal([
+      MultimapT.Entry(64, 0),
+      MultimapT.Entry(128, 64),
+      MultimapT.Entry(256, 192),
+    ])
+  );
+
   slots.removeAvailableSlot(64, 128);
   assert(!slots._offsetSizes.contains!MapT(64));
 
