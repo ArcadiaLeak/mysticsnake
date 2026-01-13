@@ -4,11 +4,14 @@ dmd -i \
     -of=artifacts/main \
     -L-lvulkan \
     -L-lglfw \
+    -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \
     -L-lSPIRV-Tools-opt \
     -L-lSPIRV-Tools \
     -L-lstdc++ \
+    -L-lSDL3_shadercross \
+    -L-lspirv-cross-c-shared \
     main.d
 
 rdmd -i \
@@ -17,11 +20,14 @@ rdmd -i \
     -of=artifacts/main \
     -L-lvulkan \
     -L-lglfw \
+    -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \
     -L-lSPIRV-Tools-opt \
     -L-lSPIRV-Tools \
     -L-lstdc++ \
+    -L-lSDL3_shadercross \
+    -L-lspirv-cross-c-shared \
     main.d
 
 ldc2 -i \
@@ -30,9 +36,12 @@ ldc2 -i \
     -of=artifacts/main \
     -L-lvulkan \
     -L-lglfw \
+    -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \
     -L-lSPIRV-Tools-opt \
     -L-lSPIRV-Tools \
     -L-lstdc++ \
+    -L-lSDL3_shadercross \
+    -L-lspirv-cross-c-shared \
     main.d
