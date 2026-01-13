@@ -1,14 +1,20 @@
 import vulkan;
 
-struct SimpleVulkanAllocator {
-public:
-  struct Allocation {
-    VkDeviceMemory memory;
-    VkDeviceSize offset;
-    VkDeviceSize size;
-    uint memoryTypeIndex;
-    void* mappedPtr;
-  };
+struct VulkanAllocation {
+  VkDeviceMemory memory;
+  VkDeviceSize offset;
+  VkDeviceSize size;
+  uint memoryTypeIndex;
+  void* mappedPtr;
+};
+
+struct VulkanAllocator {
+  private {
+    VkPhysicalDevice m_physicalDevice;
+    VkDevice m_device;
+    VkPhysicalDeviceMemoryProperties m_memProperties;
+    VkDeviceMemory[] m_blocks;
+  }
 
   @disable this();
 
@@ -44,7 +50,7 @@ public:
     throw new Exception("Failed to find suitable memory type!");
   }
 
-  Allocation allocate(
+  VulkanAllocation allocate(
     VkDeviceSize size, 
     uint32_t memoryTypeIndex
   ) {
@@ -60,7 +66,7 @@ public:
       throw new Exception("Failed to allocate Vulkan memory!");
     }
     
-    Allocation allocation;
+    VulkanAllocation allocation;
     allocation.memory = memory;
     allocation.offset = 0;
     allocation.size = size;
@@ -70,7 +76,7 @@ public:
     return allocation;
   }
 
-  Allocation allocateForBuffer(
+  VulkanAllocation allocateForBuffer(
     VkBuffer buffer, 
     VkMemoryPropertyFlags properties
   ) {
@@ -85,7 +91,7 @@ public:
     return allocate(memRequirements.size, memoryTypeIndex);
   }
 
-  void* map(ref Allocation allocation) {
+  void* map(ref VulkanAllocation allocation) {
     void* data;
     vkMapMemory(
       m_device,
@@ -99,14 +105,7 @@ public:
     return data;
   }
 
-  void unmap(ref Allocation allocation) {
+  void unmap(ref VulkanAllocation allocation) {
     vkUnmapMemory(m_device, allocation.memory);
   }
-
-private:
-  VkPhysicalDevice m_physicalDevice;
-  VkDevice m_device;
-  VkPhysicalDeviceMemoryProperties m_memProperties;
-    
-  VkDeviceMemory[] m_blocks;
 };

@@ -4,7 +4,7 @@ import std.algorithm.mutation;
 
 static import mat4;
 
-import simple_vulkan_allocator;
+import vulkan_allocator;
 import shader;
 import vulkan;
 
@@ -77,7 +77,7 @@ public:
     uint width,
     uint height
   ) {
-    m_allocator = SimpleVulkanAllocator(
+    m_allocator = VulkanAllocator(
       physicalDevice,
       device
     );
@@ -678,7 +678,7 @@ private:
   VkCommandPool m_commandPool;
   uint m_width, m_height;
   
-  SimpleVulkanAllocator m_allocator;
+  VulkanAllocator m_allocator;
   
   VkPipelineLayout m_pipelineLayout;
   VkPipeline m_graphicsPipeline;
@@ -687,9 +687,9 @@ private:
   VkBuffer m_indexBuffer;
   VkBuffer[MAX_FRAMES_IN_FLIGHT] m_uniformBuffers;
 
-  SimpleVulkanAllocator.Allocation m_vertexBufferAllocation;
-  SimpleVulkanAllocator.Allocation m_indexBufferAllocation;
-  SimpleVulkanAllocator.Allocation[MAX_FRAMES_IN_FLIGHT] m_uniformBufferAllocations;
+  VulkanAllocation m_vertexBufferAllocation;
+  VulkanAllocation m_indexBufferAllocation;
+  VulkanAllocation[MAX_FRAMES_IN_FLIGHT] m_uniformBufferAllocations;
   
   VkDescriptorPool m_descriptorPool;
   VkDescriptorSetLayout m_descriptorSetLayout;

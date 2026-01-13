@@ -29,7 +29,7 @@ static const (char*)[1] deviceExtensions = [
   cast(const(char*)) VK_KHR_SWAPCHAIN_EXTENSION_NAME
 ];
 
-struct VulkanApp {
+struct VulkanBootstrap {
   GLFWwindow* m_window;
   const uint m_width = 800;
   const uint m_height = 600;

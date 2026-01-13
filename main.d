@@ -1,7 +1,7 @@
-import vulkan_app;
+import vulkan_bootstrap;
 
 void main() {
-  VulkanApp app = VulkanApp();
+  VulkanBootstrap app = VulkanBootstrap();
 
   app.initWindow();
   app.initVulkan();
