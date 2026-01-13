@@ -1,7 +1,7 @@
 module scenegraph.vk.physical_device;
 
 import scenegraph.vk.instance;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 class PhysicalDevice {
   this(

@@ -1,5 +1,5 @@
 import glslang;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 import std.stdio;
 import std.string;

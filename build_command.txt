@@ -1,4 +1,4 @@
-dmd main.d poor_man_glm.c -i \
+dmd -i \
     -debug \
     -od=artifacts \
     -of=artifacts/main \
@@ -8,4 +8,5 @@ dmd main.d poor_man_glm.c -i \
     -L-lglslang-default-resource-limits \
     -L-lSPIRV-Tools-opt \
     -L-lSPIRV-Tools \
-    -L-lstdc++
+    -L-lstdc++ \
+    main.d

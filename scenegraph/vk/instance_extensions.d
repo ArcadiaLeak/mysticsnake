@@ -1,7 +1,7 @@
 module scenegraph.vk.instance_extensions;
 
 import scenegraph.vk.instance;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 class InstanceExtensions {
   PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT = null;

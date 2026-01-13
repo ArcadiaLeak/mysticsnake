@@ -5,7 +5,7 @@ import std.string;
 import scenegraph.vk.physical_device;
 import scenegraph.vk.device_extensions;
 import scenegraph.vk.instance;
-import scenegraph.vk.vulkan;
+import vulkan;
 import scenegraph.vk.queue;
 
 class Device {

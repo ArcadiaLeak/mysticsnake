@@ -2,7 +2,7 @@ module scenegraph.vk.device_memory;
 
 import scenegraph.core.memory_slots;
 import scenegraph.vk.device;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 synchronized class DeviceMemoryList {
   private DeviceMemory[] s_DeviceMemoryList;

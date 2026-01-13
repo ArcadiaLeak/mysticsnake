@@ -10,7 +10,7 @@ import std.algorithm.searching;
 
 import scenegraph.vk.instance_extensions;
 import scenegraph.vk.physical_device;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 VkExtensionProperties[] enumerateInstanceExtensionProperties(
   string layerName

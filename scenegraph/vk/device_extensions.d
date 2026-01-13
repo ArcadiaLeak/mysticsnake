@@ -3,7 +3,7 @@ module scenegraph.vk.device_extensions;
 import std.string;
 
 import scenegraph.vk.device;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 const VK_API_VERSION_1_2 = (1u << 22u) | (2u << 12u);
 const VK_API_VERSION_1_3 = (1u << 22u) | (3u << 12u);

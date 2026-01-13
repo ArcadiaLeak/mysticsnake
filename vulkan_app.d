@@ -11,7 +11,7 @@ import std.container.rbtree;
 import std.datetime;
 
 import glfw;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 import cube_renderer;
 import shader_compiler;

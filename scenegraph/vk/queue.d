@@ -3,7 +3,7 @@ module scenegraph.vk.queue;
 import std.string;
 
 import scenegraph.vk.fence;
-import scenegraph.vk.vulkan;
+import vulkan;
 
 shared class Queue {
   private VkQueue _vkQueue;
