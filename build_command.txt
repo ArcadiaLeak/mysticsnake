@@ -35,4 +35,4 @@ ldc2 -i \
     -L-lSPIRV-Tools-opt \
     -L-lSPIRV-Tools \
     -L-lstdc++ \
-    main.d poor_man_glm.c
+    main.d

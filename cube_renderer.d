@@ -2,7 +2,8 @@ import core.stdc.string;
 import std.stdio;
 import std.algorithm.mutation;
 
-import poor_man_glm;
+static import mat4;
+
 import simple_vulkan_allocator;
 import shader;
 import vulkan;
@@ -331,16 +332,16 @@ private:
   void updateUniformBuffer(size_t frameIndex) {
     UniformBufferObject ubo;
     
-    mat4_identity(ubo.model.ptr);
-    mat4_rotate(ubo.model.ptr, m_rotationAngle, m_rotationAxis.ptr);
+    ubo.model = mat4.identity();
+    ubo.model = mat4.rotate(ubo.model, m_rotationAngle, m_rotationAxis);
     
     float[3] eye = [2.0f, 2.0f, 2.0f];
     float[3] center = [0.0f, 0.0f, 0.0f];
     float[3] up = [0.0f, 0.0f, 1.0f];
-    mat4_lookAt(ubo.view.ptr, eye.ptr, center.ptr, up.ptr);
+    ubo.view = mat4.lookAt(eye, center, up);
     
     float aspect = cast(float) m_width / cast(float) m_height;
-    mat4_perspective(ubo.proj.ptr, 45.0f, aspect, 0.1f, 10.0f);
+    ubo.proj = mat4.perspective(45.0f, aspect, 0.1f, 10.0f);
 
     ubo.proj[1][1] *= -1;
     
