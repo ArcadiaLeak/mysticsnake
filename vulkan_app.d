@@ -30,15 +30,6 @@ static const (char*)[1] deviceExtensions = [
 ];
 
 struct VulkanApp {
-public:
-  void run() {
-    initWindow();
-    initVulkan();
-    mainLoop();
-    cleanup();
-  }
-
-private:
   GLFWwindow* m_window;
   const uint m_width = 800;
   const uint m_height = 600;

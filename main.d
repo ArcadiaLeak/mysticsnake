@@ -1,10 +1,10 @@
 import vulkan_app;
-import scenegraph.core.memory_slots;
-import scenegraph.vk.device_memory;
 
 void main() {
-  MemorySlots memorySlots;
+  VulkanApp app = VulkanApp();
 
-  auto app = VulkanApp();
-  app.run();
+  app.initWindow();
+  app.initVulkan();
+  app.mainLoop();
+  app.cleanup();
 }
