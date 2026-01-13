@@ -1,4 +1,5 @@
 import core.stdc.string;
+import std.stdio;
 import std.algorithm.mutation;
 
 import poor_man_glm;
@@ -8,7 +9,7 @@ import vulkan;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
-class CubeRenderer {
+struct CubeRenderer {
 public:
   static immutable Vertex[] s_vertices = [
     // Front face
@@ -75,14 +76,17 @@ public:
     uint width,
     uint height
   ) {
+    m_allocator = SimpleVulkanAllocator(
+      physicalDevice,
+      device
+    );
+
     m_device = device;
     m_physicalDevice = physicalDevice;
     m_renderPass = renderPass;
     m_commandPool = commandPool;
     m_width = width;
     m_height = height;
-
-    m_allocator = SimpleVulkanAllocator(physicalDevice, device);
 
     createVertexBuffer();
     createIndexBuffer();
@@ -109,6 +113,8 @@ public:
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
       vkDestroyBuffer(m_device, m_uniformBuffers[i], null);
     }
+
+    debug writeln("Cube renderer destroyed!");
   }
 
   void update(float deltaTime) {
@@ -439,26 +445,30 @@ private:
       "void main() {\n" ~
       "  outColor = vec4(1.0, 0.5, 0.2, 1.0);\n" ~
       "}\n";
+
+    glslangInitialize();
     
-    auto vertShaderCode = ShaderCompiler.CompileGLSLtoSPIRV(
+    auto vertShaderCode = compileGLSLtoSPIRV(
       vertexShaderSource,
       "cube.vert",
       true
     );
-    auto fragShaderCode = ShaderCompiler.CompileGLSLtoSPIRV(
+    auto fragShaderCode = compileGLSLtoSPIRV(
       fragmentShaderSource,
       "cube.frag",
       false
     );
 
-    VkShaderModule vertShaderModule = ShaderCompiler.CreateShaderModule(
+    VkShaderModule vertShaderModule = createShaderModule(
       m_device,
       vertShaderCode
     );
-    VkShaderModule fragShaderModule = ShaderCompiler.CreateShaderModule(
+    VkShaderModule fragShaderModule = createShaderModule(
       m_device,
       fragShaderCode
     );
+
+    glslangFinalize();
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo;
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

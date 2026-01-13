@@ -5,6 +5,6 @@ import scenegraph.vk.device_memory;
 void main() {
   MemorySlots memorySlots;
 
-  auto app = new VulkanApp();
+  auto app = VulkanApp();
   app.run();
 }

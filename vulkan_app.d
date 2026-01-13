@@ -14,7 +14,6 @@ import glfw;
 import vulkan;
 
 import cube_renderer;
-import shader_compiler;
 
 debug {
   static const bool enableValidationLayers = true;
@@ -22,15 +21,15 @@ debug {
   static const bool enableValidationLayers = false;
 }
 
-static const char*[] validationLayers = [
+static const (char*)[1] validationLayers = [
   "VK_LAYER_KHRONOS_validation"
 ];
 
-static const char*[] deviceExtensions = [
-  VK_KHR_SWAPCHAIN_EXTENSION_NAME.ptr
+static const (char*)[1] deviceExtensions = [
+  cast(const(char*)) VK_KHR_SWAPCHAIN_EXTENSION_NAME
 ];
 
-class VulkanApp {
+struct VulkanApp {
 public:
   void run() {
     initWindow();
@@ -66,7 +65,6 @@ private:
   VkFramebuffer[] m_swapChainFramebuffers;
   VkCommandPool m_commandPool;
 
-  CubeRenderer m_cubeRenderer;
   uint m_swapchainImageCount;
 
   void initWindow() {
@@ -93,20 +91,6 @@ private:
     createRenderPass();
     createCommandPool();
     createFramebuffers();
-
-    ShaderCompiler.Initialize();
-
-    writeln("Creating cube renderer...");
-    m_cubeRenderer = new CubeRenderer(
-      m_device,
-      m_physicalDevice,
-      m_renderPass,
-      m_commandPool,
-      m_width,
-      m_height
-    );
-    
-    writeln("Vulkan initialization complete!");
   }
 
   void createCommandPool() {
@@ -147,13 +131,13 @@ private:
 
   const(char*)[] getRequiredExtensions() {
     uint glfwExtensionCount = 0;
-    const(char)** glfwExtensions;
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    const(char*)* glfwExtensions =
+      glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     
     auto extensions = glfwExtensions[0..glfwExtensionCount].dup;
 
     if (enableValidationLayers) {
-      extensions ~= VK_EXT_DEBUG_UTILS_EXTENSION_NAME.toStringz;
+      extensions ~= cast(const(char*)) VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
     }
     
     return extensions;
@@ -381,10 +365,13 @@ private:
     auto availableExtensions = new VkExtensionProperties[extensionCount];
     vkEnumerateDeviceExtensionProperties(device, null, &extensionCount, availableExtensions.ptr);
     
-    auto requiredExtensions = redBlackTree(deviceExtensions.map!fromStringz);
+    auto requiredExtensions = redBlackTree!(
+      (a, b) => strcmp(a, b) < 0,
+      const(char*)
+    )(deviceExtensions);
     
     foreach (const ref ext; availableExtensions) {
-      requiredExtensions.removeKey(ext.extensionName.fromStringz);
+      requiredExtensions.removeKey(cast(const(char*)) ext.extensionName);
     }
     
     return requiredExtensions.empty;
@@ -635,31 +622,36 @@ private:
   }
 
   void mainLoop() {
+    CubeRenderer cubeRenderer = CubeRenderer(
+      m_device,
+      m_physicalDevice,
+      m_renderPass,
+      m_commandPool,
+      m_width,
+      m_height
+    );
+    
     m_lastTime = MonoTime.currTime;
 
     while (!glfwWindowShouldClose(m_window)) {
       glfwPollEvents();
-      drawFrame();
+      
+      auto currentTime = MonoTime.currTime;
+      float deltaTime = (currentTime - m_lastTime).total!"hnsecs" / 1e7;
+      m_lastTime = currentTime;
+
+      cubeRenderer.update(deltaTime);
+      
+      cubeRenderer.drawFrame(
+        m_swapchain,
+        m_swapChainFramebuffers,
+        m_graphicsQueue,
+        m_presentQueue
+      );
     }
 
     vkDeviceWaitIdle(m_device);
   }
-
-  void drawFrame() {
-    auto currentTime = MonoTime.currTime;
-    float deltaTime = (currentTime - m_lastTime).total!"hnsecs" / 1e7;
-    m_lastTime = currentTime;
-
-    m_cubeRenderer.update(deltaTime);
-    
-    m_cubeRenderer.drawFrame(
-      m_swapchain,
-      m_swapChainFramebuffers,
-      m_graphicsQueue,
-      m_presentQueue
-    );
-  }
-
 
   void cleanupSwapChain() {
     foreach (framebuffer; m_swapChainFramebuffers) {
@@ -674,8 +666,6 @@ private:
   }
 
   void cleanup() {
-    m_cubeRenderer.destroy();
-
     cleanupSwapChain();
     
     vkDestroyRenderPass(m_device, m_renderPass, null);
@@ -699,8 +689,6 @@ private:
     
     glfwDestroyWindow(m_window);
     glfwTerminate();
-
-    ShaderCompiler.Finalize();
     
     debug writeln("Cleanup complete!");
   }
