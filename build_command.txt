@@ -10,3 +10,29 @@ dmd -i \
     -L-lSPIRV-Tools \
     -L-lstdc++ \
     main.d
+
+rdmd -i \
+    -debug \
+    -od=artifacts \
+    -of=artifacts/main \
+    -L-lvulkan \
+    -L-lglfw \
+    -L-lglslang \
+    -L-lglslang-default-resource-limits \
+    -L-lSPIRV-Tools-opt \
+    -L-lSPIRV-Tools \
+    -L-lstdc++ \
+    main.d
+
+ldc2 -i \
+    -d-debug \
+    -od=artifacts \
+    -of=artifacts/main \
+    -L-lvulkan \
+    -L-lglfw \
+    -L-lglslang \
+    -L-lglslang-default-resource-limits \
+    -L-lSPIRV-Tools-opt \
+    -L-lSPIRV-Tools \
+    -L-lstdc++ \
+    main.d poor_man_glm.c
