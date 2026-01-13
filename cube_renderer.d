@@ -4,7 +4,7 @@ import std.algorithm.mutation;
 
 import poor_man_glm;
 import simple_vulkan_allocator;
-import shader_compiler;
+import shader;
 import vulkan;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
