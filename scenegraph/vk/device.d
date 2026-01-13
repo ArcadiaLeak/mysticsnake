@@ -11,8 +11,9 @@ import scenegraph.vk.queue;
 class Device {
   private {
     DeviceExtensions _extensions;
-    VkDevice _device;
     PhysicalDevice _physicalDevice;
+    
+    VkDevice _device;
   }
 
   PhysicalDevice getPhysicalDevice() { return _physicalDevice; }

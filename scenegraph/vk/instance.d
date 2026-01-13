@@ -163,7 +163,7 @@ class Instance {
 
     _extensions = new InstanceExtensions(this);
     if (
-      isExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME.fromStringz) &&
+      isExtensionSupported(VK_EXT_DEBUG_UTILS_EXTENSION_NAME.fromStringz.idup) &&
       _extensions.vkCreateDebugUtilsMessengerEXT !is null
     ) {
         VkDebugUtilsMessengerCreateInfoEXT debugUtilsMessengerCreateInfo;

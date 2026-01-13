@@ -46,7 +46,7 @@ class DeviceExtensions {
 
     if (device.supportsApiVersion(VK_API_VERSION_1_2))
       device.getProcAddr(vkCreateRenderPass2, "vkCreateRenderPass2");
-    else if (device.getPhysicalDevice().supportsDeviceExtension(VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME.fromStringz))
+    else if (device.getPhysicalDevice().supportsDeviceExtension(VK_KHR_CREATE_RENDERPASS_2_EXTENSION_NAME.fromStringz.idup))
       device.getProcAddr(vkCreateRenderPass2, "vkCreateRenderPass2KHR");
 
     device.getProcAddr(vkCreateAccelerationStructureKHR, "vkCreateAccelerationStructureKHR");
