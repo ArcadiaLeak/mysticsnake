@@ -214,7 +214,8 @@ struct CubeRenderer {
 
     SDL_GPUTexture* swapchainTexture;
     SDL_WaitAndAcquireGPUSwapchainTexture(
-      cmdbuf, m_window,
+      cmdbuf,
+      m_window,
       &swapchainTexture,
       null,
       null

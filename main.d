@@ -1,7 +1,6 @@
 import sdl;
 import shader;
 
-import std.datetime;
 import std.string;
 import std.stdio;
 
@@ -170,7 +169,7 @@ void main() {
     pipeline
   );
   
-  auto timeLast = MonoTime.currTime;
+  auto timeLast = SDL_GetPerformanceCounter();
 
   while (!quit) {
     while (SDL_PollEvent(&event)) {
@@ -179,10 +178,10 @@ void main() {
       }
     }
 
-    auto timeCurr = MonoTime.currTime;
+    auto timeCurr = SDL_GetPerformanceCounter();
     scope(exit) timeLast = timeCurr;
 
-    float deltaTime = (timeCurr - timeLast).total!"hnsecs" / 1e7;
+    auto deltaTime = cast(float) (timeCurr - timeLast) / 1e9;
     cubeRenderer.update(deltaTime);
     cubeRenderer.drawFrame();
   }
