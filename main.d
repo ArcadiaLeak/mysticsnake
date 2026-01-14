@@ -148,9 +148,9 @@ void main() {
 
   SDL_Window* window = SDL_CreateWindow(
     "Heuristic Graphic",
-    640,
-    480,
-    0
+    800,
+    600,
+    SDL_WINDOW_RESIZABLE
   );
   scope(exit) SDL_DestroyWindow(window);
 
