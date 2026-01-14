@@ -4,7 +4,7 @@ import shader;
 import std.string;
 import std.stdio;
 
-import cube_renderer;
+import renderer;
 
 SDL_GPUGraphicsPipeline* createGraphicsPipeline(
   SDL_GPUDevice* device,
@@ -163,7 +163,7 @@ void main() {
   SDL_Event event;
   bool quit = false;
 
-  CubeRenderer cubeRenderer = CubeRenderer(
+  Renderer renderer = Renderer(
     window,
     device,
     pipeline
@@ -182,7 +182,7 @@ void main() {
     scope(exit) timeLast = timeCurr;
 
     auto deltaTime = cast(float) (timeCurr - timeLast) / 1e9;
-    cubeRenderer.update(deltaTime);
-    cubeRenderer.drawFrame();
+    renderer.update(deltaTime);
+    renderer.drawFrame();
   }
 }

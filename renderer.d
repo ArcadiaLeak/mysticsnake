@@ -18,7 +18,7 @@ struct UniformBufferObject {
   align(16) float[4][4] proj;
 }
 
-struct CubeRenderer {
+struct Renderer {
   static immutable Vertex[] s_vertices = [
     Vertex([-0.5f, -0.5f,  0.5f]), 
     Vertex([ 0.5f, -0.5f,  0.5f]), 
