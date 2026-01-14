@@ -59,6 +59,19 @@ struct StyleLength {
   FloatOptional value() pure {
     return value_;
   }
+
+  FloatOptional resolve(float referenceLength) {
+    switch (unit_) {
+      case Unit.Point:
+        return value_;
+      case Unit.Percent:
+        return FloatOptional(
+          value_ * referenceLength * 0.01f
+        );
+      default:
+        return FloatOptional();
+    }
+  }
 }
 
 bool inexactEquals(StyleLength a, StyleLength b) {
