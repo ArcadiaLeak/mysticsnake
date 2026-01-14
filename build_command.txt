@@ -2,8 +2,6 @@ dmd -i \
     -debug \
     -od=artifacts \
     -of=artifacts/main \
-    -L-lvulkan \
-    -L-lglfw \
     -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \
@@ -18,8 +16,6 @@ rdmd -i \
     -debug \
     -od=artifacts \
     -of=artifacts/main \
-    -L-lvulkan \
-    -L-lglfw \
     -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \
@@ -34,8 +30,6 @@ ldc2 -i \
     -d-debug \
     -od=artifacts \
     -of=artifacts/main \
-    -L-lvulkan \
-    -L-lglfw \
     -L-lSDL3 \
     -L-lglslang \
     -L-lglslang-default-resource-limits \

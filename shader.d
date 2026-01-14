@@ -1,8 +1,31 @@
 import glslang;
-import vulkan;
 
 import std.stdio;
 import std.string;
+
+enum SDL_GPU_BUFFERUSAGE_VERTEX = 1u << 0; /**< Buffer is a vertex buffer. */
+enum SDL_GPU_BUFFERUSAGE_INDEX = 1u << 1; /**< Buffer is an index buffer. */
+enum SDL_GPU_BUFFERUSAGE_INDIRECT = 1u << 2; /**< Buffer is an indirect buffer. */
+enum SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ = 1u << 3; /**< Buffer supports storage reads in graphics stages. */
+enum SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ = 1u << 4; /**< Buffer supports storage reads in the compute stage. */
+enum SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE = 1u << 5; /**< Buffer supports storage writes in the compute stage. */
+
+enum SDL_INIT_AUDIO = 0x00000010u; /**< `SDL_INIT_AUDIO` implies `SDL_INIT_EVENTS` */
+enum SDL_INIT_VIDEO = 0x00000020u; /**< `SDL_INIT_VIDEO` implies `SDL_INIT_EVENTS`, should be initialized on the main thread */
+enum SDL_INIT_JOYSTICK = 0x00000200u; /**< `SDL_INIT_JOYSTICK` implies `SDL_INIT_EVENTS` */
+enum SDL_INIT_HAPTIC = 0x00001000u;
+enum SDL_INIT_GAMEPAD = 0x00002000u; /**< `SDL_INIT_GAMEPAD` implies `SDL_INIT_JOYSTICK` */
+enum SDL_INIT_EVENTS = 0x00004000u;
+enum SDL_INIT_SENSOR = 0x00008000u; /**< `SDL_INIT_SENSOR` implies `SDL_INIT_EVENTS` */
+enum SDL_INIT_CAMERA = 0x00010000u; /**< `SDL_INIT_CAMERA` implies `SDL_INIT_EVENTS` */
+
+enum SDL_GPU_SHADERFORMAT_INVALID = 0;
+enum SDL_GPU_SHADERFORMAT_PRIVATE = 1u << 0; /**< Shaders for NDA'd platforms. */
+enum SDL_GPU_SHADERFORMAT_SPIRV = 1u << 1; /**< SPIR-V shaders for Vulkan. */
+enum SDL_GPU_SHADERFORMAT_DXBC = 1u << 2; /**< DXBC SM5_1 shaders for D3D12. */
+enum SDL_GPU_SHADERFORMAT_DXIL = 1u << 3; /**< DXIL SM6_0 shaders for D3D12. */
+enum SDL_GPU_SHADERFORMAT_MSL = 1u << 4; /**< MSL shaders for Metal. */
+enum SDL_GPU_SHADERFORMAT_METALLIB = 1u << 5; /**< Precompiled metallib shaders for Metal. */
 
 static bool s_initialized = false;
 
@@ -125,19 +148,3 @@ const(uint[]) compileGLSLtoSPIRV(
   return spirv;
 }
 
-VkShaderModule createShaderModule(
-  VkDevice device,
-  in uint[] spirvCode
-) {
-  VkShaderModuleCreateInfo createInfo;
-  createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  createInfo.codeSize = spirvCode.length * uint.sizeof;
-  createInfo.pCode = spirvCode.ptr;
-  
-  VkShaderModule shaderModule;
-  if (vkCreateShaderModule(device, &createInfo, null, &shaderModule) != VK_SUCCESS) {
-    throw new Exception("Failed to create shader module");
-  }
-  
-  return shaderModule;
-}
