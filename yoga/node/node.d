@@ -55,11 +55,11 @@ class Node {
     dirtiedFunc_ = dirtiedFunc;
   }
 
-  void setStyle(ref Style style) {
+  void setStyle(Style* style) {
     style_ = style;
   }
 
-  void setLayout(LayoutResults layout) {
+  void setLayout(LayoutResults* layout) {
     layout_ = layout;
   }
 
@@ -84,8 +84,8 @@ private:
   YGMeasureFunc measureFunc_ = null;
   YGBaselineFunc baselineFunc_ = null;
   YGDirtiedFunc dirtiedFunc_ = null;
-  Style style_;
-  LayoutResults layout_;
+  Style* style_;
+  LayoutResults* layout_;
   size_t lineIndex_ = 0;
   size_t contentsChildrenCount_ = 0;
   Node owner_;
