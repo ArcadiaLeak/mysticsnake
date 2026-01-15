@@ -4,12 +4,16 @@ import std.typecons;
 
 alias FloatOptional = Nullable!(float, float.nan);
 
-bool inexactEquals(float lhs, float rhs) {
+bool inexactEquals(float lhs, float rhs) pure {
   if (!lhs.isNaN && !rhs.isNaN) {
     return abs(lhs - rhs) < 0.0001f;
   }
 
   return lhs.isNaN && rhs.isNaN;
+}
+
+bool inexactEquals(float[] lhs, float[] rhs) pure {
+  return equal!inexactEquals(lhs, rhs);
 }
 
 float maxOrDefined(

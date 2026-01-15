@@ -2,6 +2,7 @@ import std.variant;
 
 import yoga.enums;
 import yoga.style;
+import yoga.node.layout_results;
 
 alias YGMeasureFunc = void function(immutable Node);
 alias YGBaselineFunc = void function(immutable Node, float, float);
@@ -19,4 +20,13 @@ private:
   YGBaselineFunc baselineFunc_ = null;
   YGDirtiedFunc dirtiedFunc_ = null;
   Style style_;
+  LayoutResults layout_;
+  size_t lineIndex_ = 0;
+  size_t contentsChildrenCount_ = 0;
+  Node owner;
+  Node[] children;
+  StyleSizeLength[2] processedDimensions_ = [
+    StyleSizeLength.undefined(), 
+    StyleSizeLength.undefined()
+  ];
 }

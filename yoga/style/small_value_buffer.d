@@ -1,6 +1,6 @@
 struct SmallValueBuffer {
   private {
-    class Overflow {
+    struct Overflow {
       uint[] buffer_;
       bool[] wideElements_;
     }
@@ -10,7 +10,7 @@ struct SmallValueBuffer {
     uint[ubyte.sizeof] buffer_;
     ubyte wideElements_;
 
-    Overflow overflow_;
+    Overflow* overflow_;
   }
 
   ushort push(uint value) {

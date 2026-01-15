@@ -54,19 +54,6 @@ enum Edge : ubyte {
   All,
 }
 
-enum Errata : ubyte {
-  None,
-  StretchFlexBasis,
-  AbsolutePositionWithoutInsetsExcludesPadding,
-  AbsolutePercentAgainstInnerSize,
-  All,
-  Classic,
-}
-
-enum ExperimentalFeature : ubyte {
-  WebFlexBasis,
-}
-
 enum FlexDirection : ubyte {
   Column,
   ColumnReverse,
