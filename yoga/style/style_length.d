@@ -60,7 +60,7 @@ struct StyleLength {
     return value_;
   }
 
-  FloatOptional resolve(float referenceLength) {
+  FloatOptional resolve(float referenceLength) pure inout {
     switch (unit_) {
       case Unit.Point:
         return value_;

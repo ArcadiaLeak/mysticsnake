@@ -1,11 +1,11 @@
 import yoga.enums;
 
-bool isRow(FlexDirection flexDirection) {
+bool isRow(FlexDirection flexDirection) pure {
   return flexDirection == FlexDirection.Row ||
     flexDirection == FlexDirection.RowReverse;
 }
 
-bool isColumn(FlexDirection flexDirection) {
+bool isColumn(FlexDirection flexDirection) pure {
   return flexDirection == FlexDirection.Column ||
     flexDirection == FlexDirection.ColumnReverse;
 }
@@ -34,7 +34,7 @@ FlexDirection resolveCrossDirection(
     : FlexDirection.Column;
 }
 
-PhysicalEdge flexStartEdge(FlexDirection flexDirection) {
+PhysicalEdge flexStartEdge(FlexDirection flexDirection) pure {
   final switch (flexDirection) {
     case FlexDirection.Column:
       return PhysicalEdge.Top;
@@ -47,7 +47,7 @@ PhysicalEdge flexStartEdge(FlexDirection flexDirection) {
   }
 }
 
-PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
+PhysicalEdge flexEndEdge(FlexDirection flexDirection) pure {
   final switch (flexDirection) {
     case FlexDirection.Column:
       return PhysicalEdge.Bottom;
@@ -63,7 +63,7 @@ PhysicalEdge flexEndEdge(FlexDirection flexDirection) {
 PhysicalEdge inlineStartEdge(
   FlexDirection flexDirection,
   Direction direction
-) {
+) pure {
   if (isRow(flexDirection)) {
     return direction == Direction.RTL
       ? PhysicalEdge.Right
@@ -76,7 +76,7 @@ PhysicalEdge inlineStartEdge(
 PhysicalEdge inlineEndEdge(
   FlexDirection flexDirection,
   Direction direction
-) {
+) pure {
   if (isRow(flexDirection)) {
     return direction == Direction.RTL
       ? PhysicalEdge.Left

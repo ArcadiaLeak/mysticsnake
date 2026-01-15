@@ -93,7 +93,7 @@ struct StyleSizeLength {
     return unit_ == Unit.Percent;
   }
 
-  FloatOptional resolve(float referenceLength) {
+  FloatOptional resolve(float referenceLength) pure inout {
     switch (unit_) {
       case Unit.Point:
         return value_;

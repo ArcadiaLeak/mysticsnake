@@ -1,3 +1,4 @@
+import std.algorithm.comparison;
 import std.math;
 import std.typecons;
 
@@ -9,4 +10,25 @@ bool inexactEquals(float lhs, float rhs) {
   }
 
   return lhs.isNaN && rhs.isNaN;
+}
+
+float maxOrDefined(
+  float a,
+  float b
+) pure {
+  if (!a.isNaN && !b.isNaN) {
+    return max(a, b);
+  }
+  return a.isNaN ? b : a;
+}
+
+float minOrDefined(
+  float a,
+  float b
+) pure {
+  if (!a.isNaN && !b.isNaN) {
+    return min(a, b);
+  }
+
+  return a.isNaN ? b : a;
 }

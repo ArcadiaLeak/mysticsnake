@@ -5,6 +5,7 @@ import yoga.enums;
 import yoga.numeric;
 import yoga.style.style_value_handle;
 import yoga.style.style_value_pool;
+import yoga.algorithm.flex_direction;
 
 public import yoga.style.style_length;
 public import yoga.style.style_size_length;
@@ -161,6 +162,248 @@ struct Style {
     pool_.store(flexShrink_, value);
   }
 
+  BoxSizing boxSizing() pure inout {
+    return boxSizing_;
+  }
+  void setBoxSizing(BoxSizing value) {
+    boxSizing_ = value;
+  }
+
+  StyleLength computeLeftEdge(
+    Edges edges,
+    Direction layoutDirection
+  ) pure inout {
+    if (
+      layoutDirection == Direction.LTR &&
+      edges[Edge.Start].isDefined()
+    ) {
+      return pool_.getLength(edges[Edge.Start]);
+    } else if (
+      layoutDirection == Direction.RTL &&
+      edges[Edge.End].isDefined()
+    ) {
+      return pool_.getLength(edges[Edge.End]);
+    } else if (edges[Edge.Left].isDefined()) {
+      return pool_.getLength(edges[Edge.Left]);
+    } else if (edges[Edge.Horizontal].isDefined()) {
+      return pool_.getLength(edges[Edge.Horizontal]);
+    } else {
+      return pool_.getLength(edges[Edge.All]);
+    }
+  }
+
+  StyleLength computeTopEdge(Edges edges) pure inout {
+    if (edges[Edge.Top].isDefined()) {
+      return pool_.getLength(edges[Edge.Top]);
+    } else if (edges[Edge.Vertical].isDefined()) {
+      return pool_.getLength(edges[Edge.Vertical]);
+    } else {
+      return pool_.getLength(edges[Edge.All]);
+    }
+  }
+
+  StyleLength computeRightEdge(
+    Edges edges,
+    Direction layoutDirection
+  ) pure inout {
+    if (
+      layoutDirection == Direction.LTR &&
+      edges[Edge.End].isDefined()
+    ) {
+      return pool_.getLength(edges[Edge.End]);
+    } else if (
+      layoutDirection == Direction.RTL &&
+      edges[Edge.Start].isDefined()
+    ) {
+      return pool_.getLength(edges[Edge.Start]);
+    } else if (edges[Edge.Right].isDefined()) {
+      return pool_.getLength(edges[Edge.Right]);
+    } else if (edges[Edge.Horizontal].isDefined()) {
+      return pool_.getLength(edges[Edge.Horizontal]);
+    } else {
+      return pool_.getLength(edges[Edge.All]);
+    }
+  }
+
+  StyleLength computeBottomEdge(Edges edges) pure inout {
+    if (edges[Edge.Bottom].isDefined()) {
+      return pool_.getLength(edges[Edge.Bottom]);
+    } else if (edges[Edge.Vertical].isDefined()) {
+      return pool_.getLength(edges[Edge.Vertical]);
+    } else {
+      return pool_.getLength(edges[Edge.All]);
+    }
+  }
+
+  float computeFlexStartPadding(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return maxOrDefined(
+      computePadding(flexStartEdge(axis), direction)
+        .resolve(widthSize),
+      0.0f
+    );
+  }
+
+  float computeInlineStartPadding(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return maxOrDefined(
+      computePadding(inlineStartEdge(axis, direction), direction)
+        .resolve(widthSize),
+      0.0f
+    );
+  }
+
+  float computeFlexEndPadding(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return maxOrDefined(
+      computePadding(flexEndEdge(axis), direction)
+        .resolve(widthSize),
+      0.0f
+    );
+  }
+
+  float computeInlineEndPadding(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return maxOrDefined(
+      computePadding(inlineEndEdge(axis, direction), direction)
+        .resolve(widthSize),
+      0.0f
+    );
+  }
+
+  float computeFlexStartBorder(
+    FlexDirection axis,
+    Direction direction
+  ) pure inout {
+    return maxOrDefined(
+      computeBorder(flexStartEdge(axis), direction).resolve(0.0f),
+      0.0f
+    );
+  }
+
+  float computeFlexEndBorder(
+    FlexDirection axis,
+    Direction direction
+  ) pure inout {
+    return maxOrDefined(
+      computeBorder(flexEndEdge(axis), direction).resolve(0.0f),
+      0.0f
+    );
+  }
+
+  float computeFlexEndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return maxOrDefined(
+      computeBorder(flexEndEdge(axis), direction)
+        .resolve(widthSize),
+      0.0f
+    );
+  }
+
+  float computeFlexStartPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return computeFlexStartPadding(axis, direction, widthSize) +
+      computeFlexStartBorder(axis, direction);
+  }
+
+  float computeFlexEndPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return computeFlexEndPadding(axis, direction, widthSize) +
+      computeFlexEndBorder(axis, direction);
+  }
+
+  float computePaddingAndBorderForDimension(
+    Direction direction,
+    Dimension dimension,
+    float widthSize
+  ) pure inout {
+    FlexDirection flexDirectionForDimension = dimension == Dimension.Width
+      ? FlexDirection.Row
+      : FlexDirection.Column;
+
+    return computeFlexStartPaddingAndBorder(
+      flexDirectionForDimension,
+      direction,
+      widthSize
+    ) + computeFlexEndPaddingAndBorder(
+      flexDirectionForDimension,
+      direction,
+      widthSize
+    );
+  }
+
+  FloatOptional resolvedMinDimension(
+    Direction direction,
+    Dimension axis,
+    float referenceLength,
+    float ownerWidth
+  ) pure {
+    FloatOptional value = minDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing.BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional(
+      computePaddingAndBorderForDimension(direction, axis, ownerWidth)
+    );
+
+    FloatOptional dimensionWithFallback = dimensionPaddingAndBorder.isNull()
+      ? FloatOptional(0)
+      : dimensionPaddingAndBorder;
+
+    return FloatOptional(value + dimensionWithFallback);
+  }
+
+  StyleSizeLength maxDimension(Dimension axis) pure inout {
+    return pool_.getSize(maxDimensions_[axis]);
+  }
+  void setMaxDimension(Dimension axis, StyleSizeLength value) {
+    pool_.store(maxDimensions_[axis], value);
+  }
+
+  FloatOptional resolvedMaxDimension(
+    Direction direction,
+    Dimension axis,
+    float referenceLength,
+    float ownerWidth
+  ) pure {
+    FloatOptional value = maxDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing.BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional(
+      computePaddingAndBorderForDimension(direction, axis, ownerWidth)
+    );
+
+    FloatOptional dimensionWithFallback = dimensionPaddingAndBorder.isNull()
+      ? FloatOptional(0)
+      : dimensionPaddingAndBorder;
+
+    return FloatOptional(value + dimensionWithFallback);
+  }
+
   bool opEquals(in Style other) pure {
     return direction_ == other.direction_ &&
       flexDirection_ == other.flexDirection_ &&
@@ -307,7 +550,10 @@ private:
     }
   }
 
-  StyleLength computeMargin(PhysicalEdge edge, Direction direction) pure {
+  StyleLength computeMargin(
+    PhysicalEdge edge,
+    Direction direction
+  ) pure inout {
     final switch (edge) {
       case PhysicalEdge.Left:
         return computeLeftEdge(margin_, direction);
@@ -320,7 +566,10 @@ private:
     }
   }
 
-  StyleLength computePadding(PhysicalEdge edge, Direction direction) pure {
+  StyleLength computePadding(
+    PhysicalEdge edge,
+    Direction direction
+  ) pure inout {
     final switch (edge) {
       case PhysicalEdge.Left:
         return computeLeftEdge(padding_, direction);
@@ -333,7 +582,10 @@ private:
     }
   }
 
-  StyleLength computeBorder(PhysicalEdge edge, Direction direction) pure {
+  StyleLength computeBorder(
+    PhysicalEdge edge,
+    Direction direction
+  ) pure inout {
     final switch (edge) {
       case PhysicalEdge.Left:
         return computeLeftEdge(border_, direction);
