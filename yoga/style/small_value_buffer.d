@@ -79,7 +79,7 @@ struct SmallValueBuffer {
     }
   }
 
-  uint get32(ushort index) pure {
+  uint get32(ushort index) pure inout {
     if (index < buffer_.length) {
       return buffer_[index];
     } else {
@@ -87,7 +87,7 @@ struct SmallValueBuffer {
     }
   }
 
-  ulong get64(ushort index) pure {
+  ulong get64(ushort index) pure inout {
     const auto lsb = get32(index);
     const auto msb = get32(cast(ushort) (index + 1));
     return (cast(ulong) (msb) << 32) | lsb;

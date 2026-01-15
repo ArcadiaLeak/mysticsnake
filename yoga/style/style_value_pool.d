@@ -49,7 +49,7 @@ struct StyleValuePool {
     }
   }
 
-  StyleLength getLength(StyleValueHandle handle) pure {
+  StyleLength getLength(StyleValueHandle handle) pure inout {
     if (handle.isUndefined()) {
       return StyleLength.undefined();
     } else if (handle.isAuto()) {
@@ -70,7 +70,7 @@ struct StyleValuePool {
     }
   }
 
-  StyleSizeLength getSize(StyleValueHandle handle) pure {
+  StyleSizeLength getSize(StyleValueHandle handle) pure inout {
     if (handle.isUndefined()) {
       return StyleSizeLength.undefined();
     } else if (handle.isAuto()) {
@@ -97,7 +97,7 @@ struct StyleValuePool {
     }
   }
 
-  FloatOptional getNumber(StyleValueHandle handle) pure {
+  FloatOptional getNumber(StyleValueHandle handle) pure inout {
     if (handle.isUndefined()) {
       return FloatOptional();
     } else {

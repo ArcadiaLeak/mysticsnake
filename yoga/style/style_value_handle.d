@@ -11,15 +11,15 @@ struct StyleValueHandle {
     return handle;
   }
 
-  bool isUndefined() pure {
+  bool isUndefined() pure inout {
     return type() == Type.Undefined;
   }
 
-  bool isDefined() pure {
+  bool isDefined() pure inout {
     return !isUndefined();
   }
 
-  bool isAuto() pure {
+  bool isAuto() pure inout {
     return type() == Type.Auto;
   }
 
@@ -43,7 +43,7 @@ package:
     return type() == Type.Keyword && value() == cast(ushort) keyword;
   }
 
-  Type type() pure {
+  Type type() pure inout {
     return cast(Type) (repr_ & kHandleTypeMask);
   }
 
