@@ -1,3 +1,5 @@
+module yoga.style;
+
 import std.algorithm.comparison;
 import std.traits;
 
