@@ -2,6 +2,7 @@ module yoga.style.style_value_pool;
 
 import std.conv;
 
+import yoga.numeric;
 import yoga.style.small_value_buffer;
 import yoga.style.style_length;
 import yoga.style.style_value_handle;
@@ -17,6 +18,19 @@ struct StyleValuePool {
         ? StyleValueHandle.Type.Point
         : StyleValueHandle.Type.Percent;
       storeValue(handle, length.value(), type);
+    }
+  }
+
+  FloatOptional getNumber(StyleValueHandle handle) pure {
+    if (handle.isUndefined()) {
+      return FloatOptional();
+    } else {
+      assert(handle.type() == StyleValueHandle.Type.Number);
+      uint ivalue = buffer_.get32(handle.value());
+      float value = (handle.isValueIndexed())
+        ? bitCast!float(ivalue)
+        : unpackInlineInteger(handle.value());
+      return FloatOptional(value);
     }
   }
 
@@ -43,6 +57,23 @@ private:
     }
   }
 
+  void storeKeyword(
+    ref StyleValueHandle handle,
+    StyleValueHandle.Keyword keyword
+  ) {
+    handle.setType(StyleValueHandle.Type.Keyword);
+
+    if (handle.isValueIndexed()) {
+      auto newIndex = buffer_.replace(
+        handle.value(),
+        cast(uint) keyword
+      );
+      handle.setValue(newIndex);
+    } else {
+      handle.setValue(cast(ushort) keyword);
+    }
+  }
+
   static const(bool) isIntegerPackable(float f) {
     const ushort kMaxInlineAbsValue = (1 << 11) - 1;
 
@@ -56,6 +87,15 @@ private:
     return cast(ushort) (
       (isNegative << 11) |
       (cast(int) value * (isNegative != 0u ? -1 : 1))
+    );
+  }
+
+  static float unpackInlineInteger(ushort value) pure {
+    enum ushort kValueSignMask = 0b0000_1000_0000_0000;
+    enum ushort kValueMagnitudeMask = 0b0000_0111_1111_1111;
+    const bool isNegative = (value & kValueSignMask) != 0;
+    return cast(float) (
+      (value & kValueMagnitudeMask) * (isNegative ? -1 : 1)
     );
   }
 
