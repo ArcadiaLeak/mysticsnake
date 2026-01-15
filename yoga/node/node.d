@@ -1,12 +1,22 @@
+import std.logger.core;
+import std.math;
 import std.variant;
 
 import yoga.enums;
-import yoga.style;
 import yoga.node.layout_results;
+import yoga.numeric;
+import yoga.style;
 
-alias YGMeasureFunc = void function(immutable Node);
-alias YGBaselineFunc = void function(immutable Node, float, float);
-alias YGDirtiedFunc = void function(immutable Node);
+alias YGMeasureFunc = YGSize function(
+  const Node, float, MeasureMode, float, MeasureMode
+) pure;
+alias YGBaselineFunc = float function(const Node, float, float) pure;
+alias YGDirtiedFunc = void function(const Node) pure;
+
+struct YGSize {
+  float width;
+  float height;
+}
 
 class Node {
   this(Node node) {
@@ -26,6 +36,7 @@ class Node {
     owner_ = node.owner_;
     children_ = node.children_;
     processedDimensions_ = node.processedDimensions_;
+
     foreach (c; children_) {
       c.setOwner = this;
     }
@@ -74,6 +85,44 @@ class Node {
   void setOwner(Node owner) {
     owner_ = owner;
   }
+
+  YGSize measure(
+    float availableWidth,
+    MeasureMode widthMode,
+    float availableHeight,
+    MeasureMode heightMode
+  ) {
+    const auto size = measureFunc_(
+      this,
+      availableWidth,
+      widthMode,
+      availableHeight,
+      heightMode
+    );
+
+    if (
+      isNaN(size.height) || size.height < 0 ||
+      isNaN(size.width) || size.width < 0
+    ) {
+      warningf(
+        "Measure function returned an invalid dimension to Yoga: [width=%f, height=%f]",
+        size.width,
+        size.height
+      );
+      
+      return YGSize(
+        maxOrDefined(0.0f, size.width),
+        maxOrDefined(0.0f, size.height)
+      );
+    }
+
+    return size;
+  }
+
+  float baseline(float width, float height) pure inout {
+    return baselineFunc_(this, width, height);
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;
