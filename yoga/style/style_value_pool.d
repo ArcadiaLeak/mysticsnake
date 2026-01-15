@@ -5,6 +5,7 @@ import std.conv;
 import yoga.numeric;
 import yoga.style.small_value_buffer;
 import yoga.style.style_length;
+import yoga.style.style_size_length;
 import yoga.style.style_value_handle;
 
 struct StyleValuePool {
@@ -18,6 +19,81 @@ struct StyleValuePool {
         ? StyleValueHandle.Type.Point
         : StyleValueHandle.Type.Percent;
       storeValue(handle, length.value(), type);
+    }
+  }
+
+  void store(ref StyleValueHandle handle, StyleSizeLength sizeValue) {
+    if (sizeValue.isUndefined()) {
+      handle.setType(StyleValueHandle.Type.Undefined);
+    } else if (sizeValue.isAuto()) {
+      handle.setType(StyleValueHandle.Type.Auto);
+    } else if (sizeValue.isMaxContent()) {
+      storeKeyword(handle, StyleValueHandle.Keyword.MaxContent);
+    } else if (sizeValue.isStretch()) {
+      storeKeyword(handle, StyleValueHandle.Keyword.Stretch);
+    } else if (sizeValue.isFitContent()) {
+      storeKeyword(handle, StyleValueHandle.Keyword.FitContent);
+    } else {
+      auto type = sizeValue.isPoints()
+        ? StyleValueHandle.Type.Point
+        : StyleValueHandle.Type.Percent;
+      storeValue(handle, sizeValue.value(), type);
+    }
+  }
+
+  void store(ref StyleValueHandle handle, FloatOptional number) {
+    if (number.isNull) {
+      handle.setType(StyleValueHandle.Type.Undefined);
+    } else {
+      storeValue(handle, number, StyleValueHandle.Type.Number);
+    }
+  }
+
+  StyleLength getLength(StyleValueHandle handle) pure {
+    if (handle.isUndefined()) {
+      return StyleLength.undefined();
+    } else if (handle.isAuto()) {
+      return StyleLength.ofAuto();
+    } else {
+      assert(
+        handle.type() == StyleValueHandle.Type.Point ||
+        handle.type() == StyleValueHandle.Type.Percent
+      );
+      uint ivalue = buffer_.get32(handle.value());
+      float value = (handle.isValueIndexed())
+        ? bitCast!float(ivalue)
+        : unpackInlineInteger(handle.value());
+
+      return handle.type() == StyleValueHandle.Type.Point
+        ? StyleLength.points(value)
+        : StyleLength.percent(value);
+    }
+  }
+
+  StyleSizeLength getSize(StyleValueHandle handle) pure {
+    if (handle.isUndefined()) {
+      return StyleSizeLength.undefined();
+    } else if (handle.isAuto()) {
+      return StyleSizeLength.ofAuto();
+    } else if (handle.isKeyword(StyleValueHandle.Keyword.MaxContent)) {
+      return StyleSizeLength.ofMaxContent();
+    } else if (handle.isKeyword(StyleValueHandle.Keyword.FitContent)) {
+      return StyleSizeLength.ofFitContent();
+    } else if (handle.isKeyword(StyleValueHandle.Keyword.Stretch)) {
+      return StyleSizeLength.ofStretch();
+    } else {
+      assert(
+        handle.type() == StyleValueHandle.Type.Point ||
+        handle.type() == StyleValueHandle.Type.Percent
+      );
+      uint ivalue = buffer_.get32(handle.value());
+      float value = (handle.isValueIndexed())
+        ? bitCast!float(ivalue)
+        : unpackInlineInteger(handle.value());
+
+      return handle.type() == StyleValueHandle.Type.Point
+        ? StyleSizeLength.points(value)
+        : StyleSizeLength.percent(value);
     }
   }
 

@@ -5,47 +5,47 @@ import yoga.numeric;
 static import yoga.numeric;
 
 struct StyleSizeLength {
-  static StyleSizeLength points(float value) {
+  static StyleSizeLength points(float value) pure {
     return value.isNaN || value.isInfinity
       ? undefined()
       : StyleSizeLength(FloatOptional(value), Unit.Point);
   }
 
-  static StyleSizeLength percent(float value) {
+  static StyleSizeLength percent(float value) pure {
     return value.isNaN || value.isInfinity
       ? undefined()
       : StyleSizeLength(FloatOptional(value), Unit.Percent);
   }
 
-  static StyleSizeLength ofAuto() {
+  static StyleSizeLength ofAuto() pure {
     return StyleSizeLength(
       FloatOptional(),
       Unit.Auto
     );
   }
 
-  static StyleSizeLength ofMaxContent() {
+  static StyleSizeLength ofMaxContent() pure {
     return StyleSizeLength(
       FloatOptional(),
       Unit.MaxContent
     );
   }
 
-  static StyleSizeLength ofFitContent() {
+  static StyleSizeLength ofFitContent() pure {
     return StyleSizeLength(
       FloatOptional(),
       Unit.FitContent
     );
   }
 
-  static StyleSizeLength ofStretch() {
+  static StyleSizeLength ofStretch() pure {
     return StyleSizeLength(
       FloatOptional(),
       Unit.Stretch
     );
   }
 
-  static StyleSizeLength undefined() {
+  static StyleSizeLength undefined() pure {
     return StyleSizeLength(
       FloatOptional(),
       Unit.Undefined
@@ -57,35 +57,39 @@ struct StyleSizeLength {
     Unit unit_;
   }
 
-bool isAuto() pure {
+  FloatOptional value() pure {
+    return value_;
+  }
+
+  bool isAuto() pure {
     return unit_ == Unit.Auto;
   }
 
-bool isMaxContent() pure {
+  bool isMaxContent() pure {
     return unit_ == Unit.MaxContent;
   }
 
-bool isFitContent() pure {
+  bool isFitContent() pure {
     return unit_ == Unit.FitContent;
   }
 
-bool isStretch() pure {
+  bool isStretch() pure {
     return unit_ == Unit.Stretch;
   }
 
-bool isUndefined() pure {
+  bool isUndefined() pure {
     return unit_ == Unit.Undefined;
   }
 
-bool isDefined() pure {
+  bool isDefined() pure {
     return !isUndefined();
   }
 
-bool isPoints() pure {
+  bool isPoints() pure {
     return unit_ == Unit.Point;
   }
 
-bool isPercent() pure {
+  bool isPercent() pure {
     return unit_ == Unit.Percent;
   }
 

@@ -5,26 +5,26 @@ import yoga.numeric;
 static import yoga.numeric;
 
 struct StyleLength {
-  static StyleLength points(float value) {
+  static StyleLength points(float value) pure {
     return value.isNaN || value.isInfinity
       ? undefined()
       : StyleLength(FloatOptional(value), Unit.Point);
   }
 
-  static StyleLength percent(float value) {
+  static StyleLength percent(float value) pure {
     return value.isNaN || value.isInfinity
       ? undefined()
       : StyleLength(FloatOptional(value), Unit.Percent);
   }
 
-  static StyleLength ofAuto() {
+  static StyleLength ofAuto() pure {
     return StyleLength(
       FloatOptional(),
       Unit.Auto
     );
   }
 
-  static StyleLength undefined() {
+  static StyleLength undefined() pure {
     return StyleLength(
       FloatOptional(),
       Unit.Undefined
