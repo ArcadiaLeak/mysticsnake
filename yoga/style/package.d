@@ -2,11 +2,165 @@ import std.algorithm.comparison;
 import std.traits;
 
 import yoga.enums;
-import yoga.style.style_length;
+import yoga.numeric;
 import yoga.style.style_value_handle;
 import yoga.style.style_value_pool;
 
+public import yoga.style.style_length;
+public import yoga.style.style_size_length;
+
 struct Style {
+  static const float DefaultFlexGrow = 0.0f;
+  static const float DefaultFlexShrink = 0.0f;
+  static const float WebDefaultFlexShrink = 1.0f;
+
+  Direction direction() pure inout {
+    return direction_;
+  }
+  void setDirection(Direction value) {
+    direction_ = value;
+  }
+
+  FlexDirection flexDirection() pure inout {
+    return flexDirection_;
+  }
+  void setFlexDirection(FlexDirection value) {
+    flexDirection_ = value;
+  }
+
+  Justify justifyContent() pure inout {
+    return justifyContent_;
+  }
+  void setJustifyContent(Justify value) {
+    justifyContent_ = value;
+  }
+
+  StyleSizeLength flexBasis() pure inout {
+    return pool_.getSize(flexBasis_);
+  }
+  void setFlexBasis(StyleSizeLength value) {
+    pool_.store(flexBasis_, value);
+  }
+
+  StyleLength margin(Edge edge) pure inout {
+    return pool_.getLength(margin_[edge]);
+  }
+  void setMargin(Edge edge, StyleLength value) {
+    pool_.store(margin_[edge], value);
+  }
+
+  StyleLength position(Edge edge) pure inout {
+    return pool_.getLength(position_[edge]);
+  }
+  void setPosition(Edge edge, StyleLength value) {
+    pool_.store(position_[edge], value);
+  }
+
+  StyleLength padding(Edge edge) pure inout {
+    return pool_.getLength(padding_[edge]);
+  }
+  void setPadding(Edge edge, StyleLength value) {
+    pool_.store(padding_[edge], value);
+  }
+
+  StyleLength border(Edge edge) pure inout {
+    return pool_.getLength(border_[edge]);
+  }
+  void setBorder(Edge edge, StyleLength value) {
+    pool_.store(border_[edge], value);
+  }
+
+  StyleLength gap(Gutter gutter) pure inout {
+    return pool_.getLength(gap_[gutter]);
+  }
+  void setGap(Gutter gutter, StyleLength value) {
+    pool_.store(gap_[gutter], value);
+  }
+
+  StyleSizeLength dimension(Dimension axis) pure inout {
+    return pool_.getSize(dimensions_[axis]);
+  }
+  void setDimension(Dimension axis, StyleSizeLength value) {
+    pool_.store(dimensions_[axis], value);
+  }
+
+  StyleSizeLength minDimension(Dimension axis) pure inout {
+    return pool_.getSize(minDimensions_[axis]);
+  }
+  void setMinDimension(Dimension axis, StyleSizeLength value) {
+    pool_.store(minDimensions_[axis], value);
+  }
+
+  Align alignContent() pure inout {
+    return alignContent_;
+  }
+  void setAlignContent(Align value) {
+    alignContent_ = value;
+  }
+
+  Align alignItems() pure inout {
+    return alignItems_;
+  }
+  void setAlignItems(Align value) {
+    alignItems_ = value;
+  }
+
+  Align alignSelf() pure inout {
+    return alignSelf_;
+  }
+  void setAlignSelf(Align value) {
+    alignSelf_ = value;
+  }
+
+  PositionType positionType() pure inout {
+    return positionType_;
+  }
+  void setPositionType(PositionType value) {
+    positionType_ = value;
+  }
+
+  Wrap flexWrap() pure inout {
+    return flexWrap_;
+  }
+  void setFlexWrap(Wrap value) {
+    flexWrap_ = value;
+  }
+
+  Overflow overflow() pure inout {
+    return overflow_;
+  }
+  void setOverflow(Overflow value) {
+    overflow_ = value;
+  }
+
+  Display display() pure inout {
+    return display_;
+  }
+  void setDisplay(Display value) {
+    display_ = value;
+  }
+
+  FloatOptional flex() pure inout {
+    return pool_.getNumber(flex_);
+  }
+  void setFlex(FloatOptional value) {
+    pool_.store(flex_, value);
+  }
+
+  FloatOptional flexGrow() pure inout {
+    return pool_.getNumber(flexGrow_);
+  }
+  void setFlexGrow(FloatOptional value) {
+    pool_.store(flexGrow_, value);
+  }
+
+  FloatOptional flexShrink() pure inout {
+    return pool_.getNumber(flexShrink_);
+  }
+  void setFlexShrink(FloatOptional value) {
+    pool_.store(flexShrink_, value);
+  }
+
   bool opEquals(in Style other) pure {
     return direction_ == other.direction_ &&
       flexDirection_ == other.flexDirection_ &&
