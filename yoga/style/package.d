@@ -444,6 +444,13 @@ struct Style {
       );
   }
 
+  ref Style opAssign(ref inout(Style) src) {
+    foreach (i, ref inout field; src.tupleof)
+      this.tupleof[i] = field;
+    
+    return this;
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,

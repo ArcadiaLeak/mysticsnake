@@ -3,6 +3,13 @@ struct SmallValueBuffer {
     struct Overflow {
       uint[] buffer_;
       bool[] wideElements_;
+
+      @disable this(inout(Overflow));
+
+      this(ref inout(Overflow) other) {
+        buffer_ = other.buffer_.dup;
+        wideElements_ = other.wideElements_.dup;
+      }
     }
 
     ushort count_ = 0;
@@ -11,6 +18,17 @@ struct SmallValueBuffer {
     ubyte wideElements_;
 
     Overflow* overflow_;
+  }
+
+  ref SmallValueBuffer opAssign(ref inout(SmallValueBuffer) other) {
+    count_ = other.count_;
+    buffer_ = other.buffer_;
+    wideElements_ = other.wideElements_;
+    if (other.overflow_) {
+      overflow_ = new Overflow(*other.overflow_);
+    }
+
+    return this;
   }
 
   ushort push(uint value) {

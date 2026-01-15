@@ -110,6 +110,13 @@ struct StyleValuePool {
     }
   }
 
+  ref StyleValuePool opAssign(ref inout(StyleValuePool) src) {
+    foreach (i, ref inout field; src.tupleof)
+      this.tupleof[i] = field;
+    
+    return this;
+  }
+
 private:
   void storeValue(
     ref StyleValueHandle handle,

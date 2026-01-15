@@ -19,7 +19,7 @@ class Node {
     measureFunc_ = node.measureFunc_;
     baselineFunc_ = node.baselineFunc_;
     dirtiedFunc_ = node.dirtiedFunc_;
-    style_ = node.style_;
+    style_ = __rvalue(node.style_);
     layout_ = node.layout_;
     lineIndex_ = node.lineIndex_;
     contentsChildrenCount_ = node.contentsChildrenCount_;
@@ -55,11 +55,11 @@ class Node {
     dirtiedFunc_ = dirtiedFunc;
   }
 
-  void setStyle(Style* style) {
+  void setStyle(in Style style) {
     style_ = style;
   }
 
-  void setLayout(LayoutResults* layout) {
+  void setLayout(in LayoutResults layout) {
     layout_ = layout;
   }
 
@@ -84,8 +84,8 @@ private:
   YGMeasureFunc measureFunc_ = null;
   YGBaselineFunc baselineFunc_ = null;
   YGDirtiedFunc dirtiedFunc_ = null;
-  Style* style_;
-  LayoutResults* layout_;
+  Style style_;
+  LayoutResults layout_;
   size_t lineIndex_ = 0;
   size_t contentsChildrenCount_ = 0;
   Node owner_;
