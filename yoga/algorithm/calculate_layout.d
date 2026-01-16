@@ -3,6 +3,7 @@ import std.math;
 
 import yoga.algorithm.cache;
 import yoga.algorithm.flex_direction;
+import yoga.algorithm.pixel_grid;
 import yoga.algorithm.sizing_mode;
 import yoga.enums;
 import yoga.event;
@@ -99,7 +100,7 @@ void calculateLayout(
       ownerWidth,
       ownerHeight
     );
-    // node.roundLayoutResultsToPixelGrid(0.0f, 0.0f);
+    node.roundLayoutResultsToPixelGrid(0.0, 0.0);
   }
 
   // Event::publish<Event::LayoutPassEnd>(node, {&markerData});

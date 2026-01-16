@@ -61,32 +61,41 @@ bool canUseCachedMeasurement(
     return false;
   }
 
-  const float pointScaleFactor = 1.0f;
+  const float pointScaleFactor = POINT_SCALE_FACTOR;
 
-  float effectiveWidth = roundValueToPixelGrid(
-    availableWidth,
-    pointScaleFactor,
-    false,
-    false
-  );
-  float effectiveHeight = roundValueToPixelGrid(
-    availableHeight,
-    pointScaleFactor,
-    false,
-    false
-  );
-  float effectiveLastWidth = roundValueToPixelGrid(
-    lastAvailableWidth,
-    pointScaleFactor,
-    false,
-    false
-  );
-  float effectiveLastHeight = roundValueToPixelGrid(
-    lastAvailableHeight,
-    pointScaleFactor,
-    false,
-    false
-  );
+  bool useRoundedComparison = pointScaleFactor != 0;
+  float effectiveWidth = useRoundedComparison
+    ? roundValueToPixelGrid(
+      availableWidth,
+      pointScaleFactor,
+      false,
+      false
+    )
+    : availableWidth;
+  float effectiveHeight = useRoundedComparison
+    ? roundValueToPixelGrid(
+      availableHeight,
+      pointScaleFactor,
+      false,
+      false
+    )
+    : availableHeight;
+  float effectiveLastWidth = useRoundedComparison
+    ? roundValueToPixelGrid(
+      lastAvailableWidth,
+      pointScaleFactor,
+      false,
+      false
+    )
+    : lastAvailableWidth;
+  float effectiveLastHeight = useRoundedComparison
+    ? roundValueToPixelGrid(
+      lastAvailableHeight,
+      pointScaleFactor,
+      false,
+      false
+    )
+    : lastAvailableHeight;
 
   bool hasSameWidthSpec = lastWidthMode == widthMode &&
     effectiveLastWidth.inexactEquals(effectiveWidth);

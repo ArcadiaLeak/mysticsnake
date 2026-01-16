@@ -298,6 +298,14 @@ class Node {
     );
   }
 
+  NodeType getNodeType() pure inout {
+    return nodeType_;
+  }
+
+  Node[] getChildren() {
+    return children_;
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;

@@ -1,8 +1,13 @@
 import std.math;
 
+import yoga.enums;
+import yoga.node;
 import yoga.numeric;
 
+enum float POINT_SCALE_FACTOR = 1.0f;
+
 extern (C) double fmod(double x, double y) pure;
+extern (C) double round(double x) pure;
 
 float roundValueToPixelGrid(
   double value,
@@ -36,4 +41,82 @@ float roundValueToPixelGrid(
   return scaledValue.isNaN || pointScaleFactor.isNaN
     ? float.nan
     : cast(float) (scaledValue / pointScaleFactor);
+}
+
+void roundLayoutResultsToPixelGrid(
+  Node node,
+  double absoluteLeft,
+  double absoluteTop
+) {
+  auto pointScaleFactor = POINT_SCALE_FACTOR;
+
+  double nodeLeft = node.getLayout.position(PhysicalEdge.Left);
+  double nodeTop = node.getLayout.position(PhysicalEdge.Top);
+
+  double nodeWidth = node.getLayout.dimension(Dimension.Width);
+  double nodeHeight = node.getLayout.dimension(Dimension.Height);
+
+  double absoluteNodeLeft = absoluteLeft + nodeLeft;
+  double absoluteNodeTop = absoluteTop + nodeTop;
+
+  double absoluteNodeRight = absoluteNodeLeft + nodeWidth;
+  double absoluteNodeBottom = absoluteNodeTop + nodeHeight;
+
+  if (pointScaleFactor != 0.0) {
+    bool textRounding = node.getNodeType == NodeType.Text;
+
+    node.setLayoutPosition(
+      roundValueToPixelGrid(nodeLeft, pointScaleFactor, false, textRounding),
+      PhysicalEdge.Left
+    );
+
+    node.setLayoutPosition(
+      roundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding),
+      PhysicalEdge.Top
+    );
+
+    double scaledNodeWidth = nodeWidth * pointScaleFactor;
+    bool hasFractionalWidth = !scaledNodeWidth.round
+      .inexactEquals(scaledNodeWidth);
+    
+    double scaledNodeHeight = nodeHeight * pointScaleFactor;
+    bool hasFractionalHeight = scaledNodeHeight.round
+      .inexactEquals(scaledNodeHeight);
+
+    node.getLayout.setDimension(
+      Dimension.Width,
+      roundValueToPixelGrid(
+        absoluteNodeRight,
+        pointScaleFactor,
+        (textRounding && hasFractionalWidth),
+        (textRounding && !hasFractionalWidth)
+      ) -
+      roundValueToPixelGrid(
+        absoluteNodeLeft,
+        pointScaleFactor,
+        false,
+        textRounding
+      )
+    );
+
+    node.getLayout.setDimension(
+      Dimension.Height,
+      roundValueToPixelGrid(
+        absoluteNodeBottom,
+        pointScaleFactor,
+        (textRounding && hasFractionalHeight),
+        (textRounding && !hasFractionalHeight)
+      ) -
+      roundValueToPixelGrid(
+        absoluteNodeTop,
+        pointScaleFactor,
+        false,
+        textRounding
+      )
+    );
+  }
+
+  foreach (child; node.getChildren) {
+    roundLayoutResultsToPixelGrid(child, absoluteNodeLeft, absoluteNodeTop);
+  }
 }
