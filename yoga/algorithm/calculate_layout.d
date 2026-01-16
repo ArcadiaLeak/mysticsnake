@@ -1,11 +1,13 @@
 import core.atomic;
 import std.math;
 
+import yoga.algorithm.cache;
 import yoga.algorithm.flex_direction;
 import yoga.algorithm.sizing_mode;
 import yoga.enums;
 import yoga.event;
 import yoga.node;
+import yoga.node.cached_measurement;
 import yoga.style;
 
 private shared uint gCurrentGenerationCount = 0;
@@ -111,6 +113,30 @@ bool calculateLayoutInternal(
   }
 
   CachedMeasurement* cachedResults = null;
+
+  if (node.hasMeasureFunc) {
+    float marginAxisRow = node.style
+      .computeMarginForAxis(FlexDirection.Row, ownerWidth);
+    float marginAxisColumn = node.style
+      .computeMarginForAxis(FlexDirection.Column, ownerWidth);
+
+    if (
+      canUseCachedMeasurement(
+        widthSizingMode,
+        availableWidth,
+        heightSizingMode,
+        availableHeight,
+        layout.cachedLayout.widthSizingMode,
+        layout.cachedLayout.availableWidth,
+        layout.cachedLayout.heightSizingMode,
+        layout.cachedLayout.availableHeight,
+        layout.cachedLayout.computedWidth,
+        layout.cachedLayout.computedHeight,
+        marginAxisRow,
+        marginAxisColumn
+      )
+    ) {}
+  }
 
   return false;
 }

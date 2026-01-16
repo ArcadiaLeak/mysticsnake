@@ -102,6 +102,10 @@ class Node {
     return isDirty_;
   }
 
+  bool hasMeasureFunc() pure inout {
+    return measureFunc_ !is null;
+  }
+
   YGSize measure(
     float availableWidth,
     MeasureMode widthMode,

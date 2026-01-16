@@ -21,6 +21,14 @@ bool inexactEquals(float lhs, float rhs) pure {
   return lhs.isNaN && rhs.isNaN;
 }
 
+bool inexactEquals(double lhs, double rhs) pure {
+  if (!lhs.isNaN && !rhs.isNaN) {
+    return abs(lhs - rhs) < 0.0001;
+  }
+
+  return lhs.isNaN && rhs.isNaN;
+}
+
 bool inexactEquals(float[] lhs, float[] rhs) pure {
   return equal!inexactEquals(lhs, rhs);
 }
