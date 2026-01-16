@@ -406,6 +406,37 @@ struct Style {
     return FloatOptional(value + dimensionWithFallback);
   }
 
+  float computeInlineStartMargin(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    auto result = computeMargin(axis.inlineStartEdge(direction), direction)
+      .resolve(widthSize);
+
+    return result.isNull ? 0.0f : result;
+  }
+
+  float computeInlineEndMargin(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    auto result = computeMargin(axis.inlineEndEdge(direction), direction)
+      .resolve(widthSize);
+
+    if (result.isNull) {
+      return 0.0f;
+    }
+
+    return result.isNull ? 0.0f : result;
+  }
+
+  float computeMarginForAxis(FlexDirection axis, float widthSize) pure inout {
+    return computeInlineStartMargin(axis, Direction.LTR, widthSize) +
+      computeInlineEndMargin(axis, Direction.LTR, widthSize);
+  }
+
   bool opEquals(in Style other) pure {
     return direction_ == other.direction_ &&
       flexDirection_ == other.flexDirection_ &&

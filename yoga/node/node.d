@@ -2,6 +2,7 @@ import std.logger.core;
 import std.math;
 import std.variant;
 
+import yoga.algorithm.flex_direction;
 import yoga.enums;
 import yoga.node.layout_results;
 import yoga.numeric;
@@ -119,8 +120,20 @@ class Node {
     return size;
   }
 
+  ref inout(LayoutResults) getLayout() pure inout {
+    return layout_;
+  }
+
   float baseline(float width, float height) pure inout {
     return baselineFunc_(this, width, height);
+  }
+
+  float dimensionWithMargin(
+    const FlexDirection axis,
+    const float widthSize
+  ) pure {
+    return getLayout().measuredDimension(dimension(axis)) +
+      style_.computeMarginForAxis(axis, widthSize);
   }
 
 private:

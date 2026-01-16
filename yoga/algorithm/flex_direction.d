@@ -86,7 +86,7 @@ PhysicalEdge inlineEndEdge(
   return PhysicalEdge.Bottom;
 }
 
-Dimension dimension(FlexDirection flexDirection) {
+Dimension dimension(FlexDirection flexDirection) pure {
   final switch (flexDirection) {
     case FlexDirection.Column:
       return Dimension.Height;
