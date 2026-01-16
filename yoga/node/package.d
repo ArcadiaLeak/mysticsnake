@@ -4,9 +4,10 @@ import std.traits;
 
 import yoga.algorithm.flex_direction;
 import yoga.enums;
-import yoga.node.layout_results;
 import yoga.numeric;
 import yoga.style;
+
+public import yoga.node.layout_results;
 
 alias YGMeasureFunc = YGSize function(
   const Node, float, MeasureMode, float, MeasureMode
@@ -20,6 +21,8 @@ struct YGSize {
 }
 
 class Node {
+  this() {}
+
   this(Node node) {
     hasNewLayout_ = node.hasNewLayout_;
     isReferenceBaseline_ = node.isReferenceBaseline_;
@@ -93,6 +96,10 @@ class Node {
 
   void setOwner(Node owner) {
     owner_ = owner;
+  }
+
+  bool isDirty() pure inout {
+    return isDirty_;
   }
 
   YGSize measure(
@@ -219,4 +226,13 @@ private:
     StyleSizeLength.undefined(), 
     StyleSizeLength.undefined()
   ];
+}
+
+unittest {
+  auto node = new Node;
+  auto ref layout = node.getLayout();
+  auto prev = layout.nextCachedMeasurementsIndex;
+  layout.nextCachedMeasurementsIndex = 777;
+  assert(node.getLayout().nextCachedMeasurementsIndex == 777);
+  layout.nextCachedMeasurementsIndex = prev;
 }

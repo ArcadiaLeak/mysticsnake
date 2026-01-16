@@ -11,7 +11,6 @@ struct LayoutResults {
   FloatOptional computedFlexBasis;
 
   uint generationCount;
-  uint configVersion;
   Direction lastOwnerDirection = Direction.Inherit;
 
   uint nextCachedMeasurementsIndex;
@@ -100,7 +99,6 @@ struct LayoutResults {
       direction() == layout.direction() &&
       hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
-      configVersion == layout.configVersion &&
       nextCachedMeasurementsIndex == layout.nextCachedMeasurementsIndex &&
       cachedLayout == layout.cachedLayout &&
       computedFlexBasis == layout.computedFlexBasis;
