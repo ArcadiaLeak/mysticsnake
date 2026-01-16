@@ -2,7 +2,8 @@ import std.logger.core;
 import std.math;
 import std.traits;
 
-import yoga.algorithm.flex_direction;
+import flexDirection = yoga.algorithm.flex_direction;
+
 import yoga.enums;
 import yoga.numeric;
 import yoga.style;
@@ -147,7 +148,7 @@ class Node {
     const FlexDirection axis,
     const float widthSize
   ) pure {
-    return getLayout().measuredDimension(dimension(axis)) +
+    return getLayout().measuredDimension(flexDirection.dimension(axis)) +
       style_.computeMarginForAxis(axis, widthSize);
   }
 
@@ -208,6 +209,20 @@ class Node {
 
     return FloatOptional(value + (dimensionPaddingAndBorder.isNull
       ? FloatOptional(0.0) : dimensionPaddingAndBorder));
+  }
+
+  void setPosition(
+    Direction direction,
+    float ownerWidth,
+    float ownerHeight
+  ) {
+    Direction directionRespectingRoot = owner_ is null
+      ? Direction.LTR
+      : direction;
+    FlexDirection mainAxis = flexDirection.resolveDirection(
+      style_.flexDirection,
+      directionRespectingRoot
+    );
   }
 
 private:

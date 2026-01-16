@@ -8,6 +8,7 @@ import yoga.enums;
 import yoga.event;
 import yoga.node;
 import yoga.node.cached_measurement;
+import yoga.numeric;
 import yoga.style;
 
 private shared uint gCurrentGenerationCount = 0;
@@ -77,6 +78,31 @@ void calculateLayout(
       ? SizingMode.MaxContent
       : SizingMode.StretchFit;
   }
+  if (
+    node.calculateLayoutInternal(
+      width,
+      height,
+      ownerDirection,
+      widthSizingMode,
+      heightSizingMode,
+      ownerWidth,
+      ownerHeight,
+      true,
+      LayoutPassReason.kInitial,
+      markerData,
+      0,
+      gCurrentGenerationCount.atomicLoad!(MemoryOrder.raw)
+    )
+  ) {
+    node.setPosition(
+      node.getLayout().direction,
+      ownerWidth,
+      ownerHeight
+    );
+    // node.roundLayoutResultsToPixelGrid(0.0f, 0.0f);
+  }
+
+  // Event::publish<Event::LayoutPassEnd>(node, {&markerData});
 }
 
 bool calculateLayoutInternal(
@@ -135,8 +161,91 @@ bool calculateLayoutInternal(
         marginAxisRow,
         marginAxisColumn
       )
-    ) {}
+    ) {
+      cachedResults = &layout.cachedLayout;
+    } else {
+      for (size_t i = 0; i < layout.nextCachedMeasurementsIndex; i++) {
+        if (
+          canUseCachedMeasurement(
+            widthSizingMode,
+            availableWidth,
+            heightSizingMode,
+            availableHeight,
+            layout.cachedMeasurements[i].widthSizingMode,
+            layout.cachedMeasurements[i].availableWidth,
+            layout.cachedMeasurements[i].heightSizingMode,
+            layout.cachedMeasurements[i].availableHeight,
+            layout.cachedMeasurements[i].computedWidth,
+            layout.cachedMeasurements[i].computedHeight,
+            marginAxisRow,
+            marginAxisColumn
+          )
+        ) {
+          cachedResults = &layout.cachedMeasurements[i];
+          break;
+        }
+      }
+    }
+  } else if (performLayout) {
+    if (
+      layout.cachedLayout.availableWidth.inexactEquals(availableWidth) &&
+      layout.cachedLayout.availableHeight.inexactEquals(availableHeight) &&
+      layout.cachedLayout.widthSizingMode == widthSizingMode &&
+      layout.cachedLayout.heightSizingMode == heightSizingMode
+    ) {
+      cachedResults = &layout.cachedLayout;
+    }
+  } else {
+    for (uint i = 0; i < layout.nextCachedMeasurementsIndex; i++) {
+      if (
+        layout.cachedMeasurements[i].availableWidth
+          .inexactEquals(availableWidth) &&
+        layout.cachedMeasurements[i].availableHeight
+          .inexactEquals(availableHeight) &&
+        layout.cachedMeasurements[i].widthSizingMode ==
+          widthSizingMode &&
+        layout.cachedMeasurements[i].heightSizingMode ==
+          heightSizingMode
+      ) {
+        cachedResults = &layout.cachedMeasurements[i];
+        break;
+      }
+    }
+  }
+
+  if (!needToVisitNode && cachedResults !is null) {
+    layout.setMeasuredDimension(
+      Dimension.Width,
+      cachedResults.computedWidth
+    );
+    layout.setMeasuredDimension(
+      Dimension.Height,
+      cachedResults.computedHeight
+    );
+
+    (performLayout ? layoutMarkerData.cachedLayouts
+      : layoutMarkerData.cachedMeasures) += 1;
+  } else {
+    
   }
 
   return false;
+}
+
+private void calculateLayoutImpl(
+  Node node,
+  float availableWidth,
+  float availableHeight,
+  Direction ownerDirection,
+  SizingMode widthSizingMode,
+  SizingMode heightSizingMode,
+  float ownerWidth,
+  float ownerHeight,
+  bool performLayout,
+  LayoutPassReason,
+  ref LayoutData layoutMarkerData,
+  uint depth,
+  uint generationCount
+) {
+
 }
