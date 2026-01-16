@@ -211,6 +211,30 @@ class Node {
       ? FloatOptional(0.0) : dimensionPaddingAndBorder));
   }
 
+  float relativePosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize
+  ) pure {
+    if (style_.positionType() == PositionType.Static) {
+      return 0;
+    }
+    if (
+      style_.isInlineStartPositionDefined(axis, direction) &&
+      !style_.isInlineStartPositionAuto(axis, direction)
+    ) {
+      return style_.computeInlineStartPosition(
+        axis, direction, axisSize
+      );
+    }
+
+    return -1 * style_.computeInlineEndPosition(axis, direction, axisSize);
+  }
+
+  void setLayoutPosition(float position, PhysicalEdge edge) {
+    layout_.setPosition(edge, position);
+  }
+
   void setPosition(
     Direction direction,
     float ownerWidth,
@@ -222,6 +246,55 @@ class Node {
     FlexDirection mainAxis = flexDirection.resolveDirection(
       style_.flexDirection,
       directionRespectingRoot
+    );
+    FlexDirection crossAxis = flexDirection.resolveCrossDirection(
+      mainAxis,
+      directionRespectingRoot
+    );
+
+    float relativePositionMain = relativePosition(
+      mainAxis,
+      directionRespectingRoot,
+      flexDirection.isRow(mainAxis)
+        ? ownerWidth
+        : ownerHeight
+    );
+    float relativePositionCross = relativePosition(
+      crossAxis,
+      directionRespectingRoot,
+      flexDirection.isRow(mainAxis)
+        ? ownerHeight
+        : ownerWidth
+    );
+
+    auto mainAxisLeadingEdge = flexDirection
+      .inlineStartEdge(mainAxis, direction);
+    auto mainAxisTrailingEdge = flexDirection
+      .inlineEndEdge(mainAxis, direction);
+    auto crossAxisLeadingEdge = flexDirection
+      .inlineStartEdge(crossAxis, direction);
+    auto crossAxisTrailingEdge = flexDirection
+      .inlineEndEdge(crossAxis, direction);
+
+    setLayoutPosition(
+      style_.computeInlineStartMargin(mainAxis, direction, ownerWidth) +
+        relativePositionMain,
+      mainAxisLeadingEdge
+    );
+    setLayoutPosition(
+      style_.computeInlineEndMargin(mainAxis, direction, ownerWidth) +
+        relativePositionMain,
+      mainAxisTrailingEdge
+    );
+    setLayoutPosition(
+      style_.computeInlineStartMargin(crossAxis, direction, ownerWidth) +
+        relativePositionCross,
+      crossAxisLeadingEdge
+    );
+    setLayoutPosition(
+      style_.computeInlineEndMargin(crossAxis, direction, ownerWidth) +
+        relativePositionCross,
+      crossAxisTrailingEdge
     );
   }
 

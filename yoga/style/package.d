@@ -476,6 +476,40 @@ struct Style {
     return this;
   }
 
+  bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
+    pure inout {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+      .isDefined();
+  }
+
+  bool isInlineStartPositionAuto(FlexDirection axis, Direction direction)
+    pure inout {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+      .isAuto();
+  }
+
+  float computeInlineStartPosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize
+  ) pure inout {
+    auto result = computePosition(inlineStartEdge(axis, direction), direction)
+      .resolve(axisSize);
+
+    return result.isNull ? 0.0f : result.get;
+  }
+
+  float computeInlineEndPosition(
+    FlexDirection axis,
+    Direction direction,
+    float axisSize
+  ) pure inout {
+    auto result = computePosition(inlineEndEdge(axis, direction), direction)
+      .resolve(axisSize);
+
+    return result.isNull ? 0.0f : result.get;
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,
@@ -629,6 +663,22 @@ private:
         return computeRightEdge(border_, direction);
       case PhysicalEdge.Bottom:
         return computeBottomEdge(border_);
+    }
+  }
+
+  StyleLength computePosition(
+    PhysicalEdge edge,
+    Direction direction
+  ) pure inout {
+    final switch (edge) {
+      case PhysicalEdge.Left:
+        return computeLeftEdge(position_, direction);
+      case PhysicalEdge.Top:
+        return computeTopEdge(position_);
+      case PhysicalEdge.Right:
+        return computeRightEdge(position_, direction);
+      case PhysicalEdge.Bottom:
+        return computeBottomEdge(position_);
     }
   }
 
