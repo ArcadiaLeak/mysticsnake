@@ -20,7 +20,7 @@ void calculateLayout(
   float ownerHeight,
   Direction ownerDirection
 ) {
-  Event.publish(node, Event.Type.LayoutPassStart);
+  Event.publish!(Event.Type.LayoutPassStart)(node);
   LayoutData markerData;
 
   gCurrentGenerationCount.atomicFetchAdd!(MemoryOrder.raw)(1);
@@ -103,7 +103,10 @@ void calculateLayout(
     node.roundLayoutResultsToPixelGrid(0.0, 0.0);
   }
 
-  // Event::publish<Event::LayoutPassEnd>(node, {&markerData});
+  Event.publish!(Event.Type.LayoutPassEnd)(
+    node,
+    Event.TypedData!(Event.Type.LayoutPassEnd)(&markerData)
+  );
 }
 
 bool calculateLayoutInternal(

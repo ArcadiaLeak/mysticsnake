@@ -67,26 +67,48 @@ struct Event {
     NodeBaselineEnd,
   }
 
-  alias Subscriber = void delegate(const Node, Type);
+  alias Subscriber = void delegate(const Node, Type, Data);
+
+  const struct Data {
+    private void* data_;
+
+    this(Type E)(in TypedData!E data) {
+      data_ = &data;
+    }
+  }
 
   static void reset() {
     push(null);
+  }
+
+  const struct TypedData(Type E) {}
+
+  const struct TypedData(Type E : Type.LayoutPassEnd) {
+    LayoutData* layoutData;
   }
 
   static void subscribe(Subscriber subscriber) {
     push(new SubscriberNode(subscriber));
   }
 
-  static void publish(
+  static void publish(Type E)(
+    Node node,
+    in TypedData!E eventData = TypedData!E()
+  ) {
+    publish(node, E, Data().__ctor!E(eventData));
+  }
+
+  private static void publish(
     const Node node,
-    Type eventType
+    Type eventType,
+    in Data eventData
   ) {
     for (
       auto subscriber = subscribers.atomicLoad!(MemoryOrder.raw);
       subscriber != null;
       subscriber = subscriber.next
     ) {
-      subscriber.subscriber(node, eventType);
+      subscriber.subscriber(node, eventType, eventData);
     }
   }
 }
