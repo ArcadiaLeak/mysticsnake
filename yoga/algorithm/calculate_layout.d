@@ -34,5 +34,6 @@ void calculateLayout(
       FlexDirection.Row,
       ownerWidth
     );
+    widthSizingMode = SizingMode.StretchFit;
   }
 }
