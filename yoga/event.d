@@ -21,3 +21,25 @@ struct LayoutData {
   int[EnumMembers!LayoutPassReason.length]
     measureCallbackReasonsCount;
 };
+
+struct Event {
+  enum Type {
+    NodeAllocation,
+    NodeDeallocation,
+    NodeLayout,
+    LayoutPassStart,
+    LayoutPassEnd,
+    MeasureCallbackStart,
+    MeasureCallbackEnd,
+    NodeBaselineStart,
+    NodeBaselineEnd,
+  }
+
+  struct TypedData(Type T : Type.NodeAllocation) {
+    const Node config;
+  }
+
+  struct TypedData(Type T : Type.NodeDeallocation) {
+    const Node config;
+  }
+}
