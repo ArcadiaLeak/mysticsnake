@@ -69,11 +69,24 @@ struct Event {
 
   alias Subscriber = void delegate(const Node, Type);
 
-  void reset() {
+  static void reset() {
     push(null);
   }
 
-  void subscribe(Subscriber subscriber) {
+  static void subscribe(Subscriber subscriber) {
     push(new SubscriberNode(subscriber));
+  }
+
+  static void publish(
+    const Node node,
+    Type eventType
+  ) {
+    for (
+      auto subscriber = subscribers.atomicLoad!(MemoryOrder.raw);
+      subscriber != null;
+      subscriber = subscriber.next
+    ) {
+      subscriber.subscriber(node, eventType);
+    }
   }
 }

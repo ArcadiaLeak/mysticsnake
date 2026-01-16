@@ -370,11 +370,8 @@ struct Style {
       computePaddingAndBorderForDimension(direction, axis, ownerWidth)
     );
 
-    FloatOptional dimensionWithFallback = dimensionPaddingAndBorder.isNull()
-      ? FloatOptional(0)
-      : dimensionPaddingAndBorder;
-
-    return FloatOptional(value + dimensionWithFallback);
+    return FloatOptional(value + dimensionPaddingAndBorder.isNull
+      ? FloatOptional(0.0) : dimensionPaddingAndBorder);
   }
 
   StyleSizeLength maxDimension(Dimension axis) pure inout {
@@ -399,11 +396,8 @@ struct Style {
       computePaddingAndBorderForDimension(direction, axis, ownerWidth)
     );
 
-    FloatOptional dimensionWithFallback = dimensionPaddingAndBorder.isNull()
-      ? FloatOptional(0)
-      : dimensionPaddingAndBorder;
-
-    return FloatOptional(value + dimensionWithFallback);
+    return FloatOptional(value + dimensionPaddingAndBorder.isNull
+      ? FloatOptional(0.0) : dimensionPaddingAndBorder);
   }
 
   float computeInlineStartMargin(

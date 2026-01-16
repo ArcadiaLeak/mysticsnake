@@ -1,5 +1,6 @@
 import std.logger.core;
 import std.math;
+import std.traits;
 
 import yoga.algorithm.flex_direction;
 import yoga.enums;
@@ -66,8 +67,16 @@ class Node {
     dirtiedFunc_ = dirtiedFunc;
   }
 
+  ref inout(Style) style() pure inout {
+    return style_;
+  }
+
   void setStyle(in Style style) {
     style_ = style;
+  }
+
+  ref inout(LayoutResults) getLayout() pure inout {
+    return layout_;
   }
 
   void setLayout(in LayoutResults layout) {
@@ -119,10 +128,6 @@ class Node {
     return size;
   }
 
-  ref inout(LayoutResults) getLayout() pure inout {
-    return layout_;
-  }
-
   float baseline(float width, float height) pure inout {
     return baselineFunc_(this, width, height);
   }
@@ -133,6 +138,65 @@ class Node {
   ) pure {
     return getLayout().measuredDimension(dimension(axis)) +
       style_.computeMarginForAxis(axis, widthSize);
+  }
+
+  StyleSizeLength getProcessedDimension(Dimension dimension) pure inout {
+    return processedDimensions_[dimension];
+  }
+
+  void processDimensions() {
+    foreach (dim; EnumMembers!Dimension) {
+      if (
+        style_.maxDimension(dim).isDefined &&
+        inexactEquals(
+          style_.maxDimension(dim),
+          style_.minDimension(dim)
+        )
+      ) {
+        processedDimensions_[dim] = style_.maxDimension(dim);
+      } else {
+        processedDimensions_[dim] = style_.dimension(dim);
+      }
+    }
+  }
+
+  Direction resolveDirection(Direction ownerDirection) {
+    if (style_.direction == Direction.Inherit) {
+      return ownerDirection != Direction.Inherit
+        ? ownerDirection
+        : Direction.LTR;
+    }
+
+    return style_.direction();
+  }
+
+  bool hasDefiniteLength(Dimension dimension, float ownerSize) {
+    auto usedValue = getProcessedDimension(dimension).resolve(ownerSize);
+    return !usedValue.isNull && usedValue.get >= 0.0f;
+  }
+
+  FloatOptional getResolvedDimension(
+    Direction direction,
+    Dimension dimension,
+    float referenceLength,
+    float ownerWidth
+  ) pure inout {
+    FloatOptional value = getProcessedDimension(dimension)
+      .resolve(referenceLength);
+    if (style_.boxSizing == BoxSizing.BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional(
+      style_.computePaddingAndBorderForDimension(
+        direction,
+        dimension,
+        ownerWidth
+      )
+    );
+
+    return FloatOptional(value + (dimensionPaddingAndBorder.isNull
+      ? FloatOptional(0.0) : dimensionPaddingAndBorder));
   }
 
 private:
