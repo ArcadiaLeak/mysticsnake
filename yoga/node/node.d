@@ -1,6 +1,5 @@
 import std.logger.core;
 import std.math;
-import std.variant;
 
 import yoga.algorithm.flex_direction;
 import yoga.enums;
@@ -43,7 +42,7 @@ class Node {
     }
   }
 
-  void setContext(Variant context) {
+  void setContext(void* context) {
     context_ = context;
   }
 
@@ -142,7 +141,7 @@ private:
   bool isDirty_ = true;
   bool alwaysFormsContainingBlock_ = false;
   NodeType nodeType_ = NodeType.Default;
-  Variant context_;
+  void* context_;
   YGMeasureFunc measureFunc_ = null;
   YGBaselineFunc baselineFunc_ = null;
   YGDirtiedFunc dirtiedFunc_ = null;

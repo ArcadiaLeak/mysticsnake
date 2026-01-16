@@ -3,23 +3,6 @@ import glslang;
 import std.stdio;
 import std.string;
 
-version (LDC) {
-  enum SDL_GPU_BUFFERUSAGE_VERTEX = 1u << 0; /**< Buffer is a vertex buffer. */
-  enum SDL_GPU_BUFFERUSAGE_INDEX = 1u << 1; /**< Buffer is an index buffer. */
-  enum SDL_GPU_BUFFERUSAGE_INDIRECT = 1u << 2; /**< Buffer is an indirect buffer. */
-  enum SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ = 1u << 3; /**< Buffer supports storage reads in graphics stages. */
-  enum SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_READ = 1u << 4; /**< Buffer supports storage reads in the compute stage. */
-  enum SDL_GPU_BUFFERUSAGE_COMPUTE_STORAGE_WRITE = 1u << 5; /**< Buffer supports storage writes in the compute stage. */
-
-  enum SDL_GPU_SHADERFORMAT_INVALID = 0;
-  enum SDL_GPU_SHADERFORMAT_PRIVATE = 1u << 0; /**< Shaders for NDA'd platforms. */
-  enum SDL_GPU_SHADERFORMAT_SPIRV = 1u << 1; /**< SPIR-V shaders for Vulkan. */
-  enum SDL_GPU_SHADERFORMAT_DXBC = 1u << 2; /**< DXBC SM5_1 shaders for D3D12. */
-  enum SDL_GPU_SHADERFORMAT_DXIL = 1u << 3; /**< DXIL SM6_0 shaders for D3D12. */
-  enum SDL_GPU_SHADERFORMAT_MSL = 1u << 4; /**< MSL shaders for Metal. */
-  enum SDL_GPU_SHADERFORMAT_METALLIB = 1u << 5; /**< Precompiled metallib shaders for Metal. */
-}
-
 enum ulong SDL_WINDOW_FULLSCREEN = 0x0000000000000001;    /**< window is in fullscreen mode */
 enum ulong SDL_WINDOW_OPENGL = 0x0000000000000002;    /**< window usable with OpenGL context */
 enum ulong SDL_WINDOW_OCCLUDED = 0x0000000000000004;    /**< window is occluded */
@@ -47,16 +30,16 @@ enum ulong SDL_WINDOW_METAL = 0x0000000020000000;    /**< window usable for Meta
 enum ulong SDL_WINDOW_TRANSPARENT = 0x0000000040000000;    /**< window with transparent buffer */
 enum ulong SDL_WINDOW_NOT_FOCUSABLE = 0x0000000080000000;    /**< window should not be focusable */
 
-static bool s_initialized = false;
+private bool s_initialized = false;
 
-static void glslangInitialize() {
+void glslangInitialize() {
   if (!s_initialized) {
     glslang_initialize_process();
     s_initialized = true;
   }
 }
 
-static void glslangFinalize() {
+void glslangFinalize() {
   if (s_initialized) {
     glslang_finalize_process();
     s_initialized = false;
