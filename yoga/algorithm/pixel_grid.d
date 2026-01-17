@@ -4,8 +4,6 @@ import yoga.enums;
 import yoga.node;
 import yoga.numeric;
 
-enum float POINT_SCALE_FACTOR = 1.0f;
-
 extern (C) double fmod(double x, double y) pure;
 extern (C) double round(double x) pure;
 
@@ -48,7 +46,7 @@ void roundLayoutResultsToPixelGrid(
   double absoluteLeft,
   double absoluteTop
 ) {
-  auto pointScaleFactor = POINT_SCALE_FACTOR;
+  auto pointScaleFactor = node.getConfig.getPointScaleFactor;
 
   double nodeLeft = node.getLayout.position(PhysicalEdge.Left);
   double nodeTop = node.getLayout.position(PhysicalEdge.Top);

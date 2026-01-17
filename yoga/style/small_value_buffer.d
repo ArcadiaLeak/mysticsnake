@@ -6,7 +6,7 @@ struct SmallValueBuffer {
 
       @disable this(inout(Overflow));
 
-      this(ref inout(Overflow) other) {
+      this(ref inout(Overflow) other) pure {
         buffer_ = other.buffer_.dup;
         wideElements_ = other.wideElements_.dup;
       }
@@ -20,7 +20,11 @@ struct SmallValueBuffer {
     Overflow* overflow_;
   }
 
-  ref SmallValueBuffer opAssign(ref inout(SmallValueBuffer) other) {
+  this(ref inout(SmallValueBuffer) other) pure {
+    this = other;
+  }
+
+  ref SmallValueBuffer opAssign(ref inout(SmallValueBuffer) other) pure {
     count_ = other.count_;
     buffer_ = other.buffer_;
     wideElements_ = other.wideElements_;

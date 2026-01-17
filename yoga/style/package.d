@@ -469,7 +469,11 @@ struct Style {
       );
   }
 
-  ref Style opAssign(ref inout(Style) src) {
+  this(ref inout(Style) src) pure {
+    this = src;
+  }
+
+  ref Style opAssign(ref inout(Style) src) pure {
     foreach (i, ref inout field; src.tupleof)
       this.tupleof[i] = field;
     
@@ -530,6 +534,24 @@ struct Style {
         .resolve(0.0f),
       0.0f
     );
+  }
+
+  float computeInlineStartPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return computeInlineStartPadding(axis, direction, widthSize) +
+      computeInlineStartBorder(axis, direction);
+  }
+
+  float computeInlineEndPaddingAndBorder(
+    FlexDirection axis,
+    Direction direction,
+    float widthSize
+  ) pure inout {
+    return computeInlineEndPadding(axis, direction, widthSize) +
+      computeInlineEndBorder(axis, direction);
   }
 
 private:

@@ -1,6 +1,8 @@
 import core.atomic;
 import std.traits;
 
+import yoga.config;
+import yoga.enums;
 import yoga.node;
 
 enum LayoutType : int {
@@ -96,6 +98,24 @@ struct Event {
 
   const struct TypedData(Type E : Type.NodeLayout) {
     LayoutType layoutType;
+  }
+
+  const struct TypedData(Type E : Type.MeasureCallbackEnd) {
+    float width;
+    MeasureMode widthMeasureMode;
+    float height;
+    MeasureMode heightMeasureMode;
+    float measuredWidth;
+    float measuredHeight;
+    const LayoutPassReason reason;
+  }
+
+  const struct TypedData(Type E : Type.NodeAllocation) {
+    const(Config*) config;
+  }
+
+  const struct TypedData(Type E : Type.NodeDeallocation) {
+    const(Config*) config;
   }
 
   static void subscribe(Subscriber subscriber) {

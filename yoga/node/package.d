@@ -1,9 +1,11 @@
 import std.logger.core;
 import std.math;
 import std.traits;
+import std.typecons;
 
 import flexDirection = yoga.algorithm.flex_direction;
 
+import yoga.config;
 import yoga.enums;
 import yoga.numeric;
 import yoga.style;
@@ -22,33 +24,31 @@ struct YGSize {
 }
 
 class Node {
-  this() {}
+  this() {
+    config_ = new Config;
+  }
 
-  this(Node node) {
+  this(const Node node) {
     hasNewLayout_ = node.hasNewLayout_;
     isReferenceBaseline_ = node.isReferenceBaseline_;
     isDirty_ = node.isDirty_;
     alwaysFormsContainingBlock_ = node.alwaysFormsContainingBlock_;
     nodeType_ = node.nodeType_;
-    context_ = node.context_;
     measureFunc_ = node.measureFunc_;
     baselineFunc_ = node.baselineFunc_;
     dirtiedFunc_ = node.dirtiedFunc_;
-    style_ = __rvalue(node.style_);
+    style_ = node.style_;
     layout_ = node.layout_;
     lineIndex_ = node.lineIndex_;
     contentsChildrenCount_ = node.contentsChildrenCount_;
     owner_ = node.owner_;
-    children_ = node.children_;
     processedDimensions_ = node.processedDimensions_;
 
-    foreach (c; children_) {
-      c.setOwner = this;
+    foreach (c; node.children_) {
+      Node child = new Node(c);
+      child.setOwner = this;
+      children_ ~= child;
     }
-  }
-
-  void setContext(void* context) {
-    context_ = context;
   }
 
   void setAlwaysFormsContainingBlock(bool alwaysFormsContainingBlock) {
@@ -95,7 +95,7 @@ class Node {
     isReferenceBaseline_ = isReferenceBaseline;
   }
 
-  void setOwner(Node owner) {
+  void setOwner(const Node owner) {
     owner_ = owner;
   }
 
@@ -344,13 +344,35 @@ class Node {
     layout_.setMeasuredDimension(dimension, measuredDimension);
   }
 
+  bool hasContentsChildren() pure inout {
+    return contentsChildrenCount_ != 0;
+  }
+
+  void cloneContentsChildrenIfNeeded() {
+    foreach(i, child; children_) {
+      if (
+        child.style.display == Display.Contents &&
+        child.getOwner !is this
+      ) {
+        
+      }
+    }
+  }
+
+  const(Config*) getConfig() pure const {
+    return config_;
+  }
+
+  const(Node) getOwner() {
+    return owner_;
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;
   bool isDirty_ = true;
   bool alwaysFormsContainingBlock_ = false;
   NodeType nodeType_ = NodeType.Default;
-  void* context_;
   YGMeasureFunc measureFunc_ = null;
   YGBaselineFunc baselineFunc_ = null;
   YGDirtiedFunc dirtiedFunc_ = null;
@@ -358,8 +380,9 @@ private:
   LayoutResults layout_;
   size_t lineIndex_ = 0;
   size_t contentsChildrenCount_ = 0;
-  Node owner_;
+  Rebindable!(const Node) owner_;
   Node[] children_;
+  Config* config_;
   StyleSizeLength[2] processedDimensions_ = [
     StyleSizeLength.undefined(), 
     StyleSizeLength.undefined()

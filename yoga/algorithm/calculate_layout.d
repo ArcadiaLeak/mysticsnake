@@ -1,4 +1,5 @@
 import core.atomic;
+import core.builtins;
 import std.algorithm;
 import std.math;
 
@@ -165,7 +166,8 @@ bool calculateLayoutInternal(
         layout.cachedLayout.computedWidth,
         layout.cachedLayout.computedHeight,
         marginAxisRow,
-        marginAxisColumn
+        marginAxisColumn,
+        node.getConfig
       )
     ) {
       cachedResults = &layout.cachedLayout;
@@ -184,7 +186,8 @@ bool calculateLayoutInternal(
             layout.cachedMeasurements[i].computedWidth,
             layout.cachedMeasurements[i].computedHeight,
             marginAxisRow,
-            marginAxisColumn
+            marginAxisColumn,
+            node.getConfig
           )
         ) {
           cachedResults = &layout.cachedMeasurements[i];
@@ -356,6 +359,13 @@ do {
     layout.border(PhysicalEdge.Top) +
     layout.border(PhysicalEdge.Bottom);
 
+  float innerWidth = availableWidth.isNaN
+    ? availableWidth
+    : 0.0f.maxOrDefined(availableWidth - paddingAndBorderAxisRow);
+  float innerHeight = availableHeight.isNaN
+    ? availableHeight
+    : 0.0f.maxOrDefined(availableHeight - paddingAndBorderAxisColumn);
+
   if (
     widthSizingMode == SizingMode.StretchFit &&
     heightSizingMode == SizingMode.StretchFit
@@ -370,6 +380,71 @@ do {
       ),
       Dimension.Width
     );
+    node.setLayoutMeasuredDimension(
+      node.boundAxis(
+        FlexDirection.Column,
+        direction,
+        availableHeight,
+        ownerHeight,
+        ownerWidth
+      ),
+      Dimension.Height
+    );
+  } else {
+    Event.publish!(Event.Type.MeasureCallbackStart)(node);
+
+    const YGSize measuredSize = node.measure(
+      innerWidth,
+      widthSizingMode.measureMode,
+      innerHeight,
+      heightSizingMode.measureMode,
+    );
+
+    layoutMarkerData.measureCallbacks += 1;
+    layoutMarkerData.measureCallbackReasonsCount[reason] += 1;
+    
+    Event.publish!(Event.Type.MeasureCallbackEnd)(
+      node,
+      Event.TypedData!(Event.Type.MeasureCallbackEnd)(
+        innerWidth,
+        widthSizingMode.measureMode,
+        innerHeight,
+        heightSizingMode.measureMode,
+        measuredSize.width,
+        measuredSize.height,
+        reason
+      )
+    );
+
+    node.setLayoutMeasuredDimension(
+      boundAxis(
+        node,
+        FlexDirection.Row,
+        direction,
+        (widthSizingMode == SizingMode.MaxContent ||
+          widthSizingMode == SizingMode.FitContent)
+            ? measuredSize.width + paddingAndBorderAxisRow
+            : availableWidth,
+        ownerWidth,
+        ownerWidth
+      ),
+      Dimension.Width
+    );
+
+    node.setLayoutMeasuredDimension(
+      boundAxis(
+        node,
+        FlexDirection.Column,
+        direction,
+        (heightSizingMode == SizingMode.MaxContent ||
+          heightSizingMode == SizingMode.FitContent)
+            ? measuredSize.height + paddingAndBorderAxisColumn
+            : availableHeight,
+        ownerHeight,
+        ownerWidth
+      ),
+      Dimension.Height
+    );
   }
 }
 
@@ -383,7 +458,7 @@ private void calculateLayoutImpl(
   float ownerWidth,
   float ownerHeight,
   bool performLayout,
-  LayoutPassReason,
+  LayoutPassReason reason,
   ref LayoutData layoutMarkerData,
   uint depth,
   uint generationCount
@@ -487,5 +562,27 @@ do {
     PhysicalEdge.Bottom
   );
 
+  if (node.hasMeasureFunc) {
+    node.measureNodeWithMeasureFunc(
+      direction,
+      availableWidth - marginAxisRow,
+      availableHeight - marginAxisColumn,
+      widthSizingMode,
+      heightSizingMode,
+      ownerWidth,
+      ownerHeight,
+      layoutMarkerData,
+      reason
+    );
 
+    cleanupContentsNodesRecursively(node);
+    return;
+  }
+}
+
+private void cleanupContentsNodesRecursively(Node node) {
+  if (node.hasContentsChildren.unlikely) {
+    node.cloneContentsChildrenIfNeeded();
+
+  }
 }

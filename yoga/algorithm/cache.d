@@ -2,6 +2,7 @@ import std.math;
 
 import yoga.algorithm.sizing_mode;
 import yoga.algorithm.pixel_grid;
+import yoga.config;
 import yoga.numeric;
 
 private:
@@ -52,7 +53,8 @@ bool canUseCachedMeasurement(
   float lastComputedWidth,
   float lastComputedHeight,
   float marginRow,
-  float marginColumn
+  float marginColumn,
+  const(Config*) config
 ) pure {
   if (
     (!lastComputedHeight.isNaN && lastComputedHeight < 0) ||
@@ -61,9 +63,9 @@ bool canUseCachedMeasurement(
     return false;
   }
 
-  const float pointScaleFactor = POINT_SCALE_FACTOR;
+  float pointScaleFactor = config.getPointScaleFactor;
 
-  bool useRoundedComparison = pointScaleFactor != 0;
+  bool useRoundedComparison = config!= null && pointScaleFactor != 0;
   float effectiveWidth = useRoundedComparison
     ? roundValueToPixelGrid(
       availableWidth,
