@@ -580,6 +580,108 @@ do {
   }
 
   auto childCount = node.getLayoutChildCount();
+  if (childCount == 0) {
+    node.measureNodeWithoutChildren(
+      direction,
+      availableWidth - marginAxisRow,
+      availableHeight - marginAxisColumn,
+      widthSizingMode,
+      heightSizingMode,
+      ownerWidth,
+      ownerHeight
+    );
+
+    cleanupContentsNodesRecursively(node);
+    return;
+  }
+
+  if (
+    !performLayout &&
+    node.measureNodeWithFixedSize(
+      direction,
+      availableWidth - marginAxisRow,
+      availableHeight - marginAxisColumn,
+      widthSizingMode,
+      heightSizingMode,
+      ownerWidth,
+      ownerHeight
+    )
+  ) {
+    cleanupContentsNodesRecursively(node);
+    return;
+  }
+
+  node.cloneChildrenIfNeeded();
+  node.setLayoutHadOverflow = false;
+
+  cleanupContentsNodesRecursively(node);
+
+  FlexDirection mainAxis = resolveDirection(
+    node.style.flexDirection,
+    direction
+  );
+  FlexDirection crossAxis = resolveCrossDirection(
+    mainAxis,
+    direction
+  );
+  bool isMainAxisRow = mainAxis.isRow;
+  bool isNodeFlexWrap = node.style.flexWrap != Wrap.NoWrap;
+
+  float paddingAndBorderAxisMain = paddingAndBorderForAxis(
+    node,
+    mainAxis,
+    direction,
+    ownerWidth
+  );
+  float paddingAndBorderAxisCross = paddingAndBorderForAxis(
+    node,
+    crossAxis,
+    direction,
+    ownerWidth
+  );
+  float leadingPaddingAndBorderCross = node.style
+    .computeFlexStartPaddingAndBorder(
+      crossAxis,
+      direction,
+      ownerWidth
+    );
+
+  SizingMode sizingModeMainDim = isMainAxisRow
+    ? widthSizingMode : heightSizingMode;
+  SizingMode sizingModeCrossDim = isMainAxisRow
+    ? heightSizingMode : widthSizingMode;
+
+  float paddingAndBorderAxisRow = isMainAxisRow
+    ? paddingAndBorderAxisMain : paddingAndBorderAxisCross;
+  float paddingAndBorderAxisColumn = isMainAxisRow
+    ? paddingAndBorderAxisCross : paddingAndBorderAxisMain;
+
+  float availableInnerWidth = calculateAvailableInnerDimension(
+    node,
+    direction,
+    Dimension.Width,
+    availableWidth - marginAxisRow,
+    paddingAndBorderAxisRow,
+    ownerWidth,
+    ownerWidth
+  );
+  float availableInnerHeight = calculateAvailableInnerDimension(
+    node,
+    direction,
+    Dimension.Height,
+    availableHeight - marginAxisColumn,
+    paddingAndBorderAxisColumn,
+    ownerHeight,
+    ownerWidth
+  );
+
+  float availableInnerMainDim = isMainAxisRow
+    ? availableInnerWidth : availableInnerHeight;
+  float availableInnerCrossDim = isMainAxisRow
+    ? availableInnerHeight : availableInnerWidth;
+
+  float totalMainDim = 0;
+
 }
 
 private void cleanupContentsNodesRecursively(Node node) {
@@ -598,4 +700,164 @@ private void cleanupContentsNodesRecursively(Node node) {
       }
     }
   }
+}
+
+private void measureNodeWithoutChildren(
+  Node node,
+  Direction direction,
+  float availableWidth,
+  float availableHeight,
+  SizingMode widthSizingMode,
+  SizingMode heightSizingMode,
+  float ownerWidth,
+  float ownerHeight
+) {
+  auto ref layout = node.getLayout();
+
+  float width = availableWidth;
+  if (
+    widthSizingMode == SizingMode.MaxContent ||
+    widthSizingMode == SizingMode.FitContent
+  ) {
+    width = layout.padding(PhysicalEdge.Left) +
+      layout.padding(PhysicalEdge.Right) +
+      layout.border(PhysicalEdge.Left) +
+      layout.border(PhysicalEdge.Right);
+  }
+  node.setLayoutMeasuredDimension(
+    node.boundAxis(
+      FlexDirection.Row,
+      direction,
+      width,
+      ownerWidth,
+      ownerWidth
+    ),
+    Dimension.Width
+  );
+
+  float height = availableHeight;
+  if (
+    heightSizingMode == SizingMode.MaxContent ||
+    heightSizingMode == SizingMode.FitContent
+  ) {
+    height = layout.padding(PhysicalEdge.Top) +
+      layout.padding(PhysicalEdge.Bottom) +
+      layout.border(PhysicalEdge.Top) +
+      layout.border(PhysicalEdge.Bottom);
+  }
+  node.setLayoutMeasuredDimension(
+    node.boundAxis(
+      FlexDirection.Column,
+      direction,
+      height,
+      ownerHeight,
+      ownerWidth
+    ),
+    Dimension.Height
+  );
+}
+
+private bool isFixedSize(
+  float dim,
+  SizingMode sizingMode
+) {
+  return sizingMode == SizingMode.StretchFit ||
+    (!dim.isNaN && sizingMode == SizingMode.FitContent &&
+      dim <= 0.0);
+}
+
+private bool measureNodeWithFixedSize(
+  Node node,
+  Direction direction,
+  float availableWidth,
+  float availableHeight,
+  SizingMode widthSizingMode,
+  SizingMode heightSizingMode,
+  float ownerWidth,
+  float ownerHeight
+) {
+  if (
+    isFixedSize(availableWidth, widthSizingMode) &&
+    isFixedSize(availableHeight, heightSizingMode)
+  ) {
+    node.setLayoutMeasuredDimension(
+      node.boundAxis(
+        FlexDirection.Row,
+        direction,
+        availableWidth.isNaN ||
+          (widthSizingMode == SizingMode.FitContent &&
+            availableWidth < 0.0f)
+          ? 0.0f
+          : availableWidth,
+        ownerWidth,
+        ownerWidth
+      ),
+      Dimension.Width
+    );
+
+    node.setLayoutMeasuredDimension(
+      node.boundAxis(
+        FlexDirection.Column,
+        direction,
+        availableHeight.isNaN ||
+          (heightSizingMode == SizingMode.FitContent &&
+            availableHeight < 0.0f)
+          ? 0.0f
+          : availableHeight,
+        ownerHeight,
+        ownerWidth
+      ),
+      Dimension.Height
+    );
+    return true;
+  }
+
+  return false;
+}
+
+private float calculateAvailableInnerDimension(
+  Node node,
+  Direction direction,
+  Dimension dimension,
+  float availableDim,
+  float paddingAndBorder,
+  float ownerDim,
+  float ownerWidth
+) {
+  float availableInnerDim = availableDim - paddingAndBorder;
+  
+  if (!availableInnerDim.isNaN) {
+    FloatOptional minDimensionOptional = node.style.resolvedMinDimension(
+      direction, dimension, ownerDim, ownerWidth);
+    float minInnerDim = minDimensionOptional.isNull
+      ? 0.0f : minDimensionOptional - paddingAndBorder;
+
+    FloatOptional maxDimensionOptional = node.style.resolvedMaxDimension(
+      direction, dimension, ownerDim, ownerWidth);
+    float maxInnerDim = maxDimensionOptional.isNull
+      ? float.max : maxDimensionOptional - paddingAndBorder;
+
+    availableInnerDim = availableInnerDim
+      .minOrDefined(maxInnerDim)
+      .maxOrDefined(minInnerDim);
+  }
+
+  return availableInnerDim;
+}
+
+private computeFlexBasisForChildren(
+  Node node,
+  float availableInnerWidth,
+  float availableInnerHeight,
+  SizingMode widthSizingMode,
+  SizingMode heightSizingMode,
+  Direction direction,
+  FlexDirection mainAxis,
+  bool performLayout,
+  ref LayoutData layoutMarkerData,
+  uint depth,
+  uint generationCount
+) {
+  float totalOuterFlexBasis = 0.0f;
+  
 }

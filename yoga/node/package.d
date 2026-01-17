@@ -1,6 +1,7 @@
 import core.builtins;
 import std.logger.core;
 import std.math;
+import std.range;
 import std.traits;
 import std.typecons;
 
@@ -242,7 +243,7 @@ class Node {
     float ownerWidth,
     float ownerHeight
   ) {
-    Direction directionRespectingRoot = owner_ is null
+    Direction directionRespectingRoot = owner_ == null
       ? Direction.LTR
       : direction;
     FlexDirection mainAxis = flexDirection.resolveDirection(
@@ -352,7 +353,7 @@ class Node {
 
   void cloneChildrenIfNeeded() {
     foreach (i, ref child; children_) {
-      if (child.getOwner !is this) {
+      if (child.getOwner != this) {
         child = config_.cloneNode(child, this, i);
         child.setOwner = this;
 
@@ -367,7 +368,7 @@ class Node {
     foreach (i, ref child; children_) {
       if (
         child.style.display == Display.Contents &&
-        child.getOwner !is this
+        child.getOwner != this
       ) {
         child = config_.cloneNode(child, this, i);
         child.setOwner = this;
@@ -388,17 +389,28 @@ class Node {
     return owner_;
   }
 
-  LayoutableChildren!Node getLayoutChildren() const {
-    return LayoutableChildren!Node(this.rebindable);
+  LayoutableChildren!Node getLayoutChildren() {
+    return LayoutableChildren!Node(this);
   }
 
-  size_t getLayoutChildCount() pure inout {
+  size_t getLayoutChildCount() {
     if (contentsChildrenCount_ == 0) {
       return children_.length;
     } else {
-      size_t count = 0;
-      return count;
+      return getLayoutChildren[].walkLength;
     }
+  }
+
+  size_t getChildCount() pure inout {
+    return children_.length;
+  }
+
+  inout(Node) getChild(size_t index) pure inout {
+    return children_[index];
+  }
+
+  void setLayoutHadOverflow(bool hadOverflow) {
+    layout_.setHadOverflow(hadOverflow);
   }
 
 private:
