@@ -337,6 +337,13 @@ class Node {
     layout_.setPadding(edge, padding);
   }
 
+  void setLayoutMeasuredDimension(
+    float measuredDimension,
+    Dimension dimension
+  ) {
+    layout_.setMeasuredDimension(dimension, measuredDimension);
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;

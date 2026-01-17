@@ -2,6 +2,7 @@ import core.atomic;
 import std.algorithm;
 import std.math;
 
+import yoga.algorithm.bound_axis;
 import yoga.algorithm.cache;
 import yoga.algorithm.flex_direction;
 import yoga.algorithm.pixel_grid;
@@ -317,6 +318,61 @@ bool calculateLayoutInternal(
   return (needToVisitNode || cachedResults is null);
 }
 
+private void measureNodeWithMeasureFunc(
+  Node node,
+  Direction direction,
+  float availableWidth,
+  float availableHeight,
+  SizingMode widthSizingMode,
+  SizingMode heightSizingMode,
+  float ownerWidth,
+  float ownerHeight,
+  ref LayoutData layoutMarkerData,
+  LayoutPassReason reason
+)
+in {
+  assert(
+    node.hasMeasureFunc(),
+    "Expected node to have custom measure function"
+  );
+}
+do {
+  if (widthSizingMode == SizingMode.MaxContent) {
+    availableWidth = float.nan;
+  }
+  if (heightSizingMode == SizingMode.MaxContent) {
+    availableHeight = float.nan;
+  }
+
+  auto ref layout = node.getLayout();
+  float paddingAndBorderAxisRow =
+    layout.padding(PhysicalEdge.Left) +
+    layout.padding(PhysicalEdge.Right) +
+    layout.border(PhysicalEdge.Left) +
+    layout.border(PhysicalEdge.Right);
+  float paddingAndBorderAxisColumn =
+    layout.padding(PhysicalEdge.Top) +
+    layout.padding(PhysicalEdge.Bottom) +
+    layout.border(PhysicalEdge.Top) +
+    layout.border(PhysicalEdge.Bottom);
+
+  if (
+    widthSizingMode == SizingMode.StretchFit &&
+    heightSizingMode == SizingMode.StretchFit
+  ) {
+    node.setLayoutMeasuredDimension(
+      node.boundAxis(
+        FlexDirection.Row,
+        direction,
+        availableWidth,
+        ownerWidth,
+        ownerWidth
+      ),
+      Dimension.Width
+    );
+  }
+}
+
 private void calculateLayoutImpl(
   Node node,
   float availableWidth,
@@ -393,4 +449,43 @@ do {
     node.style.computeInlineStartBorder(flexRowDirection, direction),
     startEdge
   );
+  node.setLayoutBorder(
+    node.style.computeInlineEndBorder(flexRowDirection, direction),
+    endEdge
+  );
+  node.setLayoutBorder(
+    node.style.computeInlineStartBorder(flexColumnDirection, direction),
+    PhysicalEdge.Top
+  );
+  node.setLayoutBorder(
+    node.style.computeInlineEndBorder(flexColumnDirection, direction),
+    PhysicalEdge.Bottom
+  );
+
+  node.setLayoutPadding(
+    node.style.computeInlineStartPadding(
+      flexRowDirection, direction, ownerWidth
+    ),
+    startEdge
+  );
+  node.setLayoutPadding(
+    node.style.computeInlineEndPadding(
+      flexRowDirection, direction, ownerWidth
+    ),
+    endEdge
+  );
+  node.setLayoutPadding(
+    node.style.computeInlineStartPadding(
+      flexColumnDirection, direction, ownerWidth
+    ),
+    PhysicalEdge.Top
+  );
+  node.setLayoutPadding(
+    node.style.computeInlineEndPadding(
+      flexColumnDirection, direction, ownerWidth
+    ),
+    PhysicalEdge.Bottom
+  );
+
+
 }
