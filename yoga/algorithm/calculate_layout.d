@@ -859,5 +859,17 @@ private float computeFlexBasisForChildren(
   uint generationCount
 ) {
   float totalOuterFlexBasis = 0.0f;
+  Node singleFlexChild = null;
+  auto children = node.getLayoutChildren();
+  SizingMode sizingModeMainDim = mainAxis.isRow
+    ? widthSizingMode : heightSizingMode;
+  
+  if (sizingModeMainDim == SizingMode.StretchFit) {
+    foreach (child; children) {
+      if (child.isNodeFlexible) {
+        
+      }
+    }
+  }
   return 0.0f;
 }

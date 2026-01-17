@@ -13,9 +13,8 @@ public import yoga.style.style_length;
 public import yoga.style.style_size_length;
 
 struct Style {
-  static const float DefaultFlexGrow = 0.0f;
-  static const float DefaultFlexShrink = 0.0f;
-  static const float WebDefaultFlexShrink = 1.0f;
+  enum float DefaultFlexGrow = 0.0f;
+  enum float DefaultFlexShrink = 0.0f;
 
   Direction direction() pure inout {
     return direction_;

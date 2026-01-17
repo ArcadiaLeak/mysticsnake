@@ -412,6 +412,39 @@ class Node {
     layout_.setHadOverflow(hadOverflow);
   }
 
+  float resolveFlexGrow() pure inout {
+    if (owner_ is null) {
+      return 0.0;
+    }
+    if (!style_.flexGrow.isNull) {
+      return style_.flexGrow.get;
+    }
+    if (!style_.flex.isNull && style_.flex.get > 0.0f) {
+      return style_.flex.get;
+    }
+    return Style.DefaultFlexGrow;
+  }
+
+  float resolveFlexShrink() pure inout {
+    if (owner_ is null) {
+      return 0.0;
+    }
+    if (!style_.flexShrink.isNull) {
+      return style_.flexShrink.get;
+    }
+    if (!style_.flex.isNull && style_.flex.get < 0.0f) {
+      return -style_.flex.get;
+    }
+    return Style.DefaultFlexShrink;
+  }
+
+  bool isNodeFlexible() pure inout {
+    return (
+      style_.positionType != PositionType.Absolute &&
+      (resolveFlexGrow != 0 || resolveFlexShrink != 0)
+    );
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;
