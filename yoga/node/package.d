@@ -3,7 +3,6 @@ import std.logger.core;
 import std.math;
 import std.range;
 import std.traits;
-import std.typecons;
 
 import flexDirection = yoga.algorithm.flex_direction;
 
@@ -44,7 +43,7 @@ class Node {
     layout_ = node.layout_;
     lineIndex_ = node.lineIndex_;
     contentsChildrenCount_ = node.contentsChildrenCount_;
-    owner_ = node.owner_;
+    owner_ = new NodeRef(*node.owner_);
     processedDimensions_ = node.processedDimensions_;
 
     foreach (c; node.children_) {
@@ -99,7 +98,7 @@ class Node {
   }
 
   void setOwner(const Node owner) {
-    owner_ = owner;
+    owner_ = new NodeRef(owner);
   }
 
   bool isDirty() pure inout {
@@ -386,7 +385,7 @@ class Node {
   }
 
   const(Node) getOwner() {
-    return owner_;
+    return *owner_;
   }
 
   LayoutableChildren!Node getLayoutChildren() {
@@ -426,7 +425,7 @@ private:
   LayoutResults layout_;
   size_t lineIndex_ = 0;
   size_t contentsChildrenCount_ = 0;
-  Rebindable!(const Node) owner_;
+  NodeRef* owner_;
   Node[] children_;
   Config* config_;
   StyleSizeLength[2] processedDimensions_ = [
@@ -442,4 +441,9 @@ unittest {
   layout.nextCachedMeasurementsIndex = 777;
   assert(node.getLayout().nextCachedMeasurementsIndex == 777);
   layout.nextCachedMeasurementsIndex = prev;
+}
+
+const struct NodeRef {
+  private Node referee;
+  alias referee this;
 }

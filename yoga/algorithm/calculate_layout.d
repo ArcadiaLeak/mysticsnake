@@ -845,7 +845,7 @@ private float calculateAvailableInnerDimension(
   return availableInnerDim;
 }
 
-private computeFlexBasisForChildren(
+private float computeFlexBasisForChildren(
   Node node,
   float availableInnerWidth,
   float availableInnerHeight,
@@ -859,5 +859,5 @@ private computeFlexBasisForChildren(
   uint generationCount
 ) {
   float totalOuterFlexBasis = 0.0f;
-  
+  return 0.0f;
 }
