@@ -867,9 +867,103 @@ private float computeFlexBasisForChildren(
   if (sizingModeMainDim == SizingMode.StretchFit) {
     foreach (child; children) {
       if (child.isNodeFlexible) {
-        
+        if (
+          singleFlexChild !is null ||
+          child.resolveFlexGrow.inexactEquals(0.0f) ||
+          child.resolveFlexShrink.inexactEquals(0.0f)
+        ) {
+          singleFlexChild = null;
+        } else {
+          singleFlexChild = child;
+        }
       }
     }
   }
+
+  foreach (child; children) {
+    child.processDimensions();
+    if (child.style.display == Display.None) {
+      child.zeroOutLayoutRecursively();
+      child.setHasNewLayout = true;
+      child.setDirty = false;
+      continue;
+    }
+    if (performLayout) {
+      Direction childDirection = child.resolveDirection(direction);
+      child.setPosition(
+        childDirection,
+        availableInnerWidth,
+        availableInnerHeight
+      );
+    }
+
+    if (child.style.positionType == PositionType.Absolute) {
+      continue;
+    }
+    if (child == singleFlexChild) {
+      child.setLayoutComputedFlexBasisGeneration = generationCount;
+      child.setLayoutComputedFlexBasis = FloatOptional(0);
+    } else {
+
+    }
+  }
+
   return 0.0f;
+}
+
+private void computeFlexBasisForChild(
+  Node node,
+  Node child,
+  float width,
+  SizingMode widthMode,
+  float height,
+  float ownerWidth,
+  float ownerHeight,
+  SizingMode heightMode,
+  Direction direction,
+  ref LayoutData layoutMarkerData,
+  uint depth,
+  uint generationCount
+) {
+  FlexDirection mainAxis = node.style.flexDirection.resolveDirection(direction);
+  bool isMainAxisRow = mainAxis.isRow;
+  float mainAxisSize = isMainAxisRow ? width : height;
+  float mainAxisOwnerSize = isMainAxisRow ? ownerWidth : ownerHeight;
+
+  float childWidth = float.nan;
+  float childHeight = float.nan;
+  SizingMode childWidthSizingMode;
+  SizingMode childHeightSizingMode;
+
+  FloatOptional resolvedFlexBasis = child.resolveFlexBasis(
+    direction, mainAxis, mainAxisOwnerSize, ownerWidth
+  );
+  bool isRowStyleDimDefined = child.hasDefiniteLength(
+    Dimension.Width, ownerWidth
+  );
+  bool isColumnStyleDimDefined = child.hasDefiniteLength(
+    Dimension.Height, ownerHeight
+  );
+
+  if (!resolvedFlexBasis.isNull && !mainAxisSize.isNaN) {
+    if (child.getLayout.computedFlexBasis.isNull) {
+      FloatOptional paddingAndBorder = FloatOptional(
+        paddingAndBorderForAxis(child, mainAxis, direction, ownerWidth)
+      );
+      child.setLayoutComputedFlexBasis = resolvedFlexBasis
+        .maxOrDefined(paddingAndBorder);
+    }
+  }
+}
+
+private void zeroOutLayoutRecursively(Node node) {
+  node.getLayout = LayoutResults();
+  node.setLayoutDimension(0, Dimension.Width);
+  node.setLayoutDimension(0, Dimension.Height);
+  node.setHasNewLayout = true;
+
+  node.cloneChildrenIfNeeded();
+  foreach (child; node.getChildren) {
+    child.zeroOutLayoutRecursively();
+  }
 }

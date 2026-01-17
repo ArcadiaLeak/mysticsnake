@@ -6,6 +6,7 @@ import std.traits;
 
 import flexDirection = yoga.algorithm.flex_direction;
 
+import yoga.algorithm.flex_direction;
 import yoga.config;
 import yoga.enums;
 import yoga.numeric;
@@ -443,6 +444,47 @@ class Node {
       style_.positionType != PositionType.Absolute &&
       (resolveFlexGrow != 0 || resolveFlexShrink != 0)
     );
+  }
+
+  void setLayoutComputedFlexBasisGeneration(
+    uint computedFlexBasisGeneration
+  ) {
+    layout_.computedFlexBasisGeneration = computedFlexBasisGeneration;
+  }
+
+  void setLayoutComputedFlexBasis(FloatOptional computedFlexBasis) {
+    layout_.computedFlexBasis = computedFlexBasis;
+  }
+
+  StyleSizeLength processFlexBasis() pure inout {
+    StyleSizeLength flexBasis = style_.flexBasis;
+    if (!flexBasis.isAuto && !flexBasis.isUndefined) {
+      return flexBasis;
+    }
+    if (!style_.flex.isNull && style_.flex > 0.0f) {
+      return StyleSizeLength.points(0);
+    }
+    return StyleSizeLength.ofAuto;
+  }
+
+  FloatOptional resolveFlexBasis(
+    Direction direction,
+    FlexDirection flexDirection,
+    float referenceLength,
+    float ownerWidth
+  ) pure inout {
+    FloatOptional value = processFlexBasis.resolve(referenceLength);
+    if (style_.boxSizing == BoxSizing.BorderBox) {
+      return value;
+    }
+
+    Dimension dim = flexDirection.dimension;
+    FloatOptional dimensionPaddingAndBorder = FloatOptional(
+      style_.computePaddingAndBorderForDimension(direction, dim, ownerWidth)
+    );
+
+    return FloatOptional(value + (dimensionPaddingAndBorder.isNull
+      ? FloatOptional(0.0) : dimensionPaddingAndBorder));
   }
 
 private:

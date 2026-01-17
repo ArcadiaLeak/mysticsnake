@@ -43,6 +43,13 @@ float maxOrDefined(
   return a.isNaN ? b : a;
 }
 
+FloatOptional maxOrDefined(
+  FloatOptional a,
+  FloatOptional b
+) pure {
+  return FloatOptional(maxOrDefined(a.get, b.get));
+}
+
 float minOrDefined(
   float a,
   float b
