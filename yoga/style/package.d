@@ -510,6 +510,28 @@ struct Style {
     return result.isNull ? 0.0f : result.get;
   }
 
+  float computeInlineStartBorder(
+    FlexDirection axis,
+    Direction direction
+  ) pure inout {
+    return maxOrDefined(
+      computeBorder(inlineStartEdge(axis, direction), direction)
+        .resolve(0.0f),
+      0.0f
+    );
+  }
+
+  float computeInlineEndBorder(
+    FlexDirection axis,
+    Direction direction
+  ) pure inout {
+    return maxOrDefined(
+      computeBorder(inlineEndEdge(axis, direction), direction)
+        .resolve(0.0f),
+      0.0f
+    );
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,

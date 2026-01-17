@@ -321,6 +321,22 @@ class Node {
     }
   }
 
+  void setLayoutDirection(Direction direction) {
+    layout_.setDirection(direction);
+  }
+
+  void setLayoutMargin(float margin, PhysicalEdge edge) {
+    layout_.setMargin(edge, margin);
+  }
+
+  void setLayoutBorder(float border, PhysicalEdge edge) {
+    layout_.setBorder(edge, border);
+  }
+
+  void setLayoutPadding(float padding, PhysicalEdge edge) {
+    layout_.setPadding(edge, padding);
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;

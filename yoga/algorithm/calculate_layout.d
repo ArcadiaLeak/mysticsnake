@@ -331,6 +331,66 @@ private void calculateLayoutImpl(
   ref LayoutData layoutMarkerData,
   uint depth,
   uint generationCount
-) {
+)
+in {
+  assert(
+    availableWidth.isNaN
+      ? widthSizingMode == SizingMode.MaxContent
+      : true,
+    "availableWidth is indefinite so widthSizingMode must be " ~
+    "SizingMode.MaxContent"
+  );
+  assert(
+    availableHeight.isNaN
+      ? heightSizingMode == SizingMode.MaxContent
+      : true,
+    "availableHeight is indefinite so heightSizingMode must be " ~
+    "SizingMode.MaxContent"
+  );
+}
+do {
+  (performLayout ? layoutMarkerData.layouts
+    : layoutMarkerData.measures) += 1;
 
+  Direction direction = node.resolveDirection(ownerDirection);
+  node.setLayoutDirection = direction;
+
+  FlexDirection flexRowDirection = resolveDirection(
+    FlexDirection.Row,
+    direction
+  );
+  FlexDirection flexColumnDirection = resolveDirection(
+    FlexDirection.Column,
+    direction
+  );
+
+  auto startEdge = direction == Direction.LTR
+    ? PhysicalEdge.Left : PhysicalEdge.Right;
+  auto endEdge = direction == Direction.LTR
+    ? PhysicalEdge.Right : PhysicalEdge.Left;
+
+  float marginRowLeading = node.style.computeInlineStartMargin(
+    flexRowDirection, direction, ownerWidth
+  );
+  node.setLayoutMargin(marginRowLeading, startEdge);
+  float marginRowTrailing = node.style.computeInlineEndMargin(
+    flexRowDirection, direction, ownerWidth
+  );
+  node.setLayoutMargin(marginRowTrailing, endEdge);
+  float marginColumnLeading = node.style.computeInlineStartMargin(
+    flexColumnDirection, direction, ownerWidth
+  );
+  node.setLayoutMargin(marginColumnLeading, PhysicalEdge.Top);
+  float marginColumnTrailing = node.style.computeInlineEndMargin(
+    flexColumnDirection, direction, ownerWidth
+  );
+  node.setLayoutMargin(marginColumnTrailing, PhysicalEdge.Bottom);
+
+  float marginAxisRow = marginRowLeading + marginRowTrailing;
+  float marginAxisColumn = marginColumnLeading + marginColumnTrailing;
+
+  node.setLayoutBorder(
+    node.style.computeInlineStartBorder(flexRowDirection, direction),
+    startEdge
+  );
 }
