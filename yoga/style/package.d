@@ -553,6 +553,10 @@ struct Style {
       computeInlineEndBorder(axis, direction);
   }
 
+  FloatOptional aspectRatio() pure inout {
+    return pool_.getNumber(aspectRatio_);
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,

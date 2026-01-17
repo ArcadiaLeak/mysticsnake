@@ -3,6 +3,7 @@ import core.builtins;
 import std.algorithm;
 import std.math;
 
+import yoga.algorithm.alignment;
 import yoga.algorithm.bound_axis;
 import yoga.algorithm.cache;
 import yoga.algorithm.flex_direction;
@@ -953,6 +954,85 @@ private void computeFlexBasisForChild(
       child.setLayoutComputedFlexBasis = resolvedFlexBasis
         .maxOrDefined(paddingAndBorder);
     }
+  } else if (isMainAxisRow && isRowStyleDimDefined) {
+    FloatOptional paddingAndBorder = FloatOptional(
+      child.paddingAndBorderForAxis(
+        FlexDirection.Row, direction, ownerWidth
+      )
+    );
+    child.setLayoutComputedFlexBasis = child
+      .getResolvedDimension(direction, Dimension.Width, ownerWidth, ownerWidth)
+      .maxOrDefined(paddingAndBorder);
+  } else if (!isMainAxisRow && isColumnStyleDimDefined) {
+    FloatOptional paddingAndBorder = FloatOptional(
+      child.paddingAndBorderForAxis(
+        FlexDirection.Column, direction, ownerWidth
+      )
+    );
+    child.setLayoutComputedFlexBasis = child
+      .getResolvedDimension(direction, Dimension.Height, ownerHeight, ownerWidth)
+      .maxOrDefined(paddingAndBorder);
+  } else {
+    childWidthSizingMode = SizingMode.MaxContent;
+    childHeightSizingMode = SizingMode.MaxContent;
+
+    auto marginRow = child.style.computeMarginForAxis(
+      FlexDirection.Row, ownerWidth);
+    auto marginColumn = child.style.computeMarginForAxis(
+      FlexDirection.Column, ownerWidth);
+
+    if (isRowStyleDimDefined) {
+      childWidth = child.getResolvedDimension(
+        direction, Dimension.Width, ownerWidth, ownerWidth) +
+        marginRow;
+      childWidthSizingMode = SizingMode.StretchFit;
+    }
+    if (isColumnStyleDimDefined) {
+      childHeight = child.getResolvedDimension(
+        direction, Dimension.Height, ownerHeight, ownerWidth) +
+        marginColumn;
+      childHeightSizingMode = SizingMode.StretchFit;
+    }
+
+    if (
+      (!isMainAxisRow && node.style.overflow == Overflow.Scroll) ||
+      node.style.overflow != Overflow.Scroll
+    ) {
+      if (childWidth.isNaN && !width.isNaN) {
+        childWidth = width;
+        childWidthSizingMode = SizingMode.FitContent;
+      }
+    }
+
+    if (
+      (isMainAxisRow && node.style.overflow == Overflow.Scroll) ||
+      node.style.overflow != Overflow.Scroll 
+    ) {
+      if (childHeight.isNaN && !height.isNaN) {
+        childHeight = height;
+        childHeightSizingMode = SizingMode.FitContent;
+      }
+    }
+
+    auto ref childStyle = child.style;
+    if (!childStyle.aspectRatio.isNull) {
+      if (!isMainAxisRow && childWidthSizingMode == SizingMode.StretchFit) {
+        childHeight = marginColumn +
+          (childWidth - marginRow) /
+          childStyle.aspectRatio;
+        childHeightSizingMode = SizingMode.StretchFit;
+      } else if (
+        isMainAxisRow && childHeightSizingMode == SizingMode.StretchFit) {
+        childWidth = marginRow +
+          (childHeight - marginColumn) *
+          childStyle.aspectRatio;
+        childWidthSizingMode = SizingMode.StretchFit;
+      }
+    }
+
+    bool hasExactWidth = !width.isNaN && widthMode == SizingMode.StretchFit;
+    bool childWidthStretch = node.resolveChildAlignment(child) ==
+      Align.Stretch && childWidthSizingMode != SizingMode.StretchFit;
   }
 }
 
