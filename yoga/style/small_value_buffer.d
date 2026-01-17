@@ -21,7 +21,7 @@ struct SmallValueBuffer {
   }
 
   this(ref inout(SmallValueBuffer) other) pure {
-    this = other;
+    opAssign(other);
   }
 
   ref SmallValueBuffer opAssign(ref inout(SmallValueBuffer) other) pure {

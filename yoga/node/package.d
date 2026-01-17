@@ -1,3 +1,4 @@
+import core.builtins;
 import std.logger.core;
 import std.math;
 import std.traits;
@@ -11,6 +12,7 @@ import yoga.numeric;
 import yoga.style;
 
 public import yoga.node.layout_results;
+public import yoga.node.layoutable_children;
 
 alias YGMeasureFunc = YGSize function(
   const Node, float, MeasureMode, float, MeasureMode
@@ -348,13 +350,32 @@ class Node {
     return contentsChildrenCount_ != 0;
   }
 
+  void cloneChildrenIfNeeded() {
+    foreach (i, ref child; children_) {
+      if (child.getOwner !is this) {
+        child = config_.cloneNode(child, this, i);
+        child.setOwner = this;
+
+        if (child.hasContentsChildren.unlikely) {
+          child.cloneContentsChildrenIfNeeded();
+        }
+      }
+    }
+  }
+
   void cloneContentsChildrenIfNeeded() {
-    foreach(i, child; children_) {
+    foreach (i, ref child; children_) {
       if (
         child.style.display == Display.Contents &&
         child.getOwner !is this
       ) {
-        
+        child = config_.cloneNode(child, this, i);
+        child.setOwner = this;
+        child.cloneChildrenIfNeeded();
+
+        if (child.hasContentsChildren.unlikely) {
+          child.cloneContentsChildrenIfNeeded();
+        }
       }
     }
   }
@@ -365,6 +386,19 @@ class Node {
 
   const(Node) getOwner() {
     return owner_;
+  }
+
+  LayoutableChildren!Node getLayoutChildren() const {
+    return LayoutableChildren!Node(this.rebindable);
+  }
+
+  size_t getLayoutChildCount() pure inout {
+    if (contentsChildrenCount_ == 0) {
+      return children_.length;
+    } else {
+      size_t count = 0;
+      return count;
+    }
   }
 
 private:

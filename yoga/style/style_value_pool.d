@@ -111,7 +111,7 @@ struct StyleValuePool {
   }
 
   this(ref inout(StyleValuePool) src) pure {
-    this = src;
+    opAssign(src);
   }
 
   ref StyleValuePool opAssign(ref inout(StyleValuePool) src) pure {

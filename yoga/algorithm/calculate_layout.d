@@ -578,11 +578,24 @@ do {
     cleanupContentsNodesRecursively(node);
     return;
   }
+
+  auto childCount = node.getLayoutChildCount();
 }
 
 private void cleanupContentsNodesRecursively(Node node) {
   if (node.hasContentsChildren.unlikely) {
     node.cloneContentsChildrenIfNeeded();
+    foreach(child; node.getChildren) {
+      if (child.style.display == Display.Contents) {
+        child.getLayout = LayoutResults();
+        child.setLayoutDimension(0, Dimension.Width);
+        child.setLayoutDimension(0, Dimension.Height);
+        child.setHasNewLayout = true;
+        child.setDirty = false;
+        child.cloneChildrenIfNeeded();
 
+        child.cleanupContentsNodesRecursively();
+      }
+    }
   }
 }

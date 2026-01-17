@@ -470,7 +470,7 @@ struct Style {
   }
 
   this(ref inout(Style) src) pure {
-    this = src;
+    opAssign(src);
   }
 
   ref Style opAssign(ref inout(Style) src) pure {
