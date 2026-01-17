@@ -295,7 +295,26 @@ bool calculateLayoutInternal(
     node.setDirty = false;
   }
 
-  return false;
+  layout.generationCount = generationCount;
+
+  LayoutType layoutType;
+  if (performLayout) {
+    layoutType = !needToVisitNode && cachedResults == &layout.cachedLayout
+      ? LayoutType.kCachedLayout
+      : LayoutType.kLayout;
+  } else {
+    layoutType = cachedResults !is null
+      ? LayoutType.kCachedMeasure
+      : LayoutType.kMeasure;
+  }
+  Event.publish!(Event.Type.NodeLayout)(
+    node,
+    Event.TypedData!(Event.Type.NodeLayout)(
+      layoutType
+    )
+  );
+
+  return (needToVisitNode || cachedResults is null);
 }
 
 private void calculateLayoutImpl(

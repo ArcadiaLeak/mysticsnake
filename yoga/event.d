@@ -3,6 +3,13 @@ import std.traits;
 
 import yoga.node;
 
+enum LayoutType : int {
+  kLayout = 0,
+  kMeasure = 1,
+  kCachedLayout = 2,
+  kCachedMeasure = 3
+}
+
 enum LayoutPassReason : int {
   kInitial = 0,
   kAbsLayout = 1,
@@ -85,6 +92,10 @@ struct Event {
 
   const struct TypedData(Type E : Type.LayoutPassEnd) {
     LayoutData* layoutData;
+  }
+
+  const struct TypedData(Type E : Type.NodeLayout) {
+    LayoutType layoutType;
   }
 
   static void subscribe(Subscriber subscriber) {
