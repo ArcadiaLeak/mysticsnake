@@ -1,4 +1,5 @@
 import core.atomic;
+import std.algorithm;
 import std.math;
 
 import yoga.algorithm.cache;
@@ -230,7 +231,68 @@ bool calculateLayoutInternal(
     (performLayout ? layoutMarkerData.cachedLayouts
       : layoutMarkerData.cachedMeasures) += 1;
   } else {
-    
+    node.calculateLayoutImpl(
+      availableWidth,
+      availableHeight,
+      ownerDirection,
+      widthSizingMode,
+      heightSizingMode,
+      ownerWidth,
+      ownerHeight,
+      performLayout,
+      reason,
+      layoutMarkerData,
+      depth,
+      generationCount
+    );
+
+    layout.lastOwnerDirection = ownerDirection;
+
+    if (cachedResults is null) {
+      layoutMarkerData.maxMeasureCache = max(
+        layoutMarkerData.maxMeasureCache,
+        layout.nextCachedMeasurementsIndex + 1u
+      );
+
+      if (
+        layout.nextCachedMeasurementsIndex ==
+        LayoutResults.MaxCachedMeasurements
+      ) {
+        layout.nextCachedMeasurementsIndex = 0;
+      }
+
+      CachedMeasurement* newCacheEntry = null;
+      if (performLayout) {
+        newCacheEntry = &layout.cachedLayout;
+      } else {
+        newCacheEntry = &layout.cachedMeasurements[
+          layout.nextCachedMeasurementsIndex
+        ];
+      }
+
+      newCacheEntry.availableWidth = availableWidth;
+      newCacheEntry.availableHeight = availableHeight;
+      newCacheEntry.widthSizingMode = widthSizingMode;
+      newCacheEntry.heightSizingMode = heightSizingMode;
+      newCacheEntry.computedWidth =
+        layout.measuredDimension(Dimension.Width);
+      newCacheEntry.computedHeight =
+        layout.measuredDimension(Dimension.Height);
+    }
+  }
+
+  if (performLayout) {
+    node.setLayoutDimension(
+      node.getLayout.measuredDimension(Dimension.Width),
+      Dimension.Width
+    );
+    node.setLayoutDimension(
+      node.getLayout.measuredDimension(Dimension.Height),
+      Dimension.Height
+    );
+
+    node.setHasNewLayout = true;
+    node.setDirty = false;
   }
 
   return false;

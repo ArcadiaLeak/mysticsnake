@@ -306,6 +306,21 @@ class Node {
     return children_;
   }
 
+  void setLayoutDimension(float lengthValue, Dimension dimension) {
+    layout_.setDimension(dimension, lengthValue);
+    layout_.setRawDimension(dimension, lengthValue);
+  }
+
+  void setDirty(bool isDirty) {
+    if ((cast(int) isDirty) == isDirty_) {
+      return;
+    }
+    isDirty_ = isDirty;
+    if (isDirty && (dirtiedFunc_ !is null)) {
+      dirtiedFunc_(this);
+    }
+  }
+
 private:
   bool hasNewLayout_ = true;
   bool isReferenceBaseline_ = false;
