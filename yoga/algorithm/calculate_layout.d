@@ -682,7 +682,47 @@ do {
     ? availableInnerHeight : availableInnerWidth;
 
   float totalMainDim = 0;
+  totalMainDim += node.computeFlexBasisForChildren(
+    availableInnerWidth,
+    availableInnerHeight,
+    widthSizingMode,
+    heightSizingMode,
+    direction,
+    mainAxis,
+    performLayout,
+    layoutMarkerData,
+    depth,
+    generationCount
+  );
 
+  if (childCount > 1) {
+    totalMainDim += node.style.computeGapForAxis(
+      mainAxis, availableInnerMainDim) * cast(float) (childCount - 1);
+  }
+
+  bool mainAxisOverflows =
+    (sizingModeMainDim != SizingMode.MaxContent) &&
+    totalMainDim > availableInnerMainDim;
+
+  if (isNodeFlexWrap && mainAxisOverflows &&
+    sizingModeMainDim == SizingMode.FitContent) {
+    sizingModeMainDim = SizingMode.StretchFit;
+  }
+
+  LayoutableChildren!Node.Range startOfLineRange =
+    node.getLayoutChildren[];
+
+  size_t lineCount = 0;
+
+  float totalLineCrossDim = 0;
+
+  float crossAxisGap = node.style.computeGapForAxis(
+    crossAxis, availableInnerCrossDim);
+
+  float maxLineMainDim = 0;
+  for (; startOfLineRange.empty != true; lineCount++) {
+    
+  }
 }
 
 private void cleanupContentsNodesRecursively(Node node) {
@@ -905,11 +945,26 @@ private float computeFlexBasisForChildren(
       child.setLayoutComputedFlexBasisGeneration = generationCount;
       child.setLayoutComputedFlexBasis = FloatOptional(0);
     } else {
-
+      node.computeFlexBasisForChild(
+        child,
+        availableInnerWidth,
+        widthSizingMode,
+        availableInnerHeight,
+        availableInnerWidth,
+        availableInnerHeight,
+        heightSizingMode,
+        direction,
+        layoutMarkerData,
+        depth,
+        generationCount
+      );
     }
+
+    totalOuterFlexBasis += child.getLayout.computedFlexBasis +
+      child.style.computeMarginForAxis(mainAxis, availableInnerWidth);
   }
 
-  return 0.0f;
+  return totalOuterFlexBasis;
 }
 
 private void computeFlexBasisForChild(
@@ -1033,6 +1088,98 @@ private void computeFlexBasisForChild(
     bool hasExactWidth = !width.isNaN && widthMode == SizingMode.StretchFit;
     bool childWidthStretch = node.resolveChildAlignment(child) ==
       Align.Stretch && childWidthSizingMode != SizingMode.StretchFit;
+    if (!isMainAxisRow && !isRowStyleDimDefined &&
+      hasExactWidth && childWidthStretch) {
+      childWidth = width;
+      childWidthSizingMode = SizingMode.StretchFit;
+
+      if (!childStyle.aspectRatio.isNull) {
+        childHeight = (childWidth - marginRow) /
+          childStyle.aspectRatio;
+        childHeightSizingMode = SizingMode.StretchFit;
+      }
+    }
+
+    bool hasExactHeight = !height.isNaN && heightMode == SizingMode.StretchFit;
+    bool childHeightStretch = node.resolveChildAlignment(child) ==
+      Align.Stretch && childHeightSizingMode != SizingMode.StretchFit;
+    if (isMainAxisRow && !isColumnStyleDimDefined &&
+      hasExactHeight && childHeightStretch) {
+      childHeight = height;
+      childHeightSizingMode = SizingMode.StretchFit;
+
+      if (!childStyle.aspectRatio.isNull) {
+        childWidth = (childHeight - marginColumn) *
+          childStyle.aspectRatio;
+        childWidthSizingMode = SizingMode.StretchFit;
+      }
+    }
+
+    child.constrainMaxSizeForMode(
+      direction,
+      FlexDirection.Row,
+      ownerWidth,
+      ownerWidth,
+      childWidthSizingMode,
+      childWidth
+    );
+    child.constrainMaxSizeForMode(
+      direction,
+      FlexDirection.Column,
+      ownerHeight,
+      ownerWidth,
+      childHeightSizingMode,
+      childHeight
+    );
+
+    child.calculateLayoutInternal(
+      childWidth,
+      childHeight,
+      direction,
+      childWidthSizingMode,
+      childHeightSizingMode,
+      ownerWidth,
+      ownerHeight,
+      false,
+      LayoutPassReason.kMeasureChild,
+      layoutMarkerData,
+      depth,
+      generationCount
+    );
+
+    child.setLayoutComputedFlexBasis = FloatOptional(
+      child.getLayout.measuredDimension(mainAxis.dimension)
+        .maxOrDefined = child.paddingAndBorderForAxis(
+          mainAxis, direction, ownerWidth)
+    );
+  }
+  child.setLayoutComputedFlexBasisGeneration = generationCount;
+}
+
+private void constrainMaxSizeForMode(
+  Node node,
+  Direction direction,
+  FlexDirection axis,
+  float ownerAxisSize,
+  float ownerWidth,
+  ref SizingMode mode,
+  ref float size
+) {
+  FloatOptional maxSize = node.style.resolvedMaxDimension(
+    direction, axis.dimension, ownerAxisSize, ownerWidth) +
+  FloatOptional(node.style.computeMarginForAxis(axis, ownerWidth));
+  final switch (mode) {
+    case SizingMode.StretchFit:
+    case SizingMode.FitContent:
+      size = (maxSize.isNull || size < maxSize)
+        ? size : maxSize;
+      break;
+    case SizingMode.MaxContent:
+      if (!maxSize.isNull) {
+        mode = SizingMode.FitContent;
+        size = maxSize;
+      }
+      break;
   }
 }
 

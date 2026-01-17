@@ -557,6 +557,11 @@ struct Style {
     return pool_.getNumber(aspectRatio_);
   }
 
+  float computeGapForAxis(FlexDirection axis, float ownerSize) pure inout {
+    auto gap = axis.isRow ? computeColumnGap() : computeRowGap();
+    return gap.resolve(ownerSize).maxOrDefined(0.0f);
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,
@@ -589,7 +594,7 @@ private:
     )(lhs, rhs);
   }
 
-  StyleLength computeColumnGap() pure {
+  StyleLength computeColumnGap() pure inout {
     if (gap_[Gutter.Column].isDefined()) {
       return pool_.getLength(gap_[Gutter.Column]);
     } else {
@@ -597,7 +602,7 @@ private:
     }
   }
 
-  StyleLength computeRowGap() pure {
+  StyleLength computeRowGap() pure inout {
     if (gap_[Gutter.Row].isDefined()) {
       return pool_.getLength(gap_[Gutter.Row]);
     } else {
