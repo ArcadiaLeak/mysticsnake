@@ -562,6 +562,14 @@ struct Style {
     return gap.resolve(ownerSize).maxOrDefined(0.0f);
   }
 
+  bool flexStartMarginIsAuto(FlexDirection axis, Direction direction) pure inout {
+    return computeMargin(flexStartEdge(axis), direction).isAuto();
+  }
+
+  bool flexEndMarginIsAuto(FlexDirection axis, Direction direction) pure inout {
+    return computeMargin(flexEndEdge(axis), direction).isAuto();
+  }
+
 private:
   static bool numbersEqual(
     const StyleValueHandle lhsHandle,

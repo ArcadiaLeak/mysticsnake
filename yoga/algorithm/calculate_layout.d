@@ -7,6 +7,7 @@ import yoga.algorithm.alignment;
 import yoga.algorithm.bound_axis;
 import yoga.algorithm.cache;
 import yoga.algorithm.flex_direction;
+import yoga.algorithm.flex_line;
 import yoga.algorithm.pixel_grid;
 import yoga.algorithm.sizing_mode;
 import yoga.enums;
@@ -628,6 +629,9 @@ do {
   bool isMainAxisRow = mainAxis.isRow;
   bool isNodeFlexWrap = node.style.flexWrap != Wrap.NoWrap;
 
+  float mainAxisOwnerSize = isMainAxisRow ? ownerWidth : ownerHeight;
+  float crossAxisOwnerSize = isMainAxisRow ? ownerHeight : ownerWidth;
+
   float paddingAndBorderAxisMain = paddingAndBorderForAxis(
     node,
     mainAxis,
@@ -640,12 +644,9 @@ do {
     direction,
     ownerWidth
   );
-  float leadingPaddingAndBorderCross = node.style
-    .computeFlexStartPaddingAndBorder(
-      crossAxis,
-      direction,
-      ownerWidth
-    );
+  float leadingPaddingAndBorderCross =
+    node.style.computeFlexStartPaddingAndBorder(
+      crossAxis, direction, ownerWidth);
 
   SizingMode sizingModeMainDim = isMainAxisRow
     ? widthSizingMode : heightSizingMode;
@@ -721,7 +722,15 @@ do {
 
   float maxLineMainDim = 0;
   for (; startOfLineRange.empty != true; lineCount++) {
-    
+    auto flexLine = node.calculateFlexLine(
+      ownerDirection,
+      ownerWidth,
+      mainAxisOwnerSize,
+      availableInnerWidth,
+      availableInnerMainDim,
+      startOfLineRange,
+      lineCount
+    );
   }
 }
 
