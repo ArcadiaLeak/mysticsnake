@@ -26,3 +26,5 @@ struct FT_Bitmap_Size {
 }
 
 alias FT_Module = FT_ModuleRec*;
+
+alias FT_Renderer = FT_RendererRec*;
