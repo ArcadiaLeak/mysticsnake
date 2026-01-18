@@ -1,3 +1,6 @@
+import std.range;
+
+import yoga.algorithm.bound_axis;
 import yoga.algorithm.flex_direction;
 import yoga.enums;
 import yoga.node;
@@ -63,7 +66,61 @@ FlexLine calculateFlexLine(
     }
 
     child.setLineIndex = lineCount;
+    float childMarginMainAxis = child.style.computeMarginForAxis(
+      mainAxis, availableInnerWidth);
+    float childLeadingGapMainAxis =
+      child == firstElementInLine ? 0.0f : gap;
+    float flexBasisWithMinAndMaxConstraints = child.boundAxisWithinMinAndMax(
+      direction,
+      mainAxis,
+      child.getLayout.computedFlexBasis,
+      mainAxisOwnerSize,
+      ownerWidth
+    );
+
+    if (
+      sizeConsumedIncludingMinConstraint +
+      flexBasisWithMinAndMaxConstraints +
+      childMarginMainAxis +
+      childLeadingGapMainAxis >
+      availableInnerMainDim &&
+      isNodeFlexWrap &&
+      !itemsInFlow.empty
+    ) {
+      break;
+    }
+
+    sizeConsumedIncludingMinConstraint += flexBasisWithMinAndMaxConstraints +
+      childMarginMainAxis + childLeadingGapMainAxis;
+    sizeConsumed += flexBasisWithMinAndMaxConstraints + childMarginMainAxis +
+      childLeadingGapMainAxis;
+
+    if (child.isNodeFlexible) {
+      totalFlexGrowFactors += child.resolveFlexGrow;
+
+      totalFlexShrinkScaledFactors += child.resolveFlexShrink +
+        child.getLayout.computedFlexBasis;
+    }
+
+    itemsInFlow ~= child;
   }
 
-  return FlexLine();
+  if (totalFlexGrowFactors > 0 && totalFlexGrowFactors < 1) {
+    totalFlexGrowFactors = 1;
+  }
+
+  if (totalFlexShrinkScaledFactors > 0 && totalFlexShrinkScaledFactors < 1) {
+    totalFlexShrinkScaledFactors = 1;
+  }
+
+  FlexLine ret;
+  ret.itemsInFlow = itemsInFlow;
+  ret.sizeConsumed = sizeConsumed;
+  ret.numberOfAutoMargins = numberOfAutoMargins;
+  ret.layout = FlexLineRunningLayout(
+    totalFlexGrowFactors,
+    totalFlexShrinkScaledFactors
+  );
+
+  return ret;
 }

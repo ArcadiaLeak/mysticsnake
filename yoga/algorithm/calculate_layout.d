@@ -731,6 +731,56 @@ do {
       startOfLineRange,
       lineCount
     );
+
+    bool canSkipFlex = !performLayout &&
+      sizingModeCrossDim == SizingMode.StretchFit;
+
+    bool sizeBasedOnContent = false;
+    
+    if (sizingModeMainDim != SizingMode.StretchFit) {
+      auto ref style = node.style;
+      float minInnerWidth = style.resolvedMinDimension(
+        direction, Dimension.Width, ownerWidth, ownerWidth) -
+        paddingAndBorderAxisRow;
+      float maxInnerWidth = style.resolvedMaxDimension(
+        direction, Dimension.Width, ownerWidth, ownerWidth) -
+        paddingAndBorderAxisRow;
+      float minInnerHeight = style.resolvedMinDimension(
+        direction, Dimension.Height, ownerHeight, ownerWidth) -
+        paddingAndBorderAxisColumn;
+      float maxInnerHeight = style.resolvedMaxDimension(
+        direction, Dimension.Height, ownerHeight, ownerWidth) -
+        paddingAndBorderAxisColumn;
+
+      float minInnerMainDim =
+        isMainAxisRow ? minInnerWidth : minInnerHeight;
+      float maxInnerMainDim =
+        isMainAxisRow ? maxInnerWidth : maxInnerHeight;
+
+      if (
+        !minInnerMainDim.isNaN &&
+        flexLine.sizeConsumed < minInnerMainDim
+      ) {
+        availableInnerMainDim = minInnerMainDim;
+      } else if (
+        !maxInnerMainDim.isNaN &&
+        flexLine.sizeConsumed > maxInnerMainDim
+      ) {
+        availableInnerMainDim = maxInnerMainDim;
+      } else {
+        if (
+          (!flexLine.layout.totalFlexGrowFactors.isNaN &&
+            flexLine.layout.totalFlexGrowFactors == 0) ||
+          (!node.resolveFlexGrow.isNaN &&
+            node.resolveFlexGrow == 0)
+        ) {
+          availableInnerMainDim = flexLine.sizeConsumed;
+        }
+        sizeBasedOnContent = true;
+      }
+    }
+
+    
   }
 }
 
