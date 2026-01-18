@@ -15,6 +15,14 @@ alias FT_Module_Requester = FT_Module_Interface function(
 );
 
 struct FT_Module_Class {
+  FT_ULong module_flags;
+  FT_Long module_size;
+  const(FT_String*) module_name;
+  FT_Fixed module_version;
+  FT_Fixed module_requires;
+
+  void* module_interface;
+
   FT_Module_Constructor module_init;
   FT_Module_Destructor module_done;
   FT_Module_Requester get_interface;

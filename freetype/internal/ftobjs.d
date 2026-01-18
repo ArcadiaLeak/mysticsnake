@@ -1,3 +1,4 @@
+import freetype;
 import freetype.config.ftoption;
 import freetype.ftmodapi;
 import freetype.ftsystem;
@@ -11,6 +12,12 @@ struct FT_LibraryRec {
   FT_Int version_patch;
 
   FT_UInt num_modules;
+  FT_Module[FT_MAX_MODULES] modules;
+
+  FT_ListRec renderers;
+  // FT_Renderer cur_renderer;
+  FT_Module auto_hinter;
+
 
 }
 
