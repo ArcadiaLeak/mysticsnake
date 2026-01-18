@@ -1,0 +1,1 @@
+enum bool FT_CONFIG_OPTION_SUBPIXEL_RENDERING = false;

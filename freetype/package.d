@@ -1,5 +1,6 @@
 import freetype.ftimage;
 import freetype.fttypes;
+import freetype.internal.ftobjs;
 
 struct FT_Glyph_Metrics {
   FT_Pos width;
@@ -23,3 +24,5 @@ struct FT_Bitmap_Size {
   FT_Pos x_ppem;
   FT_Pos y_ppem;
 }
+
+alias FT_Module = FT_ModuleRec*;
