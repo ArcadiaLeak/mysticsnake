@@ -9,8 +9,13 @@ struct SmallValueBuffer {
       @disable this(inout(Overflow));
 
       this(ref inout(Overflow) other) pure {
+        opAssign(other);
+      }
+
+      ref Overflow opAssign(ref inout(Overflow) other) pure {
         buffer_ = other.buffer_.dup;
         wideElements_ = other.wideElements_.dup;
+        return this;
       }
     }
 
@@ -19,7 +24,7 @@ struct SmallValueBuffer {
     uint[ubyte.sizeof] buffer_;
     ubyte wideElements_;
 
-    Overflow* overflow_;
+    Overflow overflow_;
   }
 
   this(ref inout(SmallValueBuffer) other) pure {
@@ -27,13 +32,8 @@ struct SmallValueBuffer {
   }
 
   ref SmallValueBuffer opAssign(ref inout(SmallValueBuffer) other) pure {
-    count_ = other.count_;
-    buffer_ = other.buffer_;
-    wideElements_ = other.wideElements_;
-    if (other.overflow_) {
-      overflow_ = new Overflow(*other.overflow_);
-    }
-
+    foreach (i, ref inout field; other.tupleof)
+      this.tupleof[i] = field;
     return this;
   }
 
@@ -46,10 +46,6 @@ struct SmallValueBuffer {
     if (index < buffer_.length) {
       buffer_[index] = value;
       return index;
-    }
-
-    if (overflow_ is null) {
-      overflow_ = new Overflow;
     }
 
     overflow_.buffer_ ~= value;

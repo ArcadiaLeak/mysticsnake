@@ -474,7 +474,6 @@ struct Style {
   ref Style opAssign(ref inout(Style) src) pure {
     foreach (i, ref inout field; src.tupleof)
       this.tupleof[i] = field;
-    
     return this;
   }
 
