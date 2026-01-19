@@ -5,7 +5,7 @@
 	"copyright": "Copyright © 2026, evgeniik",
 	"description": "A minimal D application.",
 	"license": "MIT",
-	"name": "heuristic_graphic",
+	"name": "divinity",
 	"libs": [
 		"vulkan",
     "SDL3",
