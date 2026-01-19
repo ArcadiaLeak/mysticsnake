@@ -20,6 +20,11 @@ struct FT_StreamRec {
   char* limit;
 }
 
+union FT_StreamDesc {
+  long value;
+  void* pointer;
+}
+
 alias FT_Alloc_Func = void* function(
   FT_Memory memory,
   long size
@@ -35,6 +40,17 @@ alias FT_Realloc_Func = void* function(
   long cur_size,
   long new_size,
   void* block
+);
+
+alias FT_Stream_IoFunc = ulong function(
+  FT_Stream stream,
+  ulong offset,
+  char* buffer,
+  ulong count
+);
+
+alias FT_Stream_CloseFunc = void function(
+  FT_Stream stream
 );
 
 alias FT_Memory = FT_MemoryRec*;

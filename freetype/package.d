@@ -1,6 +1,8 @@
 public import freetype.config;
 public import freetype.internal;
+public import freetype.ftglyph;
 public import freetype.ftimage;
+public import freetype.ftincrem;
 public import freetype.ftmodapi;
 public import freetype.ftrender;
 public import freetype.ftsystem;
@@ -40,6 +42,27 @@ enum FT_Encoding : FT_UInt32 {
   FT_ENCODING_OLD_LATIN_2 = FT_ENC_TAG!('l', 'a', 't', '2'),
 
   FT_ENCODING_APPLE_ROMAN = FT_ENC_TAG!('a', 'r', 'm', 'n')
+}
+
+enum FT_Render_Mode {
+  FT_RENDER_MODE_NORMAL = 0,
+  FT_RENDER_MODE_LIGHT,
+  FT_RENDER_MODE_MONO,
+  FT_RENDER_MODE_LCD,
+  FT_RENDER_MODE_LCD_V,
+  FT_RENDER_MODE_SDF,
+
+  FT_RENDER_MODE_MAX
+}
+
+enum FT_Size_Request_Type {
+  FT_SIZE_REQUEST_TYPE_NOMINAL,
+  FT_SIZE_REQUEST_TYPE_REAL_DIM,
+  FT_SIZE_REQUEST_TYPE_BBOX,
+  FT_SIZE_REQUEST_TYPE_CELL,
+  FT_SIZE_REQUEST_TYPE_SCALES,
+
+  FT_SIZE_REQUEST_TYPE_MAX
 }
 
 struct FT_Glyph_Metrics {
@@ -175,6 +198,14 @@ struct FT_Size_Metrics {
   FT_Pos max_advance;
 }
 
+struct FT_Size_RequestRec {
+  FT_Size_Request_Type type;
+  FT_Long width;
+  FT_Long height;
+  FT_UInt horiResolution;
+  FT_UInt vertResolution;
+}
+
 alias FT_Library = FT_LibraryRec*;
 
 alias FT_Module = FT_ModuleRec*;
@@ -198,5 +229,7 @@ alias FT_Size = FT_SizeRec*;
 alias FT_Size_Internal = FT_Size_InternalRec*;
 
 alias FT_Driver = FT_DriverRec*;
+
+alias FT_Size_Request = FT_Size_RequestRec*;
 
 alias FT_Raster = void*;

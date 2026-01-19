@@ -58,3 +58,8 @@ struct FT_Matrix {
   FT_Fixed xx, xy;
   FT_Fixed yx, yy;
 }
+
+struct FT_Data {
+  FT_Byte* pointer;
+  FT_UInt length;
+}

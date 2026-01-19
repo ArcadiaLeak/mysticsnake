@@ -47,6 +47,19 @@ alias FT_Raster_RenderFunc = int function(
 
 alias FT_Raster_Render_Func = FT_Raster_RenderFunc;
 
+alias FT_SpanFunc = void function(
+  int y,
+  int count,
+  FT_Span* spans,
+  void* user
+);
+
+struct FT_Span {
+  short x;
+  ushort len;
+  char coverage;
+}
+
 struct FT_Vector {
   FT_Pos x;
   FT_Pos y;
@@ -87,4 +100,16 @@ struct FT_Bitmap {
   ubyte pixel_mode;
   ubyte palette_mode;
   void* palette;
+}
+
+struct FT_Raster_Params {
+  FT_Bitmap* target;
+  void* source;
+  int flags;
+  FT_SpanFunc gray_spans;
+  size_t black_spans;
+  size_t bit_test;
+  size_t bit_set;
+  void* user;
+  FT_BBox clip_box;
 }

@@ -26,6 +26,11 @@ struct FT_Driver_ClassRec {
   FT_Size_SelectFunc select_size;
 }
 
+struct FT_Parameter {
+  FT_ULong tag;
+  FT_Pointer data;
+}
+
 alias FT_Face_GetKerningFunc = FT_Error function(
   FT_Face face,
   FT_UInt left_glyph,
@@ -62,6 +67,33 @@ alias FT_Size_InitFunc = FT_Error function(
 
 alias FT_Size_DoneFunc = FT_Error function(
   FT_Size size
+);
+
+alias FT_Slot_LoadFunc = FT_Error function(
+  FT_GlyphSlot slot,
+  FT_Size size,
+  FT_UInt glyph_index,
+  FT_Int32 load_flags
+);
+
+alias FT_Slot_InitFunc = FT_Error function(
+  FT_GlyphSlot slot
+);
+
+alias FT_Slot_DoneFunc = void function(
+  FT_GlyphSlot slot
+);
+
+alias FT_Face_InitFunc = FT_Error function(
+  FT_Stream stream,
+  FT_Face face,
+  FT_Int typeface_index,
+  FT_Int num_params,
+  FT_Parameter* parameters
+);
+
+alias FT_Face_DoneFunc = void function(
+  FT_Face face
 );
 
 alias FT_Driver_Class = FT_Driver_ClassRec*;
