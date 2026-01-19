@@ -171,4 +171,6 @@ alias FT_CharMap = FT_CharMapRec*;
 
 alias FT_Face = FT_FaceRec*;
 
+alias FT_Face_Internal = FT_Face_InternalRec*;
+
 alias FT_Raster = void*;

@@ -53,3 +53,24 @@ struct FT_RendererRec {
   FT_Raster_Render_Func raster_render;
   FT_Renderer_RenderFunc render;
 }
+
+struct FT_Face_InternalRec {
+    FT_Matrix transform_matrix;
+    FT_Vector transform_delta;
+    FT_Int transform_flags;
+
+    FT_ServiceCacheRec services;
+
+  static if (FT_CONFIG_OPTION_INCREMENTAL)
+    FT_Incremental_InterfaceRec* incremental_interface;
+
+    FT_Char no_stem_darkening;
+    FT_Int32 random_seed;
+
+  static if (FT_CONFIG_OPTION_SUBPIXEL_RENDERING) {
+    FT_LcdFiveTapFilter lcd_weights;
+    FT_Bitmap_LcdFilterFunc lcd_filter_func;
+  }
+
+    FT_Int refcount;
+}

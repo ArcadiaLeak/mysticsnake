@@ -2,6 +2,12 @@ import freetype;
 
 alias FT_Bool = ubyte;
 
+alias FT_Char = byte;
+
+alias FT_Byte = ubyte;
+
+alias FT_Bytes = FT_Byte*;
+
 alias FT_String = char;
 
 alias FT_Short = short;
