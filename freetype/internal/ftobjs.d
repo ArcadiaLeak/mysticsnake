@@ -74,3 +74,17 @@ struct FT_Face_InternalRec {
 
     FT_Int refcount;
 }
+
+struct FT_Size_InternalRec {
+  void* module_data;
+
+  FT_Render_Mode autohint_mode;
+  FT_Size_Metrics autohint_metrics;
+}
+
+struct FT_DriverRec {
+  FT_ModuleRec root;
+  FT_Driver_Class clazz;
+  FT_ListRec faces_list;
+  FT_GlyphLoader glyph_loader;
+}

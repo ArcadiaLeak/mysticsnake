@@ -53,3 +53,8 @@ struct FT_Generic {
   void* data;
   FT_Generic_Finalizer finalizer;
 }
+
+struct FT_Matrix {
+  FT_Fixed xx, xy;
+  FT_Fixed yx, yy;
+}

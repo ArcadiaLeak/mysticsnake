@@ -155,6 +155,26 @@ struct FT_CharMapRec {
   FT_UShort encoding_id;
 }
 
+struct FT_SizeRec {
+  FT_Face face;
+  FT_Generic generic;
+  FT_Size_Metrics metrics;
+  FT_Size_Internal internal;
+}
+
+struct FT_Size_Metrics {
+  FT_UShort x_ppem;
+  FT_UShort y_ppem;
+
+  FT_Fixed x_scale;
+  FT_Fixed y_scale;
+
+  FT_Pos ascender;
+  FT_Pos descender;
+  FT_Pos height;
+  FT_Pos max_advance;
+}
+
 alias FT_Library = FT_LibraryRec*;
 
 alias FT_Module = FT_ModuleRec*;
@@ -172,5 +192,11 @@ alias FT_CharMap = FT_CharMapRec*;
 alias FT_Face = FT_FaceRec*;
 
 alias FT_Face_Internal = FT_Face_InternalRec*;
+
+alias FT_Size = FT_SizeRec*;
+
+alias FT_Size_Internal = FT_Size_InternalRec*;
+
+alias FT_Driver = FT_DriverRec*;
 
 alias FT_Raster = void*;
