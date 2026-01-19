@@ -6,5 +6,19 @@
 	"description": "A minimal D application.",
 	"license": "MIT",
 	"name": "heuristic_graphic",
-	"libs": ["vulkan", "SDL3", "SDL3_shadercross", "spirv-cross-c-shared", "stdc++", "glslang", "glslang-default-resource-limits", "SPIRV-Tools"]
+	"libs": [
+		"vulkan",
+    "SDL3",
+    "SDL3_shadercross",
+    "spirv-cross-c-shared",
+    "stdc++",
+    "glslang",
+    "glslang-default-resource-limits",
+    "SPIRV-Tools"
+  ],
+  "subPackages": ["freetype", "yoga"],
+  "dependencies": {
+    ":freetype": "*",
+    ":yoga": "*"
+  }
 }
