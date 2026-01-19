@@ -1,27 +1,55 @@
 import freetype;
-import freetype.config.ftoption;
-import freetype.ftmodapi;
-import freetype.ftsystem;
-import freetype.fttypes;
 
 struct FT_LibraryRec {
-  FT_Memory memory;
+    FT_Memory memory;
 
-  FT_Int version_major;
-  FT_Int version_minor;
-  FT_Int version_patch;
+    FT_Int version_major;
+    FT_Int version_minor;
+    FT_Int version_patch;
 
-  FT_UInt num_modules;
-  FT_Module[FT_MAX_MODULES] modules;
+    FT_UInt num_modules;
+    FT_Module[FT_MAX_MODULES] modules;
 
-  FT_ListRec renderers;
-  // FT_Renderer cur_renderer;
-  FT_Module auto_hinter;
+    FT_ListRec renderers;
+    FT_Renderer cur_renderer;
+    FT_Module auto_hinter;
 
+    FT_DebugHook_Func[4] debug_hooks;
 
+  static if (FT_CONFIG_OPTION_SUBPIXEL_RENDERING) {
+    FT_LcdFiveTapFilter lcd_weights;
+    FT_Bitmap_LcdFilterFunc lcd_filter_func;
+  } else {
+    FT_Vector[3] lcd_geometry;
+  }
+
+    FT_Int refcount;
 }
 
 struct FT_ModuleRec {
-  const FT_Module_Class* clazz;
-  
+  FT_Module_Class* clazz;
+  FT_Library library;
+  FT_Memory memory;
+}
+
+struct FT_Slot_InternalRec {
+  FT_GlyphLoader loader;
+  FT_UInt flags;
+  FT_Bool glyph_transformed;
+  FT_Matrix glyph_matrix;
+  FT_Vector glyph_delta;
+  void* glyph_hints;
+
+  FT_Int32 load_flags;
+}
+
+struct FT_RendererRec {
+  FT_ModuleRec root;
+  FT_Renderer_Class* clazz;
+  FT_Glyph_Format glyph_format;
+  FT_Glyph_Class glyph_class;
+
+  FT_Raster raster;
+  FT_Raster_Render_Func raster_render;
+  FT_Renderer_RenderFunc render;
 }

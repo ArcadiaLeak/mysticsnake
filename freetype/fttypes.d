@@ -1,6 +1,12 @@
+import freetype;
+
+alias FT_Bool = ubyte;
+
 alias FT_String = char;
 
 alias FT_Short = short;
+
+alias FT_UShort = ushort;
 
 alias FT_Int = int;
 
@@ -20,6 +26,12 @@ alias FT_Error = int;
 
 alias FT_Pointer = void*;
 
+alias FT_List = FT_ListRec*;
+
+alias FT_ListNode = FT_ListNodeRec*;
+
+alias FT_Generic_Finalizer = void function(void* object);
+
 struct FT_ListRec {
   FT_ListNode head;
   FT_ListNode tail;
@@ -31,6 +43,7 @@ struct FT_ListNodeRec {
   void* data;
 }
 
-alias FT_List = FT_ListRec*;
-
-alias FT_ListNode = FT_ListNodeRec*;
+struct FT_Generic {
+  void* data;
+  FT_Generic_Finalizer finalizer;
+}
