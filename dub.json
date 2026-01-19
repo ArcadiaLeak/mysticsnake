@@ -1,0 +1,10 @@
+{
+	"authors": [
+		"evgeniik"
+	],
+	"copyright": "Copyright © 2026, evgeniik",
+	"description": "A minimal D application.",
+	"license": "MIT",
+	"name": "heuristic_graphic",
+	"libs": ["vulkan", "SDL3", "SDL3_shadercross", "spirv-cross-c-shared", "stdc++", "glslang", "glslang-default-resource-limits", "SPIRV-Tools"]
+}

@@ -1,0 +1,7 @@
+module freetype.config.ftoption;
+
+enum FT_CONFIG_OPTION_SUBPIXEL_RENDERING = 0;
+
+enum FT_CONFIG_OPTION_INCREMENTAL = 1;
+
+enum FT_MAX_MODULES = 32;

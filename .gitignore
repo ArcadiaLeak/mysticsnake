@@ -1,1 +1,16 @@
-/artifacts
+.dub
+docs.json
+__dummy.html
+docs/
+/heuristic_graphic
+heuristic_graphic.so
+heuristic_graphic.dylib
+heuristic_graphic.dll
+heuristic_graphic.a
+heuristic_graphic.lib
+heuristic_graphic-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
