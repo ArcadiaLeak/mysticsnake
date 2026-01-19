@@ -16,9 +16,10 @@
     "glslang-default-resource-limits",
     "SPIRV-Tools"
   ],
-  "subPackages": ["freetype", "yoga"],
+  "subPackages": ["freetype", "glslang", "yoga"],
   "dependencies": {
     ":freetype": "*",
+    ":glslang": "*",
     ":yoga": "*"
   }
 }

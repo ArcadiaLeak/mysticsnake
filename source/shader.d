@@ -1,4 +1,4 @@
-import glslang;
+import glslangcpp;
 
 import std.stdio;
 import std.string;
