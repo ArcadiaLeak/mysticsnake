@@ -2,6 +2,10 @@ module freetype.internal.ftobjs;
 
 import freetype;
 
+auto FT_FACE(alias x)() => cast(FT_Face) x;
+
+auto FT_FACE_DRIVER(alias x)() => FT_FACE(x).driver;
+
 struct FT_LibraryRec {
     FT_Memory memory;
 

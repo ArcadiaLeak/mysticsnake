@@ -190,3 +190,13 @@ alias TT_Set_CVT_Func = void function(
 alias TT_Cur_Ppem_Func = FT_Long function(
   TT_ExecContext exc
 );
+
+auto NO_SUBPIXEL_HINTING(alias exc)() {
+  return (cast(TT_Driver) FT_FACE_DRIVER(exc.face)).interpreter_version ==
+    TT_INTERPRETER_VERSION_35;
+}
+
+auto SUBPIXEL_HINTING_MINIMAL(alias exc)() {
+  return (cast(TT_Driver) FT_FACE_DRIVER(exc.face)).interpreter_version ==
+    TT_INTERPRETER_VERSION_40;
+}
