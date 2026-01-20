@@ -111,11 +111,61 @@ struct TT_FaceRec {
     char* non_var_style_name;
   }
 
-  
+    FT_ULong horz_metrics_size;
+    FT_ULong vert_metrics_size;
+
+    FT_ULong num_locations;
+    FT_Byte* glyph_locations;
+
+    FT_Byte* hdmx_table;
+    FT_ULong hdmx_table_size;
+    FT_UInt hdmx_record_count;
+    FT_ULong hdmx_record_size;
+    FT_Byte** hdmx_records;
+
+    FT_Byte* sbit_table;
+    FT_ULong sbit_table_size;
+    TT_SbitTableType sbit_table_type;
+    FT_UInt sbit_num_strikes;
+    FT_UInt* sbit_strike_map;
+
+    FT_Byte* kern_table;
+    FT_ULong kern_table_size;
+    FT_UInt num_kern_tables;
+    FT_UInt32 kern_avail_bits;
+    FT_UInt32 kern_order_bits;
+
+  static if (TT_CONFIG_OPTION_BDF) {
+    TT_BDFRec bdf;
+  }
+
+    FT_ULong horz_metrics_offset;
+    FT_ULong vert_metrics_offset;
+
+  static if (TT_CONFIG_OPTION_EMBEDDED_BITMAPS) {
+    FT_ULong ebdt_start;
+    FT_ULong ebdt_size;
+  }
+
+    void* cpal;
+    void* colr;
+
+    void* svg;
+
+  static if (TT_CONFIG_OPTION_GPOS_KERNING) {
+    FT_Byte* gpos_table;
+
+    FT_UInt32* gpos_lookups_kerning;
+    FT_UInt num_gpos_lookups_kerning;
+  }
 }
 
 alias TT_Interpreter = FT_Error function(
   void* exec_context
+);
+
+alias TT_Loader_ReadGlyphFunc = FT_Error function(
+  TT_Loader loader
 );
 
 alias TT_ExecContext = TT_ExecContextRec*;

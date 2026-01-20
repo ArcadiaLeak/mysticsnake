@@ -3,6 +3,8 @@ module freetype;
 public import freetype.config;
 public import freetype.internal;
 public import freetype.truetype;
+
+public import freetype.ftcolor;
 public import freetype.ftglyph;
 public import freetype.ftimage;
 public import freetype.ftincrem;
@@ -10,6 +12,7 @@ public import freetype.ftmodapi;
 public import freetype.ftrender;
 public import freetype.ftsystem;
 public import freetype.fttypes;
+public import freetype.tttables;
 
 FT_UInt32 FT_ENC_TAG(alias a, alias b, alias c, alias d)() {
   return (FT_STATIC_BYTE_CAST!(FT_UInt32, a) << 24) |
