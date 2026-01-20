@@ -2,6 +2,7 @@ module freetype;
 
 public import freetype.config;
 public import freetype.internal;
+public import freetype.truetype;
 public import freetype.ftglyph;
 public import freetype.ftimage;
 public import freetype.ftincrem;

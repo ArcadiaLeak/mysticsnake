@@ -72,18 +72,14 @@ enum TVisit {
 }
 
 class TIntermVariableDecl : TIntermNode {
-  private {
-    TIntermSymbol declSymbol;
-    TIntermNode initNode;
-  }
+  private { TIntermSymbol declSymbol; TIntermNode initNode; }
 
-  this(
-    TIntermSymbol in_declSymbol,
-    TIntermNode in_initNode
-  ) {
-    declSymbol = in_declSymbol;
-    initNode = in_initNode;
-  }
+  this(TIntermSymbol in_declSymbol, TIntermNode in_initNode) {
+    declSymbol = in_declSymbol; initNode = in_initNode; }
+
+  override inout(TIntermVariableDecl) getAsVariableDecl() inout => this;
+  inout(TIntermSymbol) getDeclSymbol() inout => declSymbol;
+  inout(TIntermNode) getInitNode() inout => initNode;
 }
 
 class TIntermOperator;

@@ -26,7 +26,7 @@ alias FT_ULong = ulong;
 
 alias FT_F2Dot14 = short;
 
-alias FT_26Dot6 = long;
+alias FT_F26Dot6 = long;
 
 alias FT_Fixed = long;
 
@@ -64,4 +64,9 @@ struct FT_Matrix {
 struct FT_Data {
   FT_Byte* pointer;
   FT_UInt length;
+}
+
+struct FT_UnitVector {
+  FT_F2Dot14 x;
+  FT_F2Dot14 y;
 }
