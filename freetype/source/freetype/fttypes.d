@@ -32,6 +32,8 @@ alias FT_Fixed = long;
 
 alias FT_Error = int;
 
+alias FT_Offset = size_t;
+
 alias FT_Pointer = void*;
 
 alias FT_List = FT_ListRec*;

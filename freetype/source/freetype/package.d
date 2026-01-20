@@ -8,6 +8,7 @@ public import freetype.ftcolor;
 public import freetype.ftglyph;
 public import freetype.ftimage;
 public import freetype.ftincrem;
+public import freetype.ftmm;
 public import freetype.ftmodapi;
 public import freetype.ftrender;
 public import freetype.ftsystem;

@@ -2,6 +2,14 @@ module freetype.internal.tttypes;
 
 import freetype;
 
+enum TT_SbitTableType {
+  TT_SBIT_TABLE_TYPE_NONE = 0,
+  TT_SBIT_TABLE_TYPE_EBLC,
+  TT_SBIT_TABLE_TYPE_CBLC,
+  TT_SBIT_TABLE_TYPE_SBIX,
+  TT_SBIT_TABLE_TYPE_MAX
+}
+
 struct TT_GlyphZoneRec {
   FT_UShort n_points;
   FT_UShort n_contours;
@@ -160,6 +168,158 @@ struct TT_FaceRec {
   }
 }
 
+struct TT_SBit_ScaleRec {
+  TT_SBit_LineMetricsRec hori;
+  TT_SBit_LineMetricsRec vert;
+
+  FT_Byte x_ppem;
+  FT_Byte y_ppem;
+
+  FT_Byte x_ppem_substitute;
+  FT_Byte y_ppem_substitute;
+}
+
+struct TT_Post_NamesRec {
+  FT_Bool loaded;
+  FT_UShort num_glyphs;
+  FT_UShort num_names;
+  FT_UShort* glyph_indices;
+  FT_Byte** glyph_names;
+}
+
+struct TT_SBit_LineMetricsRec {
+  FT_Char ascender;
+  FT_Char descender;
+  FT_Byte max_width;
+  FT_Char caret_slope_numerator;
+  FT_Char caret_slope_denominator;
+  FT_Char caret_offset;
+  FT_Char min_origin_SB;
+  FT_Char min_advance_SB;
+  FT_Char max_before_BL;
+  FT_Char min_after_BL;
+  FT_Char[2] pads;
+}
+
+struct TT_BDFRec {
+  FT_Byte* table;
+  FT_Byte* table_end;
+  FT_Byte* strings;
+  FT_ULong strings_size;
+  FT_UInt num_strikes;
+  FT_Bool loaded;
+}
+
+struct TT_GaspRec {
+  FT_UShort version_;
+  FT_UShort numRanges;
+  TT_GaspRange gaspRanges;
+}
+
+struct TT_LoaderRec {
+  TT_Face face;
+  TT_Size size;
+  FT_GlyphSlot glyph;
+  FT_GlyphLoader gloader;
+
+  FT_ULong load_flags;
+  FT_UInt glyph_index;
+
+  FT_Stream stream;
+  FT_UInt byte_len;
+
+  FT_Short n_contours;
+  FT_BBox bbox;
+  FT_Int left_bearing;
+  FT_Int advance;
+  FT_Int linear;
+  FT_Bool linear_def;
+  FT_Vector pp1;
+  FT_Vector pp2;
+
+  TT_GlyphZoneRec base;
+  TT_GlyphZoneRec zone;
+
+  TT_ExecContext exec;
+  FT_ULong ins_pos;
+
+  void* other;
+
+  FT_Int top_bearing;
+  FT_Int vadvance;
+  FT_Vector pp3;
+  FT_Vector pp4;
+
+  FT_Byte* cursor;
+  FT_Byte* limit;
+
+  FT_ListRec composites;
+
+  FT_Byte* widthp;
+}
+
+struct TT_GaspRangeRec {
+  FT_UShort maxPPEM;
+  FT_UShort gaspFlag;
+}
+
+struct TT_NameTableRec {
+  FT_UShort format;
+  FT_UInt numNameRecords;
+  FT_UInt storageOffset;
+  TT_NameRec* names;
+  FT_UInt numLangTagRecords;
+  TT_LangTagRec* langTags;
+  FT_Stream stream;
+}
+
+struct TT_LangTagRec {
+  FT_UShort stringLength;
+  FT_ULong stringOffset;
+
+  FT_Byte* string;
+}
+
+struct TT_NameRec {
+  FT_UShort platformID;
+  FT_UShort encodingID;
+  FT_UShort languageID;
+  FT_UShort nameID;
+  FT_UShort stringLength;
+  FT_ULong stringOffset;
+
+  FT_Byte* string;
+}
+
+struct TT_TableRec {
+  FT_ULong Tag;
+  FT_ULong CheckSum;
+  FT_ULong Offset;
+  FT_ULong Length;
+}
+
+struct TTC_HeaderRec {
+  FT_ULong tag;
+  FT_Fixed version_;
+  FT_Long count;
+  FT_ULong* offsets;
+}
+
+alias TT_Table = TT_TableRec*;
+alias TT_Name = TT_NameRec*;
+alias TT_LangTag = TT_LangTagRec*;
+alias TT_NameTable = TT_NameTableRec*;
+alias TT_Loader = TT_LoaderRec*;
+alias TT_GaspRange = TT_GaspRangeRec*;
+alias TT_SBit_LineMetrics = TT_SBit_LineMetricsRec*;
+alias TT_ExecContext = TT_ExecContextRec*;
+alias TT_GlyphZone = TT_GlyphZoneRec*;
+alias TT_Size = TT_SizeRec*;
+alias TT_SBit_Scale = TT_SBit_ScaleRec*;
+alias TT_Post_Names = TT_Post_NamesRec*;
+alias TT_Face = TT_FaceRec*;
+alias TT_BDF = TT_BDFRec*;
+
 alias TT_Interpreter = FT_Error function(
   void* exec_context
 );
@@ -168,8 +328,20 @@ alias TT_Loader_ReadGlyphFunc = FT_Error function(
   TT_Loader loader
 );
 
-alias TT_ExecContext = TT_ExecContextRec*;
+alias TT_Loader_EndGlyphFunc = void function(
+  TT_Loader loader
+);
 
-alias TT_GlyphZone = TT_GlyphZoneRec*;
+alias TT_Loader_StartGlyphFunc = FT_Error function(
+  TT_Loader loader,
+  FT_UInt glyph_index,
+  FT_ULong offset,
+  FT_UInt byte_count
+);
 
-alias TT_Size = TT_SizeRec*;
+alias TT_Loader_GotoTableFunc = FT_Error function(
+  TT_Face face,
+  FT_ULong tag,
+  FT_Stream stream,
+  FT_ULong* length
+);
