@@ -2,7 +2,7 @@ module glslang.intermediate;
 
 import glslang;
 
-class TItermNode {
+class TIntermNode {
   protected TSourceLoc loc;
 
   this() {
@@ -64,8 +64,21 @@ enum TVisit {
   EvPostVisit
 }
 
-class TIntermTraverser;
-class TIntermVariableDecl;
+class TIntermVariableDecl : TIntermNode {
+  private {
+    TIntermSymbol declSymbol;
+    TIntermNode initNode;
+  }
+
+  this(
+    TIntermSymbol in_declSymbol,
+    TIntermNode in_initNode
+  ) {
+    declSymbol = in_declSymbol;
+    initNode = in_initNode;
+  }
+}
+
 class TIntermOperator;
 class TIntermAggregate;
 class TIntermUnary;
