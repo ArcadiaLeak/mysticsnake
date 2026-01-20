@@ -3,21 +3,28 @@ module glslang.intermediate;
 import glslang;
 
 class TIntermNode {
-  protected TSourceLoc loc;
+  protected TSourceLoc m_loc;
 
-  this() {
-    loc.init();
-  }
+  this() { m_loc.init(); }
 
-  ref const(TSourceLoc) getLoc() const {
-    return loc;
-  }
-
-  void setLoc(ref const(TSourceLoc) l) {
-    loc = l;
-  }
+  ref const(TSourceLoc) loc() const => m_loc;
+  ref const(TSourceLoc) loc(ref const(TSourceLoc) l) => m_loc = l;
 
   abstract void traverse(TInterimTraverser);
+
+  inout(TIntermVariableDecl) getAsVariableDecl() inout => null;
+  inout(TIntermTyped) getAsTyped() inout => null;
+  inout(TIntermOperator) getAsOperator() inout => null;
+  inout(TIntermConstantUnion) getAsConstantUnion() inout => null;
+  inout(TIntermAggregate) getAsAggregate() inout => null;
+  inout(TIntermUnary) getAsUnaryNode() inout => null;
+  inout(TIntermBinary) getAsBinaryNode() inout => null;
+  inout(TIntermSelection) getAsSelection() inout => null;
+  inout(TIntermSwitch) getAsSwitch() inout => null;
+  inout(TIntermMethod) getAsMethod() inout => null;
+  inout(TIntermSymbol) getAsSymbol() inout => null;
+  inout(TIntermBranch) getAsBranch() inout => null;
+  inout(TIntermLoop) getAsLoop() inout => null;
 }
 
 class TInterimTraverser {
