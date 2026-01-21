@@ -39,3 +39,13 @@ struct TT_SizeRec {
     FT_Error cvt_ready;
   }
 }
+
+struct TT_DriverRec {
+  FT_DriverRec root;
+
+  TT_GlyphZoneRec zone;
+
+  FT_UInt interpreter_version;
+}
+
+alias TT_Driver = TT_DriverRec*;

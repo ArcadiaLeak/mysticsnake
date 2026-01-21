@@ -264,8 +264,6 @@ private FT_Error TT_Load_Context(
   TT_Face face,
   TT_Size size
 ) {
-  FT_Memory memory = exec.memory;
-
   exec.face = face;
   exec.size = size;
 
@@ -280,6 +278,53 @@ private FT_Error TT_Load_Context(
   exec.metrics = *size.metrics;
 
   exec.twilight = size.twilight;
+
+  return FT_Error.FT_Err_Ok;
+}
+
+private void TT_Save_Context(
+  TT_ExecContext exec,
+  TT_Size size
+) {
+  size.GS.minimum_distance = exec.GS.minimum_distance;
+  size.GS.control_value_cutin = exec.GS.control_value_cutin;
+  size.GS.single_width_cutin = exec.GS.single_width_cutin;
+  size.GS.single_width_value = exec.GS.single_width_value;
+  size.GS.delta_base = exec.GS.delta_base;
+  size.GS.delta_shift = exec.GS.delta_shift;
+  size.GS.auto_flip = exec.GS.auto_flip;
+  size.GS.instruct_control = exec.GS.instruct_control;
+  size.GS.scan_control = exec.GS.scan_control;
+  size.GS.scan_type = exec.GS.scan_type;
+}
+
+private TT_ExecContext TT_Save_Context(
+  TT_Driver driver
+) {
+    TT_ExecContext exec = null;
+    FT_DebugHook_Func interp;
+
+    if (!driver) return null;
+  
+    exec = new TT_ExecContextRec;
+
+    interp = driver.root.root.library.debug_hooks[FT_DEBUG_HOOK_TRUETYPE];
+
+    if (interp)
+      exec.interpreter = cast(TT_Interpreter) interp;
+    else
+      exec.interpreter = cast(TT_Interpreter) &TT_RunIns;
+
+    exec.callSize = 32;
+    exec.callStack = new TT_CallRec[exec.callSize].ptr;
+
+    return exec;
+}
+
+private FT_Error TT_RunIns(
+  void* exec
+) {
+  throw new Exception("uninplemented");
 
   return FT_Error.FT_Err_Ok;
 }
