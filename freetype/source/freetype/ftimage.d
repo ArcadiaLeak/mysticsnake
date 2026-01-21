@@ -6,14 +6,12 @@ import std.conv;
 
 string FT_IMAGE_TAG(
   string _x1, string _x2, string _x3, string _x4
-) {
-  return text(iq{(
-    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x1)) << 24) |
-    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x2)) << 16) |
-    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x3)) <<  8) |
-     $(FT_STATIC_BYTE_CAST(q{ulong}, _x4))
-  )});
-}
+) => iq{(
+  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x1)) << 24) |
+  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x2)) << 16) |
+  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x3)) <<  8) |
+   $(FT_STATIC_BYTE_CAST(q{ulong}, _x4))
+)}.text;
 
 enum FT_Glyph_Format : ulong {
   FT_GLYPH_FORMAT_NONE = mixin(FT_IMAGE_TAG(q{0}, q{0}, q{0}, q{0})),

@@ -20,14 +20,12 @@ import std.conv;
 
 string FT_ENC_TAG(
   string a, string b, string c, string d
-) {
-  return text(iq{(
-    ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, a)) << 24) |
-    ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, b)) << 16) |
-    ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, c)) <<  8) |
-     $(FT_STATIC_BYTE_CAST(q{FT_UInt32}, d))
-  )});
-}
+) => iq{(
+  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, a)) << 24) |
+  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, b)) << 16) |
+  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, c)) <<  8) |
+   $(FT_STATIC_BYTE_CAST(q{FT_UInt32}, d))
+)}.text;
 
 enum FT_Encoding : FT_UInt32 {
   FT_ENCODING_NONE = mixin(FT_ENC_TAG(q{0}, q{0}, q{0}, q{0})),

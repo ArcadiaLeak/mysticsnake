@@ -193,21 +193,10 @@ alias TT_Cur_Ppem_Func = FT_Long function(
   TT_ExecContext exc
 );
 
-auto NO_SUBPIXEL_HINTING(alias exc)() {
-  return (cast(TT_Driver) FT_FACE_DRIVER(exc.face)).interpreter_version ==
-    TT_INTERPRETER_VERSION_35;
-}
-
-auto SUBPIXEL_HINTING_MINIMAL(alias exc)() {
-  return (cast(TT_Driver) FT_FACE_DRIVER(exc.face)).interpreter_version ==
-    TT_INTERPRETER_VERSION_40;
-}
-
 const TT_GraphicsState tt_default_graphics_state = {
   0, 0, 0, 1, 1, 1,
   { 0x4000, 0 }, { 0x4000, 0 }, { 0x4000, 0 },
   1, 1, [0, 0, 0, 0],
-
   64, 68, 0, 0, 9, 3,
   true, 0, false, 0
 };
@@ -236,54 +225,6 @@ private void TT_Clear_CodeRange(
   exec.codeRangeTable[range - 1].size = 0;
 }
 
-private void TT_Done_Context(
-  TT_ExecContext exec
-) {
-  FT_Memory memory = exec.memory;
-
-  exec.maxPoints = 0;
-  exec.maxContours = 0;
-
-  exec.glyfCvt = null;
-  exec.glyfCvtSize = 0;
-
-  exec.glyfStorage = null;
-  exec.glyfStoreSize = 0;
-
-  exec.callStack = null;
-  exec.callSize = 0;
-  exec.callTop = 0;
-
-  exec.glyphIns = null;
-  exec.glyphSize = 0;
-
-  exec.size = null;
-  exec.face = null;
-}
-
-private FT_Error TT_Load_Context(
-  TT_ExecContext exec,
-  TT_Face face,
-  TT_Size size
-) {
-  exec.face = face;
-  exec.size = size;
-
-  exec.storage = exec.stack + exec.stackSize;
-  exec.cvt = exec.storage + exec.storeSize;
-
-  exec.glyphIns = null;
-  exec.glyphSize = 0;
-
-  exec.pointSize = size.point_size;
-  exec.tt_metrics = size.ttmetrics;
-  exec.metrics = *size.metrics;
-
-  exec.twilight = size.twilight;
-
-  return FT_Error.FT_Err_Ok;
-}
-
 private void TT_Save_Context(
   TT_ExecContext exec,
   TT_Size size
@@ -300,39 +241,8 @@ private void TT_Save_Context(
   size.GS.scan_type = exec.GS.scan_type;
 }
 
-private TT_ExecContext TT_Save_Context(
-  TT_Driver driver
-) {
-    TT_ExecContext exec = null;
-    FT_DebugHook_Func interp;
-
-    if (!driver) return null;
-  
-    exec = new TT_ExecContextRec;
-
-    interp = driver.root.root.library.debug_hooks[FT_DEBUG_HOOK_TRUETYPE];
-
-    if (interp)
-      exec.interpreter = cast(TT_Interpreter) interp;
-    else
-      exec.interpreter = cast(TT_Interpreter) &TT_RunIns;
-
-    exec.callSize = 32;
-    exec.callStack = new TT_CallRec[exec.callSize].ptr;
-
-    return exec;
-}
-
-private FT_Error TT_RunIns(
-  void* exec
-) {
-  throw new Exception("uninplemented");
-
-  return FT_Error.FT_Err_Ok;
-}
-
 string PACK(string x, string y) {
-  return text( iq{( ($(x) << 4) | $(y) )} );
+  return iq{( ($(x) << 4) | $(y) )}.text;
 }
 
 private immutable
