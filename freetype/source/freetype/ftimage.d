@@ -2,21 +2,27 @@ module freetype.ftimage;
 
 import freetype;
 
-ulong FT_IMAGE_TAG(alias _x1, alias _x2, alias _x3, alias _x4)() {
-  return (FT_STATIC_BYTE_CAST!(ulong, _x1) << 24) |
-    (FT_STATIC_BYTE_CAST!(ulong, _x2) << 16) |
-    (FT_STATIC_BYTE_CAST!(ulong, _x3) << 8) |
-    FT_STATIC_BYTE_CAST!(ulong, _x4);
+import std.conv;
+
+string FT_IMAGE_TAG(
+  string _x1, string _x2, string _x3, string _x4
+) {
+  return text(iq{(
+    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x1)) << 24) |
+    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x2)) << 16) |
+    ($(FT_STATIC_BYTE_CAST(q{ulong}, _x3)) <<  8) |
+     $(FT_STATIC_BYTE_CAST(q{ulong}, _x4))
+  )});
 }
 
 enum FT_Glyph_Format : ulong {
-  FT_GLYPH_FORMAT_NONE = FT_IMAGE_TAG!(0, 0, 0, 0),
-  
-  FT_GLYPH_FORMAT_COMPOSITE = FT_IMAGE_TAG!('c', 'o', 'm', 'p'),
-  FT_GLYPH_FORMAT_BITMAP = FT_IMAGE_TAG!('b', 'i', 't', 's'),
-  FT_GLYPH_FORMAT_OUTLINE = FT_IMAGE_TAG!('o', 'u', 't', 'l'),
-  FT_GLYPH_FORMAT_PLOTTER = FT_IMAGE_TAG!('p', 'l', 'o', 't'),
-  FT_GLYPH_FORMAT_SVG = FT_IMAGE_TAG!('S', 'V', 'G', ' ')
+  FT_GLYPH_FORMAT_NONE = mixin(FT_IMAGE_TAG(q{0}, q{0}, q{0}, q{0})),
+
+  FT_GLYPH_FORMAT_COMPOSITE = mixin(FT_IMAGE_TAG(q{'c'}, q{'o'}, q{'m'}, q{'p'})),
+  FT_GLYPH_FORMAT_BITMAP = mixin(FT_IMAGE_TAG(q{'b'}, q{'i'}, q{'t'}, q{'s'})),
+  FT_GLYPH_FORMAT_OUTLINE = mixin(FT_IMAGE_TAG(q{'o'}, q{'u'}, q{'t'}, q{'l'})),
+  FT_GLYPH_FORMAT_PLOTTER = mixin(FT_IMAGE_TAG(q{'p'}, q{'l'}, q{'o'}, q{'t'})),
+  FT_GLYPH_FORMAT_SVG = mixin(FT_IMAGE_TAG(q{'S'}, q{'V'}, q{'G'}, q{' '}))
 }
 
 alias FT_Pos = long;

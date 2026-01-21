@@ -1,5 +1,7 @@
 module freetype.config.public_macros;
 
-T FT_STATIC_BYTE_CAST(T, alias var)() {
-  return cast(T) (cast(char) var);
+import std.conv;
+
+string FT_STATIC_BYTE_CAST(string type, string var) {
+  return text(iq{cast($(type)) cast(char) ($(var))});
 }
