@@ -3,43 +3,23 @@ module freetype.fttypes;
 import freetype;
 
 alias FT_Bool = ubyte;
-
 alias FT_Char = byte;
-
 alias FT_Byte = ubyte;
-
 alias FT_Bytes = FT_Byte*;
-
 alias FT_String = char;
-
 alias FT_Short = short;
-
 alias FT_UShort = ushort;
-
 alias FT_Int = int;
-
 alias FT_UInt = uint;
-
 alias FT_Long = long;
-
 alias FT_ULong = ulong;
-
 alias FT_F2Dot14 = short;
-
 alias FT_F26Dot6 = long;
-
 alias FT_Fixed = long;
-
-alias FT_Error = int;
-
 alias FT_Offset = size_t;
-
 alias FT_Pointer = void*;
-
 alias FT_List = FT_ListRec*;
-
 alias FT_ListNode = FT_ListNodeRec*;
-
 alias FT_Generic_Finalizer = void function(void* object);
 
 struct FT_ListRec {

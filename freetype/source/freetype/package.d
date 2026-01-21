@@ -5,6 +5,7 @@ public import freetype.internal;
 public import freetype.truetype;
 
 public import freetype.ftcolor;
+public import freetype.fterrdef;
 public import freetype.ftglyph;
 public import freetype.ftimage;
 public import freetype.ftincrem;

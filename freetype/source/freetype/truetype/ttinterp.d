@@ -233,3 +233,53 @@ private void TT_Clear_CodeRange(
   exec.codeRangeTable[range - 1].base = null;
   exec.codeRangeTable[range - 1].size = 0;
 }
+
+private void TT_Done_Context(
+  TT_ExecContext exec
+) {
+  FT_Memory memory = exec.memory;
+
+  exec.maxPoints = 0;
+  exec.maxContours = 0;
+
+  exec.glyfCvt = null;
+  exec.glyfCvtSize = 0;
+
+  exec.glyfStorage = null;
+  exec.glyfStoreSize = 0;
+
+  exec.callStack = null;
+  exec.callSize = 0;
+  exec.callTop = 0;
+
+  exec.glyphIns = null;
+  exec.glyphSize = 0;
+
+  exec.size = null;
+  exec.face = null;
+}
+
+private FT_Error TT_Load_Context(
+  TT_ExecContext exec,
+  TT_Face face,
+  TT_Size size
+) {
+  FT_Memory memory = exec.memory;
+
+  exec.face = face;
+  exec.size = size;
+
+  exec.storage = exec.stack + exec.stackSize;
+  exec.cvt = exec.storage + exec.storeSize;
+
+  exec.glyphIns = null;
+  exec.glyphSize = 0;
+
+  exec.pointSize = size.point_size;
+  exec.tt_metrics = size.ttmetrics;
+  exec.metrics = *size.metrics;
+
+  exec.twilight = size.twilight;
+
+  return FT_Error.FT_Err_Ok;
+}
