@@ -1,5 +1,6 @@
 module freetype;
 
+public import freetype.base;
 public import freetype.config;
 public import freetype.internal;
 public import freetype.truetype;

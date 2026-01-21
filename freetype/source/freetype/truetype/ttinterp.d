@@ -225,6 +225,33 @@ private void TT_Clear_CodeRange(
   exec.codeRangeTable[range - 1].size = 0;
 }
 
+private void TT_Done_Context(
+  TT_ExecContext exec
+) {
+  FT_Memory memory = exec.memory;
+
+  exec.maxPoints   = 0;
+  exec.maxContours = 0;
+
+  mixin(FT_FREE(q{exec.glyfCvt}));
+  exec.glyfCvtSize = 0;
+
+  mixin(FT_FREE(q{exec.glyfStorage}));
+  exec.glyfStoreSize = 0;
+
+  mixin(FT_FREE(q{exec.callStack}));
+  exec.callSize = 0;
+  exec.callTop  = 0;
+
+  mixin(FT_FREE(q{exec.glyphIns}));
+  exec.glyphSize = 0;
+
+  exec.size = null;
+  exec.face = null;
+
+  mixin(FT_FREE(q{exec}));
+}
+
 private void TT_Save_Context(
   TT_ExecContext exec,
   TT_Size size
