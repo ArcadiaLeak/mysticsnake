@@ -220,29 +220,16 @@ struct FT_Size_RequestRec {
 }
 
 alias FT_Library = FT_LibraryRec*;
-
 alias FT_Module = FT_ModuleRec*;
-
 alias FT_Renderer = FT_RendererRec*;
-
 alias FT_GlyphSlot = FT_GlyphSlotRec*;
-
 alias FT_Slot_Internal = FT_Slot_InternalRec*;
-
 alias FT_SubGlyph = FT_SubGlyphRec*;
-
 alias FT_CharMap = FT_CharMapRec*;
-
 alias FT_Face = FT_FaceRec*;
-
 alias FT_Face_Internal = FT_Face_InternalRec*;
-
 alias FT_Size = FT_SizeRec*;
-
 alias FT_Size_Internal = FT_Size_InternalRec*;
-
 alias FT_Driver = FT_DriverRec*;
-
 alias FT_Size_Request = FT_Size_RequestRec*;
-
 alias FT_Raster = void*;

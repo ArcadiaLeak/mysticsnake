@@ -252,6 +252,31 @@ private void TT_Done_Context(
   mixin(FT_FREE(q{exec}));
 }
 
+FT_Error TT_Load_Context(
+  TT_ExecContext exec,
+  TT_Face face,
+  TT_Size size
+) {
+  FT_Memory memory = exec.memory;
+
+  exec.face = face;
+  exec.size = size;
+
+  exec.storage = exec.stack + exec.stackSize;
+  exec.cvt = exec.storage + exec.storeSize;
+
+  mixin(FT_FREE(q{exec.glyphIns}));
+  exec.glyphSize = 0;
+
+  exec.pointSize = size.point_size;
+  exec.tt_metrics = size.ttmetrics;
+  exec.metrics = *size.metrics;
+
+  exec.twilight = size.twilight;
+
+  return FT_Error.FT_Err_Ok;
+}
+
 private void TT_Save_Context(
   TT_ExecContext exec,
   TT_Size size
