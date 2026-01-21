@@ -200,3 +200,36 @@ auto SUBPIXEL_HINTING_MINIMAL(alias exc)() {
   return (cast(TT_Driver) FT_FACE_DRIVER(exc.face)).interpreter_version ==
     TT_INTERPRETER_VERSION_40;
 }
+
+const TT_GraphicsState tt_default_graphics_state = {
+  0, 0, 0, 1, 1, 1,
+  { 0x4000, 0 }, { 0x4000, 0 }, { 0x4000, 0 },
+  1, 1, [0, 0, 0, 0],
+
+  64, 68, 0, 0, 9, 3,
+  true, 0, false, 0
+};
+
+private void TT_Set_CodeRange(
+  TT_ExecContext exec,
+  FT_Int range,
+  FT_Byte* base,
+  FT_Long length
+) in (range >= 1 && range <= 3) {
+  exec.codeRangeTable[range - 1].base = base;
+  exec.codeRangeTable[range - 1].size = length;
+
+  exec.code = base;
+  exec.codeSize = length;
+  exec.IP = 0;
+  exec.curRange = range;
+  exec.iniRange = range;
+}
+
+private void TT_Clear_CodeRange(
+  TT_ExecContext exec,
+  FT_Int range
+) in (range >= 1 && range <= 3) {
+  exec.codeRangeTable[range - 1].base = null;
+  exec.codeRangeTable[range - 1].size = 0;
+}
