@@ -2,6 +2,8 @@ module freetype.truetype.ttinterp;
 
 import freetype;
 
+import std.conv;
+
 enum TT_MAX_CODE_RANGES = 3;
 
 struct TT_ExecContextRec {
@@ -329,284 +331,399 @@ private FT_Error TT_RunIns(
   return FT_Error.FT_Err_Ok;
 }
 
-FT_Byte PACK(int x, int y) {
-  return cast(ubyte) ((x << 4) | y);
+string PACK(string x, string y) {
+  return text( iq{( ($(x) << 4) | $(y) )} );
 }
 
 private immutable
-FT_Byte[256] Pop_Push_Count = [
-  /*  SVTCA[0]  */  PACK(0, 0),
-  /*  SVTCA[1]  */  PACK(0, 0),
-  /*  SPVTCA[0] */  PACK(0, 0),
-  /*  SPVTCA[1] */  PACK(0, 0),
-  /*  SFVTCA[0] */  PACK(0, 0),
-  /*  SFVTCA[1] */  PACK(0, 0),
-  /*  SPVTL[0]  */  PACK(2, 0),
-  /*  SPVTL[1]  */  PACK(2, 0),
-  /*  SFVTL[0]  */  PACK(2, 0),
-  /*  SFVTL[1]  */  PACK(2, 0),
-  /*  SPVFS     */  PACK(2, 0),
-  /*  SFVFS     */  PACK(2, 0),
-  /*  GPV       */  PACK(0, 2),
-  /*  GFV       */  PACK(0, 2),
-  /*  SFVTPV    */  PACK(0, 0),
-  /*  ISECT     */  PACK(5, 0),
+FT_Byte[16] Pop_Push_Count_0x00 = [
+  /*  SVTCA[0]  */  mixin(PACK(q{0}, q{0})),
+  /*  SVTCA[1]  */  mixin(PACK(q{0}, q{0})),
+  /*  SPVTCA[0] */  mixin(PACK(q{0}, q{0})),
+  /*  SPVTCA[1] */  mixin(PACK(q{0}, q{0})),
 
-  /*  SRP0      */  PACK(1, 0),
-  /*  SRP1      */  PACK(1, 0),
-  /*  SRP2      */  PACK(1, 0),
-  /*  SZP0      */  PACK(1, 0),
-  /*  SZP1      */  PACK(1, 0),
-  /*  SZP2      */  PACK(1, 0),
-  /*  SZPS      */  PACK(1, 0),
-  /*  SLOOP     */  PACK(1, 0),
-  /*  RTG       */  PACK(0, 0),
-  /*  RTHG      */  PACK(0, 0),
-  /*  SMD       */  PACK(1, 0),
-  /*  ELSE      */  PACK(0, 0),
-  /*  JMPR      */  PACK(1, 0),
-  /*  SCVTCI    */  PACK(1, 0),
-  /*  SSWCI     */  PACK(1, 0),
-  /*  SSW       */  PACK(1, 0),
+  /*  SFVTCA[0] */  mixin(PACK(q{0}, q{0})),
+  /*  SFVTCA[1] */  mixin(PACK(q{0}, q{0})),
+  /*  SPVTL[0]  */  mixin(PACK(q{2}, q{0})),
+  /*  SPVTL[1]  */  mixin(PACK(q{2}, q{0})),
 
-  /*  DUP       */  PACK(1, 2),
-  /*  POP       */  PACK(1, 0),
-  /*  CLEAR     */  PACK(0, 0),
-  /*  SWAP      */  PACK(2, 2),
-  /*  DEPTH     */  PACK(0, 1),
-  /*  CINDEX    */  PACK(1, 1),
-  /*  MINDEX    */  PACK(1, 0),
-  /*  ALIGNPTS  */  PACK(2, 0),
-  /*  INS_$28   */  PACK(0, 0),
-  /*  UTP       */  PACK(1, 0),
-  /*  LOOPCALL  */  PACK(2, 0),
-  /*  CALL      */  PACK(1, 0),
-  /*  FDEF      */  PACK(1, 0),
-  /*  ENDF      */  PACK(0, 0),
-  /*  MDAP[0]   */  PACK(1, 0),
-  /*  MDAP[1]   */  PACK(1, 0),
+  /*  SFVTL[0]  */  mixin(PACK(q{2}, q{0})),
+  /*  SFVTL[1]  */  mixin(PACK(q{2}, q{0})),
+  /*  SPVFS     */  mixin(PACK(q{2}, q{0})),
+  /*  SFVFS     */  mixin(PACK(q{2}, q{0})),
 
-  /*  IUP[0]    */  PACK(0, 0),
-  /*  IUP[1]    */  PACK(0, 0),
-  /*  SHP[0]    */  PACK(0, 0),
-  /*  SHP[1]    */  PACK(0, 0),
-  /*  SHC[0]    */  PACK(1, 0),
-  /*  SHC[1]    */  PACK(1, 0),
-  /*  SHZ[0]    */  PACK(1, 0),
-  /*  SHZ[1]    */  PACK(1, 0),
-  /*  SHPIX     */  PACK(1, 0),
-  /*  IP        */  PACK(0, 0),
-  /*  MSIRP[0]  */  PACK(2, 0),
-  /*  MSIRP[1]  */  PACK(2, 0),
-  /*  ALIGNRP   */  PACK(0, 0),
-  /*  RTDG      */  PACK(0, 0),
-  /*  MIAP[0]   */  PACK(2, 0),
-  /*  MIAP[1]   */  PACK(2, 0),
-
-  /*  NPUSHB    */  PACK(0, 0),
-  /*  NPUSHW    */  PACK(0, 0),
-  /*  WS        */  PACK(2, 0),
-  /*  RS        */  PACK(1, 1),
-  /*  WCVTP     */  PACK(2, 0),
-  /*  RCVT      */  PACK(1, 1),
-  /*  GC[0]     */  PACK(1, 1),
-  /*  GC[1]     */  PACK(1, 1),
-  /*  SCFS      */  PACK(2, 0),
-  /*  MD[0]     */  PACK(2, 1),
-  /*  MD[1]     */  PACK(2, 1),
-  /*  MPPEM     */  PACK(0, 1),
-  /*  MPS       */  PACK(0, 1),
-  /*  FLIPON    */  PACK(0, 0),
-  /*  FLIPOFF   */  PACK(0, 0),
-  /*  DEBUG     */  PACK(1, 0),
-
-  /*  LT        */  PACK(2, 1),
-  /*  LTEQ      */  PACK(2, 1),
-  /*  GT        */  PACK(2, 1),
-  /*  GTEQ      */  PACK(2, 1),
-  /*  EQ        */  PACK(2, 1),
-  /*  NEQ       */  PACK(2, 1),
-  /*  ODD       */  PACK(1, 1),
-  /*  EVEN      */  PACK(1, 1),
-  /*  IF        */  PACK(1, 0),
-  /*  EIF       */  PACK(0, 0),
-  /*  AND       */  PACK(2, 1),
-  /*  OR        */  PACK(2, 1),
-  /*  NOT       */  PACK(1, 1),
-  /*  DELTAP1   */  PACK(1, 0),
-  /*  SDB       */  PACK(1, 0),
-  /*  SDS       */  PACK(1, 0),
-
-  /*  ADD       */  PACK(2, 1),
-  /*  SUB       */  PACK(2, 1),
-  /*  DIV       */  PACK(2, 1),
-  /*  MUL       */  PACK(2, 1),
-  /*  ABS       */  PACK(1, 1),
-  /*  NEG       */  PACK(1, 1),
-  /*  FLOOR     */  PACK(1, 1),
-  /*  CEILING   */  PACK(1, 1),
-  /*  ROUND[0]  */  PACK(1, 1),
-  /*  ROUND[1]  */  PACK(1, 1),
-  /*  ROUND[2]  */  PACK(1, 1),
-  /*  ROUND[3]  */  PACK(1, 1),
-  /*  NROUND[0] */  PACK(1, 1),
-  /*  NROUND[1] */  PACK(1, 1),
-  /*  NROUND[2] */  PACK(1, 1),
-  /*  NROUND[3] */  PACK(1, 1),
-
-  /*  WCVTF     */  PACK(2, 0),
-  /*  DELTAP2   */  PACK(1, 0),
-  /*  DELTAP3   */  PACK(1, 0),
-  /*  DELTAC1   */  PACK(1, 0),
-  /*  DELTAC2   */  PACK(1, 0),
-  /*  DELTAC3   */  PACK(1, 0),
-  /*  SROUND    */  PACK(1, 0),
-  /*  S45ROUND  */  PACK(1, 0),
-  /*  JROT      */  PACK(2, 0),
-  /*  JROF      */  PACK(2, 0),
-  /*  ROFF      */  PACK(0, 0),
-  /*  INS_$7B   */  PACK(0, 0),
-  /*  RUTG      */  PACK(0, 0),
-  /*  RDTG      */  PACK(0, 0),
-  /*  SANGW     */  PACK(1, 0),
-  /*  AA        */  PACK(1, 0),
-
-  /*  FLIPPT    */  PACK(0, 0),
-  /*  FLIPRGON  */  PACK(2, 0),
-  /*  FLIPRGOFF */  PACK(2, 0),
-  /*  INS_$83   */  PACK(0, 0),
-  /*  INS_$84   */  PACK(0, 0),
-  /*  SCANCTRL  */  PACK(1, 0),
-  /*  SDPVTL[0] */  PACK(2, 0),
-  /*  SDPVTL[1] */  PACK(2, 0),
-  /*  GETINFO   */  PACK(1, 1),
-  /*  IDEF      */  PACK(1, 0),
-  /*  ROLL      */  PACK(3, 3),
-  /*  MAX       */  PACK(2, 1),
-  /*  MIN       */  PACK(2, 1),
-  /*  SCANTYPE  */  PACK(1, 0),
-  /*  INSTCTRL  */  PACK(2, 0),
-  /*  INS_$8F   */  PACK(0, 0),
-
-  /*  INS_$90  */   PACK(0, 0),
-  /*  GETVAR   */   PACK(0, 0),
-  /*  GETDATA  */   PACK(0, 1),
-  /*  INS_$93  */   PACK(0, 0),
-  /*  INS_$94  */   PACK(0, 0),
-  /*  INS_$95  */   PACK(0, 0),
-  /*  INS_$96  */   PACK(0, 0),
-  /*  INS_$97  */   PACK(0, 0),
-  /*  INS_$98  */   PACK(0, 0),
-  /*  INS_$99  */   PACK(0, 0),
-  /*  INS_$9A  */   PACK(0, 0),
-  /*  INS_$9B  */   PACK(0, 0),
-  /*  INS_$9C  */   PACK(0, 0),
-  /*  INS_$9D  */   PACK(0, 0),
-  /*  INS_$9E  */   PACK(0, 0),
-  /*  INS_$9F  */   PACK(0, 0),
-
-  /*  INS_$A0  */   PACK(0, 0),
-  /*  INS_$A1  */   PACK(0, 0),
-  /*  INS_$A2  */   PACK(0, 0),
-  /*  INS_$A3  */   PACK(0, 0),
-  /*  INS_$A4  */   PACK(0, 0),
-  /*  INS_$A5  */   PACK(0, 0),
-  /*  INS_$A6  */   PACK(0, 0),
-  /*  INS_$A7  */   PACK(0, 0),
-  /*  INS_$A8  */   PACK(0, 0),
-  /*  INS_$A9  */   PACK(0, 0),
-  /*  INS_$AA  */   PACK(0, 0),
-  /*  INS_$AB  */   PACK(0, 0),
-  /*  INS_$AC  */   PACK(0, 0),
-  /*  INS_$AD  */   PACK(0, 0),
-  /*  INS_$AE  */   PACK(0, 0),
-  /*  INS_$AF  */   PACK(0, 0),
-
-  /*  PUSHB[0]  */  PACK(0, 1),
-  /*  PUSHB[1]  */  PACK(0, 2),
-  /*  PUSHB[2]  */  PACK(0, 3),
-  /*  PUSHB[3]  */  PACK(0, 4),
-  /*  PUSHB[4]  */  PACK(0, 5),
-  /*  PUSHB[5]  */  PACK(0, 6),
-  /*  PUSHB[6]  */  PACK(0, 7),
-  /*  PUSHB[7]  */  PACK(0, 8),
-  /*  PUSHW[0]  */  PACK(0, 1),
-  /*  PUSHW[1]  */  PACK(0, 2),
-  /*  PUSHW[2]  */  PACK(0, 3),
-  /*  PUSHW[3]  */  PACK(0, 4),
-  /*  PUSHW[4]  */  PACK(0, 5),
-  /*  PUSHW[5]  */  PACK(0, 6),
-  /*  PUSHW[6]  */  PACK(0, 7),
-  /*  PUSHW[7]  */  PACK(0, 8),
-
-  /*  MDRP[00]  */  PACK(1, 0),
-  /*  MDRP[01]  */  PACK(1, 0),
-  /*  MDRP[02]  */  PACK(1, 0),
-  /*  MDRP[03]  */  PACK(1, 0),
-  /*  MDRP[04]  */  PACK(1, 0),
-  /*  MDRP[05]  */  PACK(1, 0),
-  /*  MDRP[06]  */  PACK(1, 0),
-  /*  MDRP[07]  */  PACK(1, 0),
-  /*  MDRP[08]  */  PACK(1, 0),
-  /*  MDRP[09]  */  PACK(1, 0),
-  /*  MDRP[10]  */  PACK(1, 0),
-  /*  MDRP[11]  */  PACK(1, 0),
-  /*  MDRP[12]  */  PACK(1, 0),
-  /*  MDRP[13]  */  PACK(1, 0),
-  /*  MDRP[14]  */  PACK(1, 0),
-  /*  MDRP[15]  */  PACK(1, 0),
-
-  /*  MDRP[16]  */  PACK(1, 0),
-  /*  MDRP[17]  */  PACK(1, 0),
-  /*  MDRP[18]  */  PACK(1, 0),
-  /*  MDRP[19]  */  PACK(1, 0),
-  /*  MDRP[20]  */  PACK(1, 0),
-  /*  MDRP[21]  */  PACK(1, 0),
-  /*  MDRP[22]  */  PACK(1, 0),
-  /*  MDRP[23]  */  PACK(1, 0),
-  /*  MDRP[24]  */  PACK(1, 0),
-  /*  MDRP[25]  */  PACK(1, 0),
-  /*  MDRP[26]  */  PACK(1, 0),
-  /*  MDRP[27]  */  PACK(1, 0),
-  /*  MDRP[28]  */  PACK(1, 0),
-  /*  MDRP[29]  */  PACK(1, 0),
-  /*  MDRP[30]  */  PACK(1, 0),
-  /*  MDRP[31]  */  PACK(1, 0),
-
-  /*  MIRP[00]  */  PACK(2, 0),
-  /*  MIRP[01]  */  PACK(2, 0),
-  /*  MIRP[02]  */  PACK(2, 0),
-  /*  MIRP[03]  */  PACK(2, 0),
-  /*  MIRP[04]  */  PACK(2, 0),
-  /*  MIRP[05]  */  PACK(2, 0),
-  /*  MIRP[06]  */  PACK(2, 0),
-  /*  MIRP[07]  */  PACK(2, 0),
-  /*  MIRP[08]  */  PACK(2, 0),
-  /*  MIRP[09]  */  PACK(2, 0),
-  /*  MIRP[10]  */  PACK(2, 0),
-  /*  MIRP[11]  */  PACK(2, 0),
-  /*  MIRP[12]  */  PACK(2, 0),
-  /*  MIRP[13]  */  PACK(2, 0),
-  /*  MIRP[14]  */  PACK(2, 0),
-  /*  MIRP[15]  */  PACK(2, 0),
-
-  /*  MIRP[16]  */  PACK(2, 0),
-  /*  MIRP[17]  */  PACK(2, 0),
-  /*  MIRP[18]  */  PACK(2, 0),
-  /*  MIRP[19]  */  PACK(2, 0),
-  /*  MIRP[20]  */  PACK(2, 0),
-  /*  MIRP[21]  */  PACK(2, 0),
-  /*  MIRP[22]  */  PACK(2, 0),
-  /*  MIRP[23]  */  PACK(2, 0),
-  /*  MIRP[24]  */  PACK(2, 0),
-  /*  MIRP[25]  */  PACK(2, 0),
-  /*  MIRP[26]  */  PACK(2, 0),
-  /*  MIRP[27]  */  PACK(2, 0),
-  /*  MIRP[28]  */  PACK(2, 0),
-  /*  MIRP[29]  */  PACK(2, 0),
-  /*  MIRP[30]  */  PACK(2, 0),
-  /*  MIRP[31]  */  PACK(2, 0)
+  /*  GPV       */  mixin(PACK(q{0}, q{2})),
+  /*  GFV       */  mixin(PACK(q{0}, q{2})),
+  /*  SFVTPV    */  mixin(PACK(q{0}, q{0})),
+  /*  ISECT     */  mixin(PACK(q{5}, q{0}))
 ];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x10 = [
+  /*  SRP0      */  mixin(PACK(q{1}, q{0})),
+  /*  SRP1      */  mixin(PACK(q{1}, q{0})),
+  /*  SRP2      */  mixin(PACK(q{1}, q{0})),
+  /*  SZP0      */  mixin(PACK(q{1}, q{0})),
+
+  /*  SZP1      */  mixin(PACK(q{1}, q{0})),
+  /*  SZP2      */  mixin(PACK(q{1}, q{0})),
+  /*  SZPS      */  mixin(PACK(q{1}, q{0})),
+  /*  SLOOP     */  mixin(PACK(q{1}, q{0})),
+
+  /*  RTG       */  mixin(PACK(q{0}, q{0})),
+  /*  RTHG      */  mixin(PACK(q{0}, q{0})),
+  /*  SMD       */  mixin(PACK(q{1}, q{0})),
+  /*  ELSE      */  mixin(PACK(q{0}, q{0})),
+
+  /*  JMPR      */  mixin(PACK(q{1}, q{0})),
+  /*  SCVTCI    */  mixin(PACK(q{1}, q{0})),
+  /*  SSWCI     */  mixin(PACK(q{1}, q{0})),
+  /*  SSW       */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x20 = [
+  /*  DUP       */  mixin(PACK(q{1}, q{2})),
+  /*  POP       */  mixin(PACK(q{1}, q{0})),
+  /*  CLEAR     */  mixin(PACK(q{0}, q{0})),
+  /*  SWAP      */  mixin(PACK(q{2}, q{2})),
+
+  /*  DEPTH     */  mixin(PACK(q{0}, q{1})),
+  /*  CINDEX    */  mixin(PACK(q{1}, q{1})),
+  /*  MINDEX    */  mixin(PACK(q{1}, q{0})),
+  /*  ALIGNPTS  */  mixin(PACK(q{2}, q{0})),
+
+  /*  INS_$28   */  mixin(PACK(q{0}, q{0})),
+  /*  UTP       */  mixin(PACK(q{1}, q{0})),
+  /*  LOOPCALL  */  mixin(PACK(q{2}, q{0})),
+  /*  CALL      */  mixin(PACK(q{1}, q{0})),
+
+  /*  FDEF      */  mixin(PACK(q{1}, q{0})),
+  /*  ENDF      */  mixin(PACK(q{0}, q{0})),
+  /*  MDAP[0]   */  mixin(PACK(q{1}, q{0})),
+  /*  MDAP[1]   */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x30 = [
+  /*  IUP[0]    */  mixin(PACK(q{0}, q{0})),
+  /*  IUP[1]    */  mixin(PACK(q{0}, q{0})),
+  /*  SHP[0]    */  mixin(PACK(q{0}, q{0})),
+  /*  SHP[1]    */  mixin(PACK(q{0}, q{0})),
+
+  /*  SHC[0]    */  mixin(PACK(q{1}, q{0})),
+  /*  SHC[1]    */  mixin(PACK(q{1}, q{0})),
+  /*  SHZ[0]    */  mixin(PACK(q{1}, q{0})),
+  /*  SHZ[1]    */  mixin(PACK(q{1}, q{0})),
+
+  /*  SHPIX     */  mixin(PACK(q{1}, q{0})),
+  /*  IP        */  mixin(PACK(q{0}, q{0})),
+  /*  MSIRP[0]  */  mixin(PACK(q{2}, q{0})),
+  /*  MSIRP[1]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  ALIGNRP   */  mixin(PACK(q{0}, q{0})),
+  /*  RTDG      */  mixin(PACK(q{0}, q{0})),
+  /*  MIAP[0]   */  mixin(PACK(q{2}, q{0})),
+  /*  MIAP[1]   */  mixin(PACK(q{2}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x40 = [
+  /*  NPUSHB    */  mixin(PACK(q{0}, q{0})),
+  /*  NPUSHW    */  mixin(PACK(q{0}, q{0})),
+  /*  WS        */  mixin(PACK(q{2}, q{0})),
+  /*  RS        */  mixin(PACK(q{1}, q{1})),
+
+  /*  WCVTP     */  mixin(PACK(q{2}, q{0})),
+  /*  RCVT      */  mixin(PACK(q{1}, q{1})),
+  /*  GC[0]     */  mixin(PACK(q{1}, q{1})),
+  /*  GC[1]     */  mixin(PACK(q{1}, q{1})),
+
+  /*  SCFS      */  mixin(PACK(q{2}, q{0})),
+  /*  MD[0]     */  mixin(PACK(q{2}, q{1})),
+  /*  MD[1]     */  mixin(PACK(q{2}, q{1})),
+  /*  MPPEM     */  mixin(PACK(q{0}, q{1})),
+
+  /*  MPS       */  mixin(PACK(q{0}, q{1})),
+  /*  FLIPON    */  mixin(PACK(q{0}, q{0})),
+  /*  FLIPOFF   */  mixin(PACK(q{0}, q{0})),
+  /*  DEBUG     */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x50 = [
+  /*  LT        */  mixin(PACK(q{2}, q{1})),
+  /*  LTEQ      */  mixin(PACK(q{2}, q{1})),
+  /*  GT        */  mixin(PACK(q{2}, q{1})),
+  /*  GTEQ      */  mixin(PACK(q{2}, q{1})),
+
+  /*  EQ        */  mixin(PACK(q{2}, q{1})),
+  /*  NEQ       */  mixin(PACK(q{2}, q{1})),
+  /*  ODD       */  mixin(PACK(q{1}, q{1})),
+  /*  EVEN      */  mixin(PACK(q{1}, q{1})),
+
+  /*  IF        */  mixin(PACK(q{1}, q{0})),
+  /*  EIF       */  mixin(PACK(q{0}, q{0})),
+  /*  AND       */  mixin(PACK(q{2}, q{1})),
+  /*  OR        */  mixin(PACK(q{2}, q{1})),
+
+  /*  NOT       */  mixin(PACK(q{1}, q{1})),
+  /*  DELTAP1   */  mixin(PACK(q{1}, q{0})),
+  /*  SDB       */  mixin(PACK(q{1}, q{0})),
+  /*  SDS       */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x60 = [
+  /*  ADD       */  mixin(PACK(q{2}, q{1})),
+  /*  SUB       */  mixin(PACK(q{2}, q{1})),
+  /*  DIV       */  mixin(PACK(q{2}, q{1})),
+  /*  MUL       */  mixin(PACK(q{2}, q{1})),
+
+  /*  ABS       */  mixin(PACK(q{1}, q{1})),
+  /*  NEG       */  mixin(PACK(q{1}, q{1})),
+  /*  FLOOR     */  mixin(PACK(q{1}, q{1})),
+  /*  CEILING   */  mixin(PACK(q{1}, q{1})),
+
+  /*  ROUND[0]  */  mixin(PACK(q{1}, q{1})),
+  /*  ROUND[1]  */  mixin(PACK(q{1}, q{1})),
+  /*  ROUND[2]  */  mixin(PACK(q{1}, q{1})),
+  /*  ROUND[3]  */  mixin(PACK(q{1}, q{1})),
+
+  /*  NROUND[0] */  mixin(PACK(q{1}, q{1})),
+  /*  NROUND[1] */  mixin(PACK(q{1}, q{1})),
+  /*  NROUND[2] */  mixin(PACK(q{1}, q{1})),
+  /*  NROUND[3] */  mixin(PACK(q{1}, q{1}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x70 = [
+  /*  WCVTF     */  mixin(PACK(q{2}, q{0})),
+  /*  DELTAP2   */  mixin(PACK(q{1}, q{0})),
+  /*  DELTAP3   */  mixin(PACK(q{1}, q{0})),
+  /*  DELTAC1   */  mixin(PACK(q{1}, q{0})),
+
+  /*  DELTAC2   */  mixin(PACK(q{1}, q{0})),
+  /*  DELTAC3   */  mixin(PACK(q{1}, q{0})),
+  /*  SROUND    */  mixin(PACK(q{1}, q{0})),
+  /*  S45ROUND  */  mixin(PACK(q{1}, q{0})),
+
+  /*  JROT      */  mixin(PACK(q{2}, q{0})),
+  /*  JROF      */  mixin(PACK(q{2}, q{0})),
+  /*  ROFF      */  mixin(PACK(q{0}, q{0})),
+  /*  INS_$7B   */  mixin(PACK(q{0}, q{0})),
+
+  /*  RUTG      */  mixin(PACK(q{0}, q{0})),
+  /*  RDTG      */  mixin(PACK(q{0}, q{0})),
+  /*  SANGW     */  mixin(PACK(q{1}, q{0})),
+  /*  AA        */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x80 = [
+  /*  FLIPPT    */  mixin(PACK(q{0}, q{0})),
+  /*  FLIPRGON  */  mixin(PACK(q{2}, q{0})),
+  /*  FLIPRGOFF */  mixin(PACK(q{2}, q{0})),
+  /*  INS_$83   */  mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$84   */  mixin(PACK(q{0}, q{0})),
+  /*  SCANCTRL  */  mixin(PACK(q{1}, q{0})),
+  /*  SDPVTL[0] */  mixin(PACK(q{2}, q{0})),
+  /*  SDPVTL[1] */  mixin(PACK(q{2}, q{0})),
+
+  /*  GETINFO   */  mixin(PACK(q{1}, q{1})),
+  /*  IDEF      */  mixin(PACK(q{1}, q{0})),
+  /*  ROLL      */  mixin(PACK(q{3}, q{3})),
+  /*  MAX       */  mixin(PACK(q{2}, q{1})),
+
+  /*  MIN       */  mixin(PACK(q{2}, q{1})),
+  /*  SCANTYPE  */  mixin(PACK(q{1}, q{0})),
+  /*  INSTCTRL  */  mixin(PACK(q{2}, q{0})),
+  /*  INS_$8F   */  mixin(PACK(q{0}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0x90 = [
+  /*  INS_$90  */   mixin(PACK(q{0}, q{0})),
+  /*  GETVAR   */   mixin(PACK(q{0}, q{0})),
+  /*  GETDATA  */   mixin(PACK(q{0}, q{1})),
+  /*  INS_$93  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$94  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$95  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$96  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$97  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$98  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$99  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$9A  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$9B  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$9C  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$9D  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$9E  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$9F  */   mixin(PACK(q{0}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xA0 = [
+  /*  INS_$A0  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A1  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A2  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A3  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$A4  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A5  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A6  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A7  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$A8  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$A9  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$AA  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$AB  */   mixin(PACK(q{0}, q{0})),
+
+  /*  INS_$AC  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$AD  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$AE  */   mixin(PACK(q{0}, q{0})),
+  /*  INS_$AF  */   mixin(PACK(q{0}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xB0 = [
+  /*  PUSHB[0]  */  mixin(PACK(q{0}, q{1})),
+  /*  PUSHB[1]  */  mixin(PACK(q{0}, q{2})),
+  /*  PUSHB[2]  */  mixin(PACK(q{0}, q{3})),
+  /*  PUSHB[3]  */  mixin(PACK(q{0}, q{4})),
+
+  /*  PUSHB[4]  */  mixin(PACK(q{0}, q{5})),
+  /*  PUSHB[5]  */  mixin(PACK(q{0}, q{6})),
+  /*  PUSHB[6]  */  mixin(PACK(q{0}, q{7})),
+  /*  PUSHB[7]  */  mixin(PACK(q{0}, q{8})),
+
+  /*  PUSHW[0]  */  mixin(PACK(q{0}, q{1})),
+  /*  PUSHW[1]  */  mixin(PACK(q{0}, q{2})),
+  /*  PUSHW[2]  */  mixin(PACK(q{0}, q{3})),
+  /*  PUSHW[3]  */  mixin(PACK(q{0}, q{4})),
+
+  /*  PUSHW[4]  */  mixin(PACK(q{0}, q{5})),
+  /*  PUSHW[5]  */  mixin(PACK(q{0}, q{6})),
+  /*  PUSHW[6]  */  mixin(PACK(q{0}, q{7})),
+  /*  PUSHW[7]  */  mixin(PACK(q{0}, q{8}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xC0 = [
+  /*  MDRP[00]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[01]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[02]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[03]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[04]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[05]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[06]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[07]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[08]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[09]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[10]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[11]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[12]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[13]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[14]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[15]  */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xD0 = [
+  /*  MDRP[16]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[17]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[18]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[19]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[20]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[21]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[22]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[23]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[24]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[25]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[26]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[27]  */  mixin(PACK(q{1}, q{0})),
+
+  /*  MDRP[28]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[29]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[30]  */  mixin(PACK(q{1}, q{0})),
+  /*  MDRP[31]  */  mixin(PACK(q{1}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xE0 = [
+  /*  MIRP[00]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[01]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[02]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[03]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[04]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[05]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[06]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[07]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[08]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[09]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[10]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[11]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[12]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[13]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[14]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[15]  */  mixin(PACK(q{2}, q{0}))
+];
+
+private immutable
+FT_Byte[16] Pop_Push_Count_0xF0 = [
+  /*  MIRP[16]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[17]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[18]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[19]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[20]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[21]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[22]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[23]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[24]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[25]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[26]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[27]  */  mixin(PACK(q{2}, q{0})),
+
+  /*  MIRP[28]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[29]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[30]  */  mixin(PACK(q{2}, q{0})),
+  /*  MIRP[31]  */  mixin(PACK(q{2}, q{0}))
+];
+
+private immutable
+FT_Byte[256] Pop_Push_Count =
+  Pop_Push_Count_0x00 ~
+  Pop_Push_Count_0x10 ~
+  Pop_Push_Count_0x20 ~
+  Pop_Push_Count_0x30 ~
+
+  Pop_Push_Count_0x40 ~
+  Pop_Push_Count_0x50 ~
+  Pop_Push_Count_0x60 ~
+  Pop_Push_Count_0x70 ~
+
+  Pop_Push_Count_0x80 ~
+  Pop_Push_Count_0x90 ~
+  Pop_Push_Count_0xA0 ~
+  Pop_Push_Count_0xB0 ~
+
+  Pop_Push_Count_0xC0 ~
+  Pop_Push_Count_0xD0 ~
+  Pop_Push_Count_0xE0 ~
+  Pop_Push_Count_0xF0;
 
 private immutable
 string[256] opcode_name = [
