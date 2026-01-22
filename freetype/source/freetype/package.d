@@ -19,26 +19,23 @@ public import freetype.tttables;
 
 import std.conv;
 
-string FT_ENC_TAG(
-  string a, string b, string c, string d
-) => iq{(
-  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, a)) << 24) |
-  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, b)) << 16) |
-  ($(FT_STATIC_BYTE_CAST(q{FT_UInt32}, c)) <<  8) |
-   $(FT_STATIC_BYTE_CAST(q{FT_UInt32}, d))
-)}.text;
+uint FT_ENC_TAG(string bytes) =>
+  cast(uint) bytes[0] << 24 | 
+  cast(uint) bytes[1] << 16 | 
+  cast(uint) bytes[2] << 8  | 
+  cast(uint) bytes[3];
 
 enum FT_Encoding : FT_UInt32 {
-  FT_ENCODING_NONE = mixin(FT_ENC_TAG(q{0}, q{0}, q{0}, q{0})),
+  FT_ENCODING_NONE = [0, 0, 0, 0].FT_ENC_TAG,
 
-  FT_ENCODING_MS_SYMBOL = mixin(FT_ENC_TAG(q{'s'}, q{'y'}, q{'m'}, q{'b'})),
-  FT_ENCODING_UNICODE = mixin(FT_ENC_TAG(q{'u'}, q{'n'}, q{'i'}, q{'c'})),
+  FT_ENCODING_MS_SYMBOL = "symb".FT_ENC_TAG,
+  FT_ENCODING_UNICODE = "unic".FT_ENC_TAG,
 
-  FT_ENCODING_SJIS = mixin(FT_ENC_TAG(q{'s'}, q{'j'}, q{'i'}, q{'s'})),
-  FT_ENCODING_PRC = mixin(FT_ENC_TAG(q{'g'}, q{'b'}, q{' '}, q{' '})),
-  FT_ENCODING_BIG5 = mixin(FT_ENC_TAG(q{'b'}, q{'i'}, q{'g'}, q{'5'})),
-  FT_ENCODING_WANSUNG = mixin(FT_ENC_TAG(q{'w'}, q{'a'}, q{'n'}, q{'s'})),
-  FT_ENCODING_JOHAB = mixin(FT_ENC_TAG(q{'j'}, q{'o'}, q{'h'}, q{'a'})),
+  FT_ENCODING_SJIS = "sjis".FT_ENC_TAG,
+  FT_ENCODING_PRC = "gb  ".FT_ENC_TAG,
+  FT_ENCODING_BIG5 = "big5".FT_ENC_TAG,
+  FT_ENCODING_WANSUNG = "wans".FT_ENC_TAG,
+  FT_ENCODING_JOHAB = "joha".FT_ENC_TAG,
 
   FT_ENCODING_GB2312 = FT_ENCODING_PRC,
   FT_ENCODING_MS_SJIS = FT_ENCODING_SJIS,
@@ -47,14 +44,14 @@ enum FT_Encoding : FT_UInt32 {
   FT_ENCODING_MS_WANSUNG = FT_ENCODING_WANSUNG,
   FT_ENCODING_MS_JOHAB = FT_ENCODING_JOHAB,
 
-  FT_ENCODING_ADOBE_STANDARD = mixin(FT_ENC_TAG(q{'A'}, q{'D'}, q{'O'}, q{'B'})),
-  FT_ENCODING_ADOBE_EXPERT = mixin(FT_ENC_TAG(q{'A'}, q{'D'}, q{'B'}, q{'E'})),
-  FT_ENCODING_ADOBE_CUSTOM = mixin(FT_ENC_TAG(q{'A'}, q{'D'}, q{'B'}, q{'C'})),
-  FT_ENCODING_ADOBE_LATIN_1 = mixin(FT_ENC_TAG(q{'l'}, q{'a'}, q{'t'}, q{'1'})),
+  FT_ENCODING_ADOBE_STANDARD = "ADOB".FT_ENC_TAG,
+  FT_ENCODING_ADOBE_EXPERT = "ADBE".FT_ENC_TAG,
+  FT_ENCODING_ADOBE_CUSTOM = "ADBC".FT_ENC_TAG,
+  FT_ENCODING_ADOBE_LATIN_1 = "lat1".FT_ENC_TAG,
 
-  FT_ENCODING_OLD_LATIN_2 = mixin(FT_ENC_TAG(q{'l'}, q{'a'}, q{'t'}, q{'2'})),
+  FT_ENCODING_OLD_LATIN_2 = "lat2".FT_ENC_TAG,
 
-  FT_ENCODING_APPLE_ROMAN = mixin(FT_ENC_TAG(q{'a'}, q{'r'}, q{'m'}, q{'n'}))
+  FT_ENCODING_APPLE_ROMAN = "armn".FT_ENC_TAG
 }
 
 enum FT_Render_Mode {

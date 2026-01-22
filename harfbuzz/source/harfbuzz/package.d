@@ -1,5 +1,6 @@
+module harfbuzz;
+
 import freetype;
 
-void main() {
-  FT_Face face;
-}
+public import harfbuzz.hb_blob;
+public import harfbuzz.hb_common;

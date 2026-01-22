@@ -4,23 +4,20 @@ import freetype;
 
 import std.conv;
 
-string FT_IMAGE_TAG(
-  string _x1, string _x2, string _x3, string _x4
-) => iq{(
-  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x1)) << 24) |
-  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x2)) << 16) |
-  ($(FT_STATIC_BYTE_CAST(q{ulong}, _x3)) <<  8) |
-   $(FT_STATIC_BYTE_CAST(q{ulong}, _x4))
-)}.text;
+uint FT_IMAGE_TAG(char[4] bytes) =>
+  cast(uint) bytes[0] << 24 | 
+  cast(uint) bytes[1] << 16 | 
+  cast(uint) bytes[2] << 8  | 
+  cast(uint) bytes[3];
 
-enum FT_Glyph_Format : ulong {
-  FT_GLYPH_FORMAT_NONE = mixin(FT_IMAGE_TAG(q{0}, q{0}, q{0}, q{0})),
+enum FT_Glyph_Format : uint {
+  FT_GLYPH_FORMAT_NONE = [0, 0, 0, 0].FT_IMAGE_TAG,
 
-  FT_GLYPH_FORMAT_COMPOSITE = mixin(FT_IMAGE_TAG(q{'c'}, q{'o'}, q{'m'}, q{'p'})),
-  FT_GLYPH_FORMAT_BITMAP = mixin(FT_IMAGE_TAG(q{'b'}, q{'i'}, q{'t'}, q{'s'})),
-  FT_GLYPH_FORMAT_OUTLINE = mixin(FT_IMAGE_TAG(q{'o'}, q{'u'}, q{'t'}, q{'l'})),
-  FT_GLYPH_FORMAT_PLOTTER = mixin(FT_IMAGE_TAG(q{'p'}, q{'l'}, q{'o'}, q{'t'})),
-  FT_GLYPH_FORMAT_SVG = mixin(FT_IMAGE_TAG(q{'S'}, q{'V'}, q{'G'}, q{' '}))
+  FT_GLYPH_FORMAT_COMPOSITE = "comp".FT_IMAGE_TAG,
+  FT_GLYPH_FORMAT_BITMAP = "bits".FT_IMAGE_TAG,
+  FT_GLYPH_FORMAT_OUTLINE = "outl".FT_IMAGE_TAG,
+  FT_GLYPH_FORMAT_PLOTTER = "plot".FT_IMAGE_TAG,
+  FT_GLYPH_FORMAT_SVG = "SVG ".FT_IMAGE_TAG
 }
 
 alias FT_Pos = long;
