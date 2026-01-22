@@ -5,6 +5,6 @@ enum EShLanguage {
   EShLangFragment
 }
 
-class TShader {
+struct TShader {
   
 }
