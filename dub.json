@@ -16,10 +16,11 @@
     "glslang-default-resource-limits",
     "SPIRV-Tools"
   ],
-  "subPackages": ["freetype", "glslang", "yoga"],
+  "subPackages": ["freetype", "glslang", "harfbuzz", "yoga"],
   "dependencies": {
     ":freetype": "*",
     ":glslang": "*",
+    ":harfbuzz": "*",
     ":yoga": "*"
   }
 }
