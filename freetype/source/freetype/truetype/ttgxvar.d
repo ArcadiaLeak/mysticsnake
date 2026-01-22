@@ -111,23 +111,13 @@ struct GX_AVarCorrespondenceRec {
 }
 
 alias GX_Blend = GX_BlendRec*;
-
 alias GX_AVarCorrespondence = GX_AVarCorrespondenceRec*;
-
 alias GX_AVarSegment = GX_AvarSegmentRec*;
-
 alias GX_AVarTable = GX_AVarTableRec*;
-
 alias GX_ItemVarData = GX_ItemVarDataRec*;
-
 alias GX_AxisCoords = GX_AxisCoordsRec*;
-
 alias GX_Value = GX_ValueRec*;
-
 alias GX_VarRegion = GX_VarRegionRec*;
-
 alias GX_ItemVarStore = GX_ItemVarStoreRec*;
-
 alias GX_DeltaSetIdxMap = GX_DeltaSetIdxMapRec*;
-
 alias GX_MVarTable = GX_MvarTableRec*;
