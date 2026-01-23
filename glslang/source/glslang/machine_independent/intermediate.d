@@ -22,7 +22,7 @@ struct TCall {
 
 class TIntermediate {
   protected {
-    const EShLanguage language;
+    const glslang_stage_t language;
     string entryPointName;
     string entryPointMangledName;
     DList!TCall callGraph;
@@ -32,7 +32,7 @@ class TIntermediate {
     SpvVersion spvVersion;
   }
 
-  this(EShLanguage l, int v = 0, EProfile p = EProfile.ENoProfile) {
+  this(glslang_stage_t l, int v = 0, EProfile p = EProfile.ENoProfile) {
     language = l;
   }
 }
