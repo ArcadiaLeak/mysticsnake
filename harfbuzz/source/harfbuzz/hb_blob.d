@@ -2,11 +2,13 @@ module harfbuzz.hb_blob;
 
 import harfbuzz;
 
+import core.builtins;
+
 enum hb_memory_mode_t {
-  HB_MEMORY_MODE_DUPLICATE,
-  HB_MEMORY_MODE_READONLY,
-  HB_MEMORY_MODE_WRITABLE,
-  HB_MEMORY_MODE_READONLY_MAY_MAKE_WRITABLE
+  DUPLICATE,
+  READONLY,
+  WRITABLE,
+  READONLY_MAY_MAKE_WRITABLE
 }
 
 struct hb_blob_t {
@@ -35,4 +37,49 @@ struct hb_blob_t {
 
   void* user_data = null;
   hb_destroy_func_t destroy_cb = null;
+}
+
+hb_blob_t hb_blob_create(
+  char* data,
+  uint length,
+  hb_memory_mode_t mode,
+  void* user_data,
+  hb_destroy_func_t destroy_cb
+) {
+  if (!length) {
+    if (destroy_cb) {
+      destroy_cb(user_data);
+    }
+    return hb_blob_t.init;
+  }
+
+  return hb_blob_create_or_fail(
+    data, length, mode, user_data, destroy_cb
+  );
+}
+
+hb_blob_t hb_blob_create_or_fail(
+  char* data,
+  uint length,
+  hb_memory_mode_t mode,
+  void* user_data,
+  hb_destroy_func_t destroy_cb
+) {
+  hb_blob_t blob;
+
+  blob.data = data;
+  blob.length = length;
+  blob.mode = mode;
+
+  blob.user_data = user_data;
+  blob.destroy_cb = destroy_cb;
+
+  if (blob.mode == hb_memory_mode_t.DUPLICATE) {
+    blob.mode = hb_memory_mode_t.READONLY;
+    if (!blob.try_make_writable()) {
+      return hb_blob_t.init;
+    }
+  }
+
+  return blob;
 }
