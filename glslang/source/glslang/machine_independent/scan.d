@@ -2,14 +2,11 @@ module glslang.machine_independent.scan;
 
 import glslang;
 
-import std.algorithm.searching;
-import std.range;
-
 enum int EndOfInput = -1;
 
-class TInputScanner {
+struct TInputScanner {
   protected {
-    const string[] sources;
+    string[] sources;
     int currentSource;
     size_t currentChar;
 
@@ -40,17 +37,19 @@ class TInputScanner {
     do {
       if (lookingInMiddle) {
         notFirstToken = true;
-        
-        if (!this.startsWith('\n', '\r'))
-          this.find!(c => c == '\n' || c == '\r')();
-
-        this.find!(c => c != '\n' && c != '\r')();
-
-        if (this.empty) return true;
+        if (front != '\n' && front != '\r') {
+          do c = takeFront; while (
+            c != EndOfInput &&
+            c != '\n' &&
+            c != '\r'
+          );
+        }
+        while (front == '\n' || front == '\r') popFront;
+        if (front == EndOfInput) return true;
       }
       lookingInMiddle = true;
 
-
+      consumeWhitespaceComment(foundNonSpaceTab);
     } while (true);
   }
 
@@ -58,22 +57,67 @@ class TInputScanner {
     do {
       consumeWhiteSpace(foundNonSpaceTab);
 
-      if (!this.startsWith('/')) return;
+      int c = front;
+      if (c != '/' || c == EndOfInput) return;
 
       foundNonSpaceTab = true;
-
       if (!consumeComment) return;
     } while (true);
   }
 
   void consumeWhiteSpace(out bool foundNonSpaceTab) {
-    auto whitespace = this.until!
-      (c => !c.only.startsWith(' ', '\t', '\r', '\n'))
-      (OpenRight.no);
-    auto n = whitespace.count!
-      (c => c.only.startsWith('\r', '\n'));
+    int c = front;
+    while (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+      if (c == '\r' || c == '\n') foundNonSpaceTab = true;
+      popFront;
+      c = front;
+    }
+  }
 
-    foundNonSpaceTab = n > 0;
+  bool consumeComment() {
+    if (front != '/') return false;
+
+    popFront;
+    int c = front;
+    if (c == '/') {
+      popFront;
+      c = takeFront;
+      do {
+        while (c != EndOfInput && c != '\\' && c != '\r' && c != '\n')
+          c = takeFront;
+
+        if (c == EndOfInput || c == '\r' || c == '\n') {
+          while (c == '\r' || c == '\n') c = takeFront;
+
+          break;
+        } else {
+          c = takeFront;
+
+          if (c == '\r' && front == '\n') popFront;
+          c = takeFront;
+        }
+      } while (true);
+
+      if (c != EndOfInput) refuseFront;
+
+      return true;
+    } else if (c == '*') {
+      popFront;
+      c = takeFront;
+      do {
+        while (c != EndOfInput && c != '*') c = takeFront;
+        if (c == '*') {
+          c = takeFront;
+          if (c == '/') break;
+        } else break;
+      } while (true);
+    
+      return true;
+    } else {
+      refuseFront;
+
+      return false;
+    }
   }
 
   bool empty() {
@@ -114,9 +158,42 @@ class TInputScanner {
     advance();
   }
 
-  int get() {
+  int takeFront() {
     scope (exit) popFront;
     return front;
+  }
+
+  void refuseFront() {
+    if (endOfFileReached) return;
+
+    if (currentChar > 0) {
+      --currentChar;
+      --loc[currentSource].column;
+      --logicalSourceLoc.column;
+      if (loc[currentSource].column < 0) {
+        size_t chIndex = currentChar;
+        while (chIndex > 0) {
+          if (sources[currentSource][chIndex] == '\n') {
+            break;
+          }
+          --chIndex;
+        }
+        logicalSourceLoc.column = cast(int) (currentChar - chIndex);
+        loc[currentSource].column = cast(int) (currentChar - chIndex);
+      }
+    } else {
+      do {
+        --currentSource;
+      } while (currentSource > 0 && sources[currentSource].length == 0);
+      if (sources[currentSource].length == 0)
+        currentChar = 0;
+      else
+        currentChar = sources[currentSource].length - 1;
+    }
+    if (front == '\n') {
+      --loc[currentSource].line;
+      --logicalSourceLoc.line;
+    }
   }
 
   protected void advance() {
