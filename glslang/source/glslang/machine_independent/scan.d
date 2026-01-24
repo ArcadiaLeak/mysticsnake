@@ -2,9 +2,11 @@ module glslang.machine_independent.scan;
 
 import glslang;
 
+import core.stdc.string;
+
 enum int EndOfInput = -1;
 
-struct TInputScanner {
+class TInputScanner {
   protected {
     string[] sources;
     int currentSource;
@@ -19,6 +21,31 @@ struct TInputScanner {
     bool singleLogical;
 
     bool endOfFileReached;
+  }
+
+  this(
+    string[] s, string[] names = null,
+    int b = 0, int f = 0, bool single = false
+  ) {
+    sources = s;
+    currentSource = 0;
+    currentChar = 0;
+    stringBias = b;
+    finale = f;
+    singleLogical = single;
+    endOfFileReached = false;
+
+    loc = new TSourceLoc[sources.length];
+    for (int i = 0; i < sources.length; ++i) {
+      loc[i].init(i - stringBias);
+    }
+    if (names != null) {
+      for (int i = 0; i < sources.length; ++i)
+        loc[i].name = names[i];
+    }
+    loc[currentSource].line = 1;
+    logicalSourceLoc.init(1);
+    logicalSourceLoc.name = loc[0].name;
   }
 
   bool scanVersion(
@@ -50,6 +77,63 @@ struct TInputScanner {
       lookingInMiddle = true;
 
       consumeWhitespaceComment(foundNonSpaceTab);
+      if (foundNonSpaceTab) versionNotFirst = true;
+
+      if (takeFront != '#') {
+        versionNotFirst = true;
+        continue;
+      }
+
+      do c = takeFront; while (c == ' ' || c == '\t');
+
+      if (
+        c != 'v' ||
+        takeFront != 'e' ||
+        takeFront != 'r' ||
+        takeFront != 's' ||
+        takeFront != 'i' ||
+        takeFront != 'o' ||
+        takeFront != 'n'
+      ) {
+        versionNotFirst = true;
+        continue;
+      }
+
+      do c = takeFront; while (c == ' ' || c == '\t');
+
+      while (c >= '0' && c <= '9') {
+        version_ = 10 * version_ + (c - '0');
+        c = takeFront;
+      }
+      if (version_ == 0) {
+        versionNotFirst = true;
+        continue;
+      }
+
+      while (c == ' ' || c == '\t') c = takeFront;
+
+      const int maxProfileLength = 13;
+      char[maxProfileLength] profileString;
+      int profileLength;
+      for (profileLength = 0; profileLength < maxProfileLength; ++profileLength) {
+        if (c == EndOfInput || c == ' ' || c == '\t' || c == '\n' || c == '\r')
+          break;
+        profileString[profileLength] = cast(char) c;
+        c = takeFront;
+      }
+      if (c != EndOfInput && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+        versionNotFirst = true;
+        continue;
+      }
+
+      if (profileLength == 2 && strncmp(profileString.ptr, "es", profileLength) == 0)
+        profile = glslang_profile_t.ES_PROFILE;
+      else if (profileLength == 4 && strncmp(profileString.ptr, "core", profileLength) == 0)
+        profile = glslang_profile_t.CORE_PROFILE;
+      else if (profileLength == 13 && strncmp(profileString.ptr, "compatibility", profileLength) == 0)
+        profile = glslang_profile_t.COMPATIBILITY_PROFILE;
+
+      return versionNotFirst;
     } while (true);
   }
 

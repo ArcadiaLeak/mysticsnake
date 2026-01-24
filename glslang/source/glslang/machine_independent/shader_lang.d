@@ -2,6 +2,8 @@ module glslang.machine_independent.shader_lang;
 
 import glslang;
 
+import std.range;
+
 struct TTarget {
   glslang_target_language_t language;
   glslang_target_language_version_t version_;
@@ -150,12 +152,10 @@ bool ProcessDeferred(ProcessingContext)(
   const int numPost = requireNonempty ? 1 : 0;
   const int numTotal = numPre + cast(int) shaderStrings.length + numPost;
 
-  size_t[] lengths = new size_t[numTotal];
   string[] strings = new string[numTotal];
   string[] names = new string[numTotal];
   foreach(s, shaderString; shaderStrings) {
     strings[s + numPre] = shaderString;
-    lengths[s + numPre] = shaderString.length;
   }
   if (stringNames.length > 0) {
     foreach(s, stringName; stringNames) {
@@ -168,6 +168,8 @@ bool ProcessDeferred(ProcessingContext)(
   glslang_stage_t stage = compiler.getLanguage;
   TranslateEnvironment(environment, messages, source, stage, spvVersion);
 
+  scope userInput = new TInputScanner(strings.drop(numPre));
+  
   return false;
 }
 
