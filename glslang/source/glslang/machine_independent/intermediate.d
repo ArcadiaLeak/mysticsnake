@@ -1,7 +1,9 @@
 module glslang.machine_independent.intermediate;
 
-import std.container.dlist;
 import glslang;
+
+import std.container.dlist;
+import std.range;
 
 struct TCall {
   this(string pCaller, string pCallee) {
@@ -23,6 +25,11 @@ struct TCall {
 struct TProcesses {
   void addProcess(string process) {
     processes ~= process;
+  }
+
+  void addArgument(string arg) {
+    processes.back ~= " ";
+    processes.back ~= arg;
   }
 
   const(string[]) getProcesses() const { return processes; }
@@ -124,4 +131,7 @@ class TIntermediate {
     if (spvVersion.openGl > 0)
       processes.addProcess("target-env opengl");
   }
+
+  void addProcess(string process) { processes.addProcess = process; }
+  void addProcessArgument(string arg) { processes.addArgument = arg; }
 }

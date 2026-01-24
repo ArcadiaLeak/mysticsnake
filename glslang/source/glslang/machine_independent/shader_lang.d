@@ -221,6 +221,8 @@ bool ProcessDeferred(ProcessingContext)(
   intermediate.setVersion = version_;
   intermediate.setProfile = profile;
   intermediate.setSpv = spvVersion;
+  RecordProcesses(intermediate, messages, sourceEntryPointName);
+  
 
   return false;
 }
@@ -421,4 +423,21 @@ bool DeduceVersionProfile(
   }
 
   return correct;
+}
+
+void RecordProcesses(
+  TIntermediate intermediate,
+  glslang_messages_t messages,
+  string sourceEntryPointName
+) {
+  if ((messages & glslang_messages_t.MSG_RELAXED_ERRORS_BIT) != 0)
+    intermediate.addProcess = "relaxed-errors";
+  if ((messages & glslang_messages_t.MSG_SUPPRESS_WARNINGS_BIT) != 0)
+    intermediate.addProcess = "suppress-warnings";
+  if ((messages & glslang_messages_t.MSG_KEEP_UNCALLED_BIT) != 0)
+    intermediate.addProcess = "keep-uncalled";
+  if (sourceEntryPointName.length > 0) {
+    intermediate.addProcess = "source-entrypoint";
+    intermediate.addProcessArgument = sourceEntryPointName;
+  }
 }
