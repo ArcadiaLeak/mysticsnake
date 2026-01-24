@@ -23,7 +23,7 @@ immutable struct glslang_input_t {
   int force_default_version_and_profile;
   int forward_compatible;
   glslang_messages_t messages;
-  TBuiltInResource* resource;
+  TBuiltInResource resource;
   glsl_include_callbacks_t callbacks;
   void* callbacks_ctx;
 }

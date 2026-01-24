@@ -84,7 +84,7 @@ class TShader {
   }
 
   bool preprocess(
-    const TBuiltInResource* builtInResources,
+    TBuiltInResource builtInResources,
     int defaultVersion, glslang_profile_t defaultProfile,
     bool forceDefaultVersionAndProfile,
     bool forwardCompatible, glslang_messages_t message,
@@ -109,7 +109,7 @@ bool PreprocessDeferred(
   TCompiler compiler,
   in string[] shaderStrings,
   in string[] stringNames,
-  in TBuiltInResource* resources,
+  TBuiltInResource resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,
@@ -130,9 +130,9 @@ bool PreprocessDeferred(
 
 bool ProcessDeferred(ProcessingContext)(
   TCompiler compiler,
-  in string[] shaderStrings,
-  in string[] stringNames,
-  in TBuiltInResource* resources,
+  const string[] shaderStrings,
+  const string[] stringNames,
+  TBuiltInResource resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,
@@ -181,12 +181,29 @@ bool ProcessDeferred(ProcessingContext)(
       !versionNotFound &&
       (version_ != defaultVersion || profile != defaultProfile)
     ) {
-      compiler.infoSink.info ~=
+      compiler.infoSink.info.append =
         "Warning, (version, profile) forced to be (" ~
         defaultVersion.to!string ~ ", " ~ ProfileName(defaultProfile) ~
         "), while in source code it is (" ~
         version_.to!string ~ ", " ~ ProfileName(profile) ~ ")\n";
     }
+
+    if (versionNotFound) {
+      versionNotFirstToken = false;
+      versionNotFirst = false;
+      versionNotFound = false;
+    }
+    version_ = defaultVersion;
+    profile = defaultProfile;
+
+    if (source == glslang_source_t.SOURCE_GLSL && overrideVersion != 0) {
+      version_ = overrideVersion;
+    }
+
+    bool goodVersion = DeduceVersionProfile(
+      compiler.infoSink, stage, versionNotFirst, defaultVersion,
+      source, version_, profile, spvVersion
+    );
   }
 
   return false;
@@ -238,4 +255,154 @@ void TranslateEnvironment(
 
   if (environment.target.language == glslang_target_language_t.TARGET_SPV)
     spvVersion.spv = environment.target.version_;
+}
+
+bool DeduceVersionProfile(
+  TInfoSink infoSink,
+  glslang_stage_t stage,
+  bool versionNotFirst,
+  int defaultVersion,
+  glslang_source_t source,
+  ref int version_,
+  ref glslang_profile_t profile,
+  in SpvVersion spvVersion
+) {
+  const int FirstProfileVersion = 150;
+  bool correct = true;
+
+  if (version_ == 0) {
+    version_ = defaultVersion;
+  }
+
+  if (profile == glslang_profile_t.NO_PROFILE) {
+    if (version_ == 300 || version_ == 310 || version_ == 320) {
+      correct = false;
+      infoSink.info.message(
+        TPrefixType.EPrefixError,
+        "#version: versions 300, 310, and 320 require specifying the 'es' profile"
+      );
+      profile = glslang_profile_t.ES_PROFILE;
+    } else if (version_ == 100)
+      profile = glslang_profile_t.ES_PROFILE;
+    else if (version_ >= FirstProfileVersion)
+      profile = glslang_profile_t.CORE_PROFILE;
+    else
+      profile = glslang_profile_t.NO_PROFILE;
+  } else {
+    if (version_ < 150) {
+      correct = false;
+      infoSink.info.message(
+        TPrefixType.EPrefixError,
+        "#version: versions before 150 do not allow a profile token"
+      );
+      if (version_ == 100)
+        profile = glslang_profile_t.ES_PROFILE;
+      else
+        profile = glslang_profile_t.NO_PROFILE;
+    } else if (version_ == 300 || version_ == 310 || version_ == 320) {
+      if (profile != glslang_profile_t.ES_PROFILE) {
+        correct = false;
+        infoSink.info.message(
+          TPrefixType.EPrefixError,
+          "#version: versions 300, 310, and 320 support only the es profile"
+        );
+      }
+      profile = glslang_profile_t.ES_PROFILE;
+    } else {
+      if (profile == glslang_profile_t.ES_PROFILE) {
+        correct = false;
+        infoSink.info.message(
+          TPrefixType.EPrefixError,
+          "#version: only version 300, 310, and 320 support the es profile"
+        );
+        if (version_ >= FirstProfileVersion)
+          profile = glslang_profile_t.CORE_PROFILE;
+        else
+          profile = glslang_profile_t.NO_PROFILE;
+      }
+    }
+  }
+
+  switch (version_) {
+    case 100: break;
+    case 300: break;
+    case 310: break;
+    case 320: break;
+
+    case 110: break;
+    case 120: break;
+    case 130: break;
+    case 140: break;
+    case 150: break;
+    case 330: break;
+    case 400: break;
+    case 410: break;
+    case 420: break;
+    case 430: break;
+    case 440: break;
+    case 450: break;
+    case 460: break;
+
+    default:
+      correct = false;
+      infoSink.info.message(TPrefixType.EPrefixError, "version not supported");
+      if (profile == glslang_profile_t.ES_PROFILE)
+        version_ = 310;
+      else {
+        version_ = 450;
+        profile = glslang_profile_t.CORE_PROFILE;
+      }
+      break;
+  }
+
+  if (
+    profile == glslang_profile_t.ES_PROFILE &&
+    version_ >= 300 && versionNotFirst
+  ) {
+    correct = false;
+    infoSink.info.message(
+      TPrefixType.EPrefixError,
+      "#version: statement must appear first in es-profile shader; before comments or newlines"
+    );
+  }
+
+  if (spvVersion.spv != 0) {
+    switch (profile) {
+      case glslang_profile_t.ES_PROFILE:
+        if (version_ < 310) {
+          correct = false;
+          infoSink.info.message(
+            TPrefixType.EPrefixError,
+            "#version: ES shaders for SPIR-V require version 310 or higher"
+          );
+          version_ = 310;
+        }
+        break;
+      case glslang_profile_t.COMPATIBILITY_PROFILE:
+        infoSink.info.message(
+          TPrefixType.EPrefixError,
+          "#version: compilation for SPIR-V does not support the compatibility profile"
+        );
+        break;
+      default:
+        if (spvVersion.vulkan > 0 && version_ < 140) {
+          correct = false;
+          infoSink.info.message(
+            TPrefixType.EPrefixError,
+            "#version: Desktop shaders for Vulkan SPIR-V require version 140 or higher"
+          );
+          version_ = 140;
+        }
+        if (spvVersion.openGl >= 100 && version_ < 330) {
+          correct = false;
+          infoSink.info.message(
+            TPrefixType.EPrefixError,
+            "#version: Desktop shaders for OpenGL SPIR-V require version 330 or higher"
+          );
+        }
+        break;
+    }
+  }
+
+  return correct;
 }
