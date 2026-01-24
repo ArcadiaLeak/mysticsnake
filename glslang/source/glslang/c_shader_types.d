@@ -24,14 +24,6 @@ enum glslang_messages_t {
   MSG_VALIDATE_CROSS_STAGE_IO_BIT = 1 << 19
 }
 
-enum glslang_profile_t {
-  BAD_PROFILE = 0,
-  NO_PROFILE = 1 << 0,
-  CORE_PROFILE = 1 << 1,
-  COMPATIBILITY_PROFILE = 1 << 2,
-  ES_PROFILE = 1 << 3
-}
-
 enum glslang_target_language_version_t {
   TARGET_SPV_1_0 = (1 << 16),
   TARGET_SPV_1_1 = (1 << 16) | (1 << 8),

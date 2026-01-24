@@ -27,12 +27,15 @@ class TIntermediate {
     string entryPointMangledName;
     DList!TCall callGraph;
 
-    EProfile profile;
+    glslang_profile_t profile;
     int version_;
     SpvVersion spvVersion;
   }
 
-  this(glslang_stage_t l, int v = 0, EProfile p = EProfile.ENoProfile) {
+  this(
+    glslang_stage_t l, int v = 0,
+    glslang_profile_t p = glslang_profile_t.NO_PROFILE
+  ) {
     language = l;
   }
 }

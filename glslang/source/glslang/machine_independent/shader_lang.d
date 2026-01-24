@@ -2,6 +2,7 @@ module glslang.machine_independent.shader_lang;
 
 import glslang;
 
+import std.conv;
 import std.range;
 
 struct TTarget {
@@ -169,7 +170,25 @@ bool ProcessDeferred(ProcessingContext)(
   TranslateEnvironment(environment, messages, source, stage, spvVersion);
 
   scope userInput = new TInputScanner(strings.drop(numPre));
-  
+  int version_ = 0;
+  glslang_profile_t profile = glslang_profile_t.NO_PROFILE;
+  bool versionNotFirstToken = false;
+  bool versionNotFirst = userInput.scanVersion(version_, profile, versionNotFirstToken);
+  bool versionNotFound = version_ == 0;
+  if (forceDefaultVersionAndProfile && source == glslang_source_t.SOURCE_GLSL) {
+    if (
+      !(messages & glslang_messages_t.MSG_SUPPRESS_WARNINGS_BIT) &&
+      !versionNotFound &&
+      (version_ != defaultVersion || profile != defaultProfile)
+    ) {
+      compiler.infoSink.info ~=
+        "Warning, (version, profile) forced to be (" ~
+        defaultVersion.to!string ~ ", " ~ ProfileName(defaultProfile) ~
+        "), while in source code it is (" ~
+        version_.to!string ~ ", " ~ ProfileName(profile) ~ ")\n";
+    }
+  }
+
   return false;
 }
 
