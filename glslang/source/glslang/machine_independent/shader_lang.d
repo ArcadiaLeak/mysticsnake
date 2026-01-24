@@ -611,5 +611,11 @@ bool InitializeSymbolTables(
   in SpvVersion spvVersion, glslang_source_t source
 ) {
   bool success = true;
+  scope builtInParseables = new TBuiltIns;
+
+  if (builtInParseables is null) return false;
+
+  builtInParseables.initialize(version_, profile, spvVersion);
+
   return success;
 }
