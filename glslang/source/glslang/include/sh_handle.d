@@ -3,5 +3,13 @@ module glslang.include.sh_handle;
 import glslang;
 
 class TCompiler {
-  this(glslang_stage_t s, TInfoSink i) {}
+  protected {
+    glslang_stage_t language;
+  }
+
+  this(glslang_stage_t l, TInfoSink i) {
+    language = l;
+  }
+
+  glslang_stage_t getLanguage() => language;
 }
