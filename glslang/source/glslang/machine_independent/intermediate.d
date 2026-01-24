@@ -41,14 +41,20 @@ private:
 class TIntermediate {
   protected {
     const glslang_stage_t language;
+
     string entryPointName;
     string entryPointMangledName;
+
     DList!TCall callGraph;
 
+    int version_;
     glslang_source_t source;
     glslang_profile_t profile;
-    int version_;
     SpvVersion spvVersion;
+
+    bool originUpperLeft;
+    string sourceFile;
+    string sourceText;
 
     TProcesses processes;
   }
@@ -68,6 +74,15 @@ class TIntermediate {
 
   void setProfile(glslang_profile_t p) { profile = p; }
   glslang_profile_t getProfile() const { return profile; }
+
+  void setSourceFile(string file) { if (file != null) sourceFile = file; }
+  string getSourceFile() const { return sourceFile; }
+
+  void addSourceText(string text) { sourceText ~= text; }
+  string getSourceText() const { return sourceText; }
+
+  void setOriginUpperLeft() { originUpperLeft = true; }
+  bool getOriginUpperLeft() const { return originUpperLeft; }
 
   void setSpv(in SpvVersion s) {
     spvVersion = s;

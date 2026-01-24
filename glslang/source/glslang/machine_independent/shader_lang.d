@@ -4,6 +4,7 @@ import glslang;
 
 import std.conv;
 import std.range;
+import std.traits;
 
 struct TTarget {
   glslang_target_language_t language;
@@ -222,7 +223,17 @@ bool ProcessDeferred(ProcessingContext)(
   intermediate.setProfile = profile;
   intermediate.setSpv = spvVersion;
   RecordProcesses(intermediate, messages, sourceEntryPointName);
-  
+  if (spvVersion.vulkan > 0) intermediate.setOriginUpperLeft();
+
+  if (messages & glslang_messages_t.MSG_DEBUG_INFO_BIT) {
+    intermediate.setSourceFile(names[numPre]);
+    for (int s = 0; s < shaderStrings.length; ++s) {
+      intermediate.addSourceText(strings[numPre + s]);
+    }
+    if (!SetupBuiltinSymbolTable(version_, profile, spvVersion, source)) {
+      return false;
+    }
+  }
 
   return false;
 }
@@ -440,4 +451,165 @@ void RecordProcesses(
     intermediate.addProcess = "source-entrypoint";
     intermediate.addProcessArgument = sourceEntryPointName;
   }
+}
+
+bool SetupBuiltinSymbolTable(
+  int version_,
+  glslang_profile_t profile,
+  in SpvVersion spvVersion,
+  glslang_source_t source
+) {
+  scope infoSink = new TInfoSink;
+  bool success;
+
+  int versionIndex = MapVersionToIndex(version_);
+  int spvVersionIndex = MapSpvVersionToIndex(spvVersion);
+  int profileIndex = MapProfileToIndex(profile);
+  int sourceIndex = MapSourceToIndex(source);
+  if (
+    CommonSymbolTable
+      [versionIndex]
+      [spvVersionIndex]
+      [profileIndex]
+      [sourceIndex]
+      [EPrecisionClass.EPcGeneral]) {
+    return true;
+  }
+
+  TSymbolTable[EnumMembers!EPrecisionClass.length] commonTable;
+  TSymbolTable[EnumMembers!glslang_stage_t.length] stageTables;
+  for (int precClass = 0; precClass < EnumMembers!EPrecisionClass.length; ++precClass)
+    commonTable[precClass] = new TSymbolTable;
+  for (int stage = 0; stage < EnumMembers!glslang_stage_t.length; ++stage)
+    stageTables[stage] = new TSymbolTable;
+  
+  if (
+    !InitializeSymbolTables(
+      infoSink, commonTable, stageTables,
+      version_, profile, spvVersion, source
+    )
+  ) {
+    success = false;
+    goto cleanup;
+  }
+
+cleanup:
+  return false;
+}
+
+const int VersionCount = 17;
+
+int MapVersionToIndex(int version_) {
+  int index = 0;
+
+  switch (version_) {
+    case 100: index = 0; break;
+    case 110: index = 1; break;
+    case 120: index = 2; break;
+    case 130: index = 3; break;
+    case 140: index = 4; break;
+    case 150: index = 5; break;
+    case 300: index = 6; break;
+    case 330: index = 7; break;
+    case 400: index = 8; break;
+    case 410: index = 9; break;
+    case 420: index = 10; break;
+    case 430: index = 11; break;
+    case 440: index = 12; break;
+    case 310: index = 13; break;
+    case 450: index = 14; break;
+    case 500: index = 0; break;
+    case 320: index = 15; break;
+    case 460: index = 16; break;
+    default: assert(0); break;
+  }
+
+  assert(index < VersionCount);
+
+  return index;
+}
+
+const int SpvVersionCount = 4;
+
+int MapSpvVersionToIndex(in SpvVersion spvVersion) {
+  int index = 0;
+
+  if (spvVersion.openGl > 0)
+    index = 1;
+  else if (spvVersion.vulkan > 0) {
+    if (!spvVersion.vulkanRelaxed)
+      index = 2;
+    else
+      index = 3;
+  }
+
+  assert(index < SpvVersionCount);
+
+  return index;
+}
+
+const int ProfileCount = 4;
+
+int MapProfileToIndex(glslang_profile_t profile) {
+  int index = 0;
+
+  switch (profile) {
+    case glslang_profile_t.NO_PROFILE: index = 0; break;
+    case glslang_profile_t.CORE_PROFILE: index = 1; break;
+    case glslang_profile_t.COMPATIBILITY_PROFILE: index = 2; break;
+    case glslang_profile_t.ES_PROFILE: index = 3; break;
+    default: break;
+  }
+
+  assert(index < ProfileCount);
+
+  return index;
+}
+
+const int SourceCount = 2;
+
+int MapSourceToIndex(glslang_source_t source) {
+  int index = 0;
+
+  switch (source) {
+    case glslang_source_t.SOURCE_GLSL: index = 0; break;
+    case glslang_source_t.SOURCE_HLSL: index = 1; break;
+    default: break;
+  }
+
+  assert(index < SourceCount);
+
+  return index;
+}
+
+enum EPrecisionClass {
+  EPcGeneral,
+  EPcFragment
+}
+
+TSymbolTable
+  [VersionCount]
+  [SpvVersionCount]
+  [ProfileCount]
+  [SourceCount]
+  [EnumMembers!EPrecisionClass.length] CommonSymbolTable;
+
+TSymbolTable
+  [VersionCount]
+  [SpvVersionCount]
+  [ProfileCount]
+  [SourceCount]
+  [EnumMembers!glslang_stage_t.length] SharedSymbolTables;
+
+class TSymbolTable {
+  
+}
+
+bool InitializeSymbolTables(
+  TInfoSink infoSink, TSymbolTable[] commonTable,
+  TSymbolTable[] symbolTables, int version_, glslang_profile_t profile,
+  in SpvVersion spvVersion, glslang_source_t source
+) {
+  bool success = true;
+  return success;
 }
