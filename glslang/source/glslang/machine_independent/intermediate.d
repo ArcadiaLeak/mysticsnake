@@ -20,6 +20,17 @@ struct TCall {
   int calleeBodyPosition;
 }
 
+struct TProcesses {
+  void addProcess(string process) {
+    processes ~= process;
+  }
+
+  const(string[]) getProcesses() const { return processes; }
+
+private:
+  string[] processes;
+};
+
 class TIntermediate {
   protected {
     const glslang_stage_t language;
@@ -27,9 +38,12 @@ class TIntermediate {
     string entryPointMangledName;
     DList!TCall callGraph;
 
+    glslang_source_t source;
     glslang_profile_t profile;
     int version_;
     SpvVersion spvVersion;
+
+    TProcesses processes;
   }
 
   this(
@@ -37,5 +51,77 @@ class TIntermediate {
     glslang_profile_t p = glslang_profile_t.NO_PROFILE
   ) {
     language = l;
+  }
+
+  void setSource(glslang_source_t s) { source = s; }
+  glslang_source_t getSource() const { return source; }
+
+  void setVersion(int v) { version_ = v; }
+  int getVersion() const { return profile; }
+
+  void setProfile(glslang_profile_t p) { profile = p; }
+  glslang_profile_t getProfile() const { return profile; }
+
+  void setSpv(in SpvVersion s) {
+    spvVersion = s;
+
+    if (spvVersion.vulkan > 0)
+      processes.addProcess("client vulkan100");
+    if (spvVersion.openGl > 0)
+      processes.addProcess("client opengl100");
+
+    switch (spvVersion.spv) {
+      case 0:
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_0:
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_1:
+        processes.addProcess("target-env spirv1.1");
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_2:
+        processes.addProcess("target-env spirv1.2");
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_3:
+        processes.addProcess("target-env spirv1.3");
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_4:
+        processes.addProcess("target-env spirv1.4");
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_5:
+        processes.addProcess("target-env spirv1.5");
+        break;
+      case glslang_target_language_version_t.TARGET_SPV_1_6:
+        processes.addProcess("target-env spirv1.6");
+        break;
+      default:
+        processes.addProcess("target-env spirvUnknown");
+        break;
+    }
+
+    switch (spvVersion.vulkan) {
+      case 0:
+        break;
+      case glslang_target_client_version_t.TARGET_VULKAN_1_0:
+        processes.addProcess("target-env vulkan1.0");
+        break;
+      case glslang_target_client_version_t.TARGET_VULKAN_1_1:
+        processes.addProcess("target-env vulkan1.1");
+        break;
+      case glslang_target_client_version_t.TARGET_VULKAN_1_2:
+        processes.addProcess("target-env vulkan1.2");
+        break;
+      case glslang_target_client_version_t.TARGET_VULKAN_1_3:
+        processes.addProcess("target-env vulkan1.3");
+        break;
+      case glslang_target_client_version_t.TARGET_VULKAN_1_4:
+        processes.addProcess("target-env vulkan1.4");
+        break;
+      default:
+        processes.addProcess("target-env vulkanUnknown");
+        break;
+    }
+
+    if (spvVersion.openGl > 0)
+      processes.addProcess("target-env opengl");
   }
 }

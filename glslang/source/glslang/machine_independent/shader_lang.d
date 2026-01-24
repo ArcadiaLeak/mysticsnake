@@ -195,16 +195,32 @@ bool ProcessDeferred(ProcessingContext)(
     }
     version_ = defaultVersion;
     profile = defaultProfile;
-
-    if (source == glslang_source_t.SOURCE_GLSL && overrideVersion != 0) {
-      version_ = overrideVersion;
-    }
-
-    bool goodVersion = DeduceVersionProfile(
-      compiler.infoSink, stage, versionNotFirst, defaultVersion,
-      source, version_, profile, spvVersion
-    );
   }
+  if (source == glslang_source_t.SOURCE_GLSL && overrideVersion != 0) {
+    version_ = overrideVersion;
+  }
+
+  bool goodVersion = DeduceVersionProfile(
+    compiler.infoSink, stage, versionNotFirst, defaultVersion,
+    source, version_, profile, spvVersion
+  );
+  bool versionWillBeError = (
+    versionNotFound ||
+    (profile == glslang_profile_t.ES_PROFILE &&
+      version_ >= 300 && versionNotFirst)
+  );
+  bool warnVersionNotFirst = false;
+  if (!versionWillBeError && versionNotFirstToken) {
+    if (messages & glslang_messages_t.MSG_RELAXED_ERRORS_BIT)
+      warnVersionNotFirst = true;
+    else
+      versionWillBeError = true;
+  }
+
+  intermediate.setSource = source;
+  intermediate.setVersion = version_;
+  intermediate.setProfile = profile;
+  intermediate.setSpv = spvVersion;
 
   return false;
 }
