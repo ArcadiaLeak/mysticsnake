@@ -6,5 +6,4 @@ public import glslang.resource_limits;
 
 public import glslang.c_interface;
 public import glslang.c_shader_types;
-public import glslang.common;
 public import glslang.intermediate;

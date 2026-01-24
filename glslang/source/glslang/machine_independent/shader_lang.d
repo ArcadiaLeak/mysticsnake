@@ -91,7 +91,7 @@ class TShader {
       compiler, strings, stringNames, builtInResources,
       defaultVersion, defaultProfile, forceDefaultVersionAndProfile,
       overrideVersion, forwardCompatible, message, intermediate,
-      output_string, &environment
+      output_string, environment
     );
   }
 }
@@ -104,9 +104,9 @@ class TDeferredCompiled : TCompiler {
 
 bool PreprocessDeferred(
   TCompiler compiler,
-  const string[] shaderStrings,
-  const string[] stringNames,
-  const TBuiltInResource* resources,
+  in string[] shaderStrings,
+  in string[] stringNames,
+  in TBuiltInResource* resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,
@@ -115,7 +115,7 @@ bool PreprocessDeferred(
   glslang_messages_t messages,
   TIntermediate intermediate,
   out string outputString,
-  const TEnvironment* environment = null
+  in TEnvironment environment
 ) {
   return ProcessDeferred(
     compiler, shaderStrings, stringNames, resources,
@@ -127,9 +127,9 @@ bool PreprocessDeferred(
 
 bool ProcessDeferred(ProcessingContext)(
   TCompiler compiler,
-  const string[] shaderStrings,
-  const string[] stringNames,
-  const TBuiltInResource* resources,
+  in string[] shaderStrings,
+  in string[] stringNames,
+  in TBuiltInResource* resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,
@@ -140,7 +140,7 @@ bool ProcessDeferred(ProcessingContext)(
   ProcessingContext processingContext,
   bool requireNonempty,
   string sourceEntryPointName,
-  const TEnvironment* environment
+  in TEnvironment environment
 ) {
   if (shaderStrings.length == 0) {
     return true;
@@ -172,7 +172,7 @@ bool ProcessDeferred(ProcessingContext)(
 }
 
 void TranslateEnvironment(
-  const TEnvironment* environment,
+  in TEnvironment environment,
   ref glslang_messages_t messages,
   ref glslang_source_t source,
   ref glslang_stage_t stage,
@@ -185,8 +185,6 @@ void TranslateEnvironment(
     spvVersion.vulkanGlsl = 100;
   } else if (spvVersion.spv != 0)
     spvVersion.openGl = 100;
-
-  if (environment == null) return;
 
   if (environment.input.languageFamily != glslang_source_t.SOURCE_NONE) {
     stage = environment.input.stage;

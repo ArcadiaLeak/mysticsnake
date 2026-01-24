@@ -5,8 +5,6 @@ import glslang;
 class TIntermNode {
   protected TSourceLoc m_loc;
 
-  this() { m_loc.init(); }
-
   ref const(TSourceLoc) loc() const => m_loc;
   ref const(TSourceLoc) loc(ref const(TSourceLoc) l) => m_loc = l;
 
