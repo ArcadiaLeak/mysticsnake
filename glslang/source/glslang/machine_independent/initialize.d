@@ -2108,6 +2108,883 @@ class TBuiltIns : TBuiltInParseables {
         void subgroupMemoryBarrierShared();
       };
     }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
+      commonBuiltins ~= q{
+        bool subgroupQuadAll(bool);
+        bool subgroupQuadAny(bool);
+      };   
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
+      commonBuiltins ~= q{
+        bool anyInvocation(bool);
+        bool allInvocations(bool);
+        bool allInvocationsEqual(bool);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins ~= q{
+        float minInvocationsAMD(float);
+        vec2 minInvocationsAMD(vec2);
+        vec3 minInvocationsAMD(vec3);
+        vec4 minInvocationsAMD(vec4);
+
+        int minInvocationsAMD(int);
+        ivec2 minInvocationsAMD(ivec2);
+        ivec3 minInvocationsAMD(ivec3);
+        ivec4 minInvocationsAMD(ivec4);
+
+        uint minInvocationsAMD(uint);
+        uvec2 minInvocationsAMD(uvec2);
+        uvec3 minInvocationsAMD(uvec3);
+        uvec4 minInvocationsAMD(uvec4);
+
+        double minInvocationsAMD(double);
+        dvec2 minInvocationsAMD(dvec2);
+        dvec3 minInvocationsAMD(dvec3);
+        dvec4 minInvocationsAMD(dvec4);
+
+        int64_t minInvocationsAMD(int64_t);
+        i64vec2 minInvocationsAMD(i64vec2);
+        i64vec3 minInvocationsAMD(i64vec3);
+        i64vec4 minInvocationsAMD(i64vec4);
+
+        uint64_t minInvocationsAMD(uint64_t);
+        u64vec2 minInvocationsAMD(u64vec2);
+        u64vec3 minInvocationsAMD(u64vec3);
+        u64vec4 minInvocationsAMD(u64vec4);
+
+        float16_t minInvocationsAMD(float16_t);
+        f16vec2 minInvocationsAMD(f16vec2);
+        f16vec3 minInvocationsAMD(f16vec3);
+        f16vec4 minInvocationsAMD(f16vec4);
+
+        int16_t minInvocationsAMD(int16_t);
+        i16vec2 minInvocationsAMD(i16vec2);
+        i16vec3 minInvocationsAMD(i16vec3);
+        i16vec4 minInvocationsAMD(i16vec4);
+
+        uint16_t minInvocationsAMD(uint16_t);
+        u16vec2 minInvocationsAMD(u16vec2);
+        u16vec3 minInvocationsAMD(u16vec3);
+        u16vec4 minInvocationsAMD(u16vec4);
+
+        float minInvocationsInclusiveScanAMD(float);
+        vec2 minInvocationsInclusiveScanAMD(vec2);
+        vec3 minInvocationsInclusiveScanAMD(vec3);
+        vec4 minInvocationsInclusiveScanAMD(vec4);
+
+        int minInvocationsInclusiveScanAMD(int);
+        ivec2 minInvocationsInclusiveScanAMD(ivec2);
+        ivec3 minInvocationsInclusiveScanAMD(ivec3);
+        ivec4 minInvocationsInclusiveScanAMD(ivec4);
+
+        uint minInvocationsInclusiveScanAMD(uint);
+        uvec2 minInvocationsInclusiveScanAMD(uvec2);
+        uvec3 minInvocationsInclusiveScanAMD(uvec3);
+        uvec4 minInvocationsInclusiveScanAMD(uvec4);
+
+        double minInvocationsInclusiveScanAMD(double);
+        dvec2 minInvocationsInclusiveScanAMD(dvec2);
+        dvec3 minInvocationsInclusiveScanAMD(dvec3);
+        dvec4 minInvocationsInclusiveScanAMD(dvec4);
+
+        int64_t minInvocationsInclusiveScanAMD(int64_t);
+        i64vec2 minInvocationsInclusiveScanAMD(i64vec2);
+        i64vec3 minInvocationsInclusiveScanAMD(i64vec3);
+        i64vec4 minInvocationsInclusiveScanAMD(i64vec4);
+
+        uint64_t minInvocationsInclusiveScanAMD(uint64_t);
+        u64vec2 minInvocationsInclusiveScanAMD(u64vec2);
+        u64vec3 minInvocationsInclusiveScanAMD(u64vec3);
+        u64vec4 minInvocationsInclusiveScanAMD(u64vec4);
+
+        float16_t minInvocationsInclusiveScanAMD(float16_t);
+        f16vec2 minInvocationsInclusiveScanAMD(f16vec2);
+        f16vec3 minInvocationsInclusiveScanAMD(f16vec3);
+        f16vec4 minInvocationsInclusiveScanAMD(f16vec4);
+
+        int16_t minInvocationsInclusiveScanAMD(int16_t);
+        i16vec2 minInvocationsInclusiveScanAMD(i16vec2);
+        i16vec3 minInvocationsInclusiveScanAMD(i16vec3);
+        i16vec4 minInvocationsInclusiveScanAMD(i16vec4);
+
+        uint16_t minInvocationsInclusiveScanAMD(uint16_t);
+        u16vec2 minInvocationsInclusiveScanAMD(u16vec2);
+        u16vec3 minInvocationsInclusiveScanAMD(u16vec3);
+        u16vec4 minInvocationsInclusiveScanAMD(u16vec4);
+
+        float minInvocationsExclusiveScanAMD(float);
+        vec2 minInvocationsExclusiveScanAMD(vec2);
+        vec3 minInvocationsExclusiveScanAMD(vec3);
+        vec4 minInvocationsExclusiveScanAMD(vec4);
+
+        int minInvocationsExclusiveScanAMD(int);
+        ivec2 minInvocationsExclusiveScanAMD(ivec2);
+        ivec3 minInvocationsExclusiveScanAMD(ivec3);
+        ivec4 minInvocationsExclusiveScanAMD(ivec4);
+
+        uint minInvocationsExclusiveScanAMD(uint);
+        uvec2 minInvocationsExclusiveScanAMD(uvec2);
+        uvec3 minInvocationsExclusiveScanAMD(uvec3);
+        uvec4 minInvocationsExclusiveScanAMD(uvec4);
+
+        double minInvocationsExclusiveScanAMD(double);
+        dvec2 minInvocationsExclusiveScanAMD(dvec2);
+        dvec3 minInvocationsExclusiveScanAMD(dvec3);
+        dvec4 minInvocationsExclusiveScanAMD(dvec4);
+
+        int64_t minInvocationsExclusiveScanAMD(int64_t);
+        i64vec2 minInvocationsExclusiveScanAMD(i64vec2);
+        i64vec3 minInvocationsExclusiveScanAMD(i64vec3);
+        i64vec4 minInvocationsExclusiveScanAMD(i64vec4);
+
+        uint64_t minInvocationsExclusiveScanAMD(uint64_t);
+        u64vec2 minInvocationsExclusiveScanAMD(u64vec2);
+        u64vec3 minInvocationsExclusiveScanAMD(u64vec3);
+        u64vec4 minInvocationsExclusiveScanAMD(u64vec4);
+
+        float16_t minInvocationsExclusiveScanAMD(float16_t);
+        f16vec2 minInvocationsExclusiveScanAMD(f16vec2);
+        f16vec3 minInvocationsExclusiveScanAMD(f16vec3);
+        f16vec4 minInvocationsExclusiveScanAMD(f16vec4);
+
+        int16_t minInvocationsExclusiveScanAMD(int16_t);
+        i16vec2 minInvocationsExclusiveScanAMD(i16vec2);
+        i16vec3 minInvocationsExclusiveScanAMD(i16vec3);
+        i16vec4 minInvocationsExclusiveScanAMD(i16vec4);
+
+        uint16_t minInvocationsExclusiveScanAMD(uint16_t);
+        u16vec2 minInvocationsExclusiveScanAMD(u16vec2);
+        u16vec3 minInvocationsExclusiveScanAMD(u16vec3);
+        u16vec4 minInvocationsExclusiveScanAMD(u16vec4);
+
+        float maxInvocationsAMD(float);
+        vec2 maxInvocationsAMD(vec2);
+        vec3 maxInvocationsAMD(vec3);
+        vec4 maxInvocationsAMD(vec4);
+
+        int maxInvocationsAMD(int);
+        ivec2 maxInvocationsAMD(ivec2);
+        ivec3 maxInvocationsAMD(ivec3);
+        ivec4 maxInvocationsAMD(ivec4);
+
+        uint maxInvocationsAMD(uint);
+        uvec2 maxInvocationsAMD(uvec2);
+        uvec3 maxInvocationsAMD(uvec3);
+        uvec4 maxInvocationsAMD(uvec4);
+
+        double maxInvocationsAMD(double);
+        dvec2 maxInvocationsAMD(dvec2);
+        dvec3 maxInvocationsAMD(dvec3);
+        dvec4 maxInvocationsAMD(dvec4);
+
+        int64_t maxInvocationsAMD(int64_t);
+        i64vec2 maxInvocationsAMD(i64vec2);
+        i64vec3 maxInvocationsAMD(i64vec3);
+        i64vec4 maxInvocationsAMD(i64vec4);
+
+        uint64_t maxInvocationsAMD(uint64_t);
+        u64vec2 maxInvocationsAMD(u64vec2);
+        u64vec3 maxInvocationsAMD(u64vec3);
+        u64vec4 maxInvocationsAMD(u64vec4);
+
+        float16_t maxInvocationsAMD(float16_t);
+        f16vec2 maxInvocationsAMD(f16vec2);
+        f16vec3 maxInvocationsAMD(f16vec3);
+        f16vec4 maxInvocationsAMD(f16vec4);
+
+        int16_t maxInvocationsAMD(int16_t);
+        i16vec2 maxInvocationsAMD(i16vec2);
+        i16vec3 maxInvocationsAMD(i16vec3);
+        i16vec4 maxInvocationsAMD(i16vec4);
+
+        uint16_t maxInvocationsAMD(uint16_t);
+        u16vec2 maxInvocationsAMD(u16vec2);
+        u16vec3 maxInvocationsAMD(u16vec3);
+        u16vec4 maxInvocationsAMD(u16vec4);
+
+        float maxInvocationsInclusiveScanAMD(float);
+        vec2 maxInvocationsInclusiveScanAMD(vec2);
+        vec3 maxInvocationsInclusiveScanAMD(vec3);
+        vec4 maxInvocationsInclusiveScanAMD(vec4);
+
+        int maxInvocationsInclusiveScanAMD(int);
+        ivec2 maxInvocationsInclusiveScanAMD(ivec2);
+        ivec3 maxInvocationsInclusiveScanAMD(ivec3);
+        ivec4 maxInvocationsInclusiveScanAMD(ivec4);
+
+        uint maxInvocationsInclusiveScanAMD(uint);
+        uvec2 maxInvocationsInclusiveScanAMD(uvec2);
+        uvec3 maxInvocationsInclusiveScanAMD(uvec3);
+        uvec4 maxInvocationsInclusiveScanAMD(uvec4);
+
+        double maxInvocationsInclusiveScanAMD(double);
+        dvec2 maxInvocationsInclusiveScanAMD(dvec2);
+        dvec3 maxInvocationsInclusiveScanAMD(dvec3);
+        dvec4 maxInvocationsInclusiveScanAMD(dvec4);
+
+        int64_t maxInvocationsInclusiveScanAMD(int64_t);
+        i64vec2 maxInvocationsInclusiveScanAMD(i64vec2);
+        i64vec3 maxInvocationsInclusiveScanAMD(i64vec3);
+        i64vec4 maxInvocationsInclusiveScanAMD(i64vec4);
+
+        uint64_t maxInvocationsInclusiveScanAMD(uint64_t);
+        u64vec2 maxInvocationsInclusiveScanAMD(u64vec2);
+        u64vec3 maxInvocationsInclusiveScanAMD(u64vec3);
+        u64vec4 maxInvocationsInclusiveScanAMD(u64vec4);
+
+        float16_t maxInvocationsInclusiveScanAMD(float16_t);
+        f16vec2 maxInvocationsInclusiveScanAMD(f16vec2);
+        f16vec3 maxInvocationsInclusiveScanAMD(f16vec3);
+        f16vec4 maxInvocationsInclusiveScanAMD(f16vec4);
+
+        int16_t maxInvocationsInclusiveScanAMD(int16_t);
+        i16vec2 maxInvocationsInclusiveScanAMD(i16vec2);
+        i16vec3 maxInvocationsInclusiveScanAMD(i16vec3);
+        i16vec4 maxInvocationsInclusiveScanAMD(i16vec4);
+
+        uint16_t maxInvocationsInclusiveScanAMD(uint16_t);
+        u16vec2 maxInvocationsInclusiveScanAMD(u16vec2);
+        u16vec3 maxInvocationsInclusiveScanAMD(u16vec3);
+        u16vec4 maxInvocationsInclusiveScanAMD(u16vec4);
+
+        float maxInvocationsExclusiveScanAMD(float);
+        vec2 maxInvocationsExclusiveScanAMD(vec2);
+        vec3 maxInvocationsExclusiveScanAMD(vec3);
+        vec4 maxInvocationsExclusiveScanAMD(vec4);
+
+        int maxInvocationsExclusiveScanAMD(int);
+        ivec2 maxInvocationsExclusiveScanAMD(ivec2);
+        ivec3 maxInvocationsExclusiveScanAMD(ivec3);
+        ivec4 maxInvocationsExclusiveScanAMD(ivec4);
+
+        uint maxInvocationsExclusiveScanAMD(uint);
+        uvec2 maxInvocationsExclusiveScanAMD(uvec2);
+        uvec3 maxInvocationsExclusiveScanAMD(uvec3);
+        uvec4 maxInvocationsExclusiveScanAMD(uvec4);
+
+        double maxInvocationsExclusiveScanAMD(double);
+        dvec2 maxInvocationsExclusiveScanAMD(dvec2);
+        dvec3 maxInvocationsExclusiveScanAMD(dvec3);
+        dvec4 maxInvocationsExclusiveScanAMD(dvec4);
+
+        int64_t maxInvocationsExclusiveScanAMD(int64_t);
+        i64vec2 maxInvocationsExclusiveScanAMD(i64vec2);
+        i64vec3 maxInvocationsExclusiveScanAMD(i64vec3);
+        i64vec4 maxInvocationsExclusiveScanAMD(i64vec4);
+
+        uint64_t maxInvocationsExclusiveScanAMD(uint64_t);
+        u64vec2 maxInvocationsExclusiveScanAMD(u64vec2);
+        u64vec3 maxInvocationsExclusiveScanAMD(u64vec3);
+        u64vec4 maxInvocationsExclusiveScanAMD(u64vec4);
+
+        float16_t maxInvocationsExclusiveScanAMD(float16_t);
+        f16vec2 maxInvocationsExclusiveScanAMD(f16vec2);
+        f16vec3 maxInvocationsExclusiveScanAMD(f16vec3);
+        f16vec4 maxInvocationsExclusiveScanAMD(f16vec4);
+
+        int16_t maxInvocationsExclusiveScanAMD(int16_t);
+        i16vec2 maxInvocationsExclusiveScanAMD(i16vec2);
+        i16vec3 maxInvocationsExclusiveScanAMD(i16vec3);
+        i16vec4 maxInvocationsExclusiveScanAMD(i16vec4);
+
+        uint16_t maxInvocationsExclusiveScanAMD(uint16_t);
+        u16vec2 maxInvocationsExclusiveScanAMD(u16vec2);
+        u16vec3 maxInvocationsExclusiveScanAMD(u16vec3);
+        u16vec4 maxInvocationsExclusiveScanAMD(u16vec4);
+
+        float addInvocationsAMD(float);
+        vec2 addInvocationsAMD(vec2);
+        vec3 addInvocationsAMD(vec3);
+        vec4 addInvocationsAMD(vec4);
+
+        int addInvocationsAMD(int);
+        ivec2 addInvocationsAMD(ivec2);
+        ivec3 addInvocationsAMD(ivec3);
+        ivec4 addInvocationsAMD(ivec4);
+
+        uint addInvocationsAMD(uint);
+        uvec2 addInvocationsAMD(uvec2);
+        uvec3 addInvocationsAMD(uvec3);
+        uvec4 addInvocationsAMD(uvec4);
+
+        double addInvocationsAMD(double);
+        dvec2 addInvocationsAMD(dvec2);
+        dvec3 addInvocationsAMD(dvec3);
+        dvec4 addInvocationsAMD(dvec4);
+
+        int64_t addInvocationsAMD(int64_t);
+        i64vec2 addInvocationsAMD(i64vec2);
+        i64vec3 addInvocationsAMD(i64vec3);
+        i64vec4 addInvocationsAMD(i64vec4);
+
+        uint64_t addInvocationsAMD(uint64_t);
+        u64vec2 addInvocationsAMD(u64vec2);
+        u64vec3 addInvocationsAMD(u64vec3);
+        u64vec4 addInvocationsAMD(u64vec4);
+
+        float16_t addInvocationsAMD(float16_t);
+        f16vec2 addInvocationsAMD(f16vec2);
+        f16vec3 addInvocationsAMD(f16vec3);
+        f16vec4 addInvocationsAMD(f16vec4);
+
+        int16_t addInvocationsAMD(int16_t);
+        i16vec2 addInvocationsAMD(i16vec2);
+        i16vec3 addInvocationsAMD(i16vec3);
+        i16vec4 addInvocationsAMD(i16vec4);
+
+        uint16_t addInvocationsAMD(uint16_t);
+        u16vec2 addInvocationsAMD(u16vec2);
+        u16vec3 addInvocationsAMD(u16vec3);
+        u16vec4 addInvocationsAMD(u16vec4);
+
+        float addInvocationsInclusiveScanAMD(float);
+        vec2 addInvocationsInclusiveScanAMD(vec2);
+        vec3 addInvocationsInclusiveScanAMD(vec3);
+        vec4 addInvocationsInclusiveScanAMD(vec4);
+
+        int addInvocationsInclusiveScanAMD(int);
+        ivec2 addInvocationsInclusiveScanAMD(ivec2);
+        ivec3 addInvocationsInclusiveScanAMD(ivec3);
+        ivec4 addInvocationsInclusiveScanAMD(ivec4);
+
+        uint addInvocationsInclusiveScanAMD(uint);
+        uvec2 addInvocationsInclusiveScanAMD(uvec2);
+        uvec3 addInvocationsInclusiveScanAMD(uvec3);
+        uvec4 addInvocationsInclusiveScanAMD(uvec4);
+
+        double addInvocationsInclusiveScanAMD(double);
+        dvec2 addInvocationsInclusiveScanAMD(dvec2);
+        dvec3 addInvocationsInclusiveScanAMD(dvec3);
+        dvec4 addInvocationsInclusiveScanAMD(dvec4);
+
+        int64_t addInvocationsInclusiveScanAMD(int64_t);
+        i64vec2 addInvocationsInclusiveScanAMD(i64vec2);
+        i64vec3 addInvocationsInclusiveScanAMD(i64vec3);
+        i64vec4 addInvocationsInclusiveScanAMD(i64vec4);
+
+        uint64_t addInvocationsInclusiveScanAMD(uint64_t);
+        u64vec2 addInvocationsInclusiveScanAMD(u64vec2);
+        u64vec3 addInvocationsInclusiveScanAMD(u64vec3);
+        u64vec4 addInvocationsInclusiveScanAMD(u64vec4);
+
+        float16_t addInvocationsInclusiveScanAMD(float16_t);
+        f16vec2 addInvocationsInclusiveScanAMD(f16vec2);
+        f16vec3 addInvocationsInclusiveScanAMD(f16vec3);
+        f16vec4 addInvocationsInclusiveScanAMD(f16vec4);
+
+        int16_t addInvocationsInclusiveScanAMD(int16_t);
+        i16vec2 addInvocationsInclusiveScanAMD(i16vec2);
+        i16vec3 addInvocationsInclusiveScanAMD(i16vec3);
+        i16vec4 addInvocationsInclusiveScanAMD(i16vec4);
+
+        uint16_t addInvocationsInclusiveScanAMD(uint16_t);
+        u16vec2 addInvocationsInclusiveScanAMD(u16vec2);
+        u16vec3 addInvocationsInclusiveScanAMD(u16vec3);
+        u16vec4 addInvocationsInclusiveScanAMD(u16vec4);
+
+        float addInvocationsExclusiveScanAMD(float);
+        vec2 addInvocationsExclusiveScanAMD(vec2);
+        vec3 addInvocationsExclusiveScanAMD(vec3);
+        vec4 addInvocationsExclusiveScanAMD(vec4);
+
+        int addInvocationsExclusiveScanAMD(int);
+        ivec2 addInvocationsExclusiveScanAMD(ivec2);
+        ivec3 addInvocationsExclusiveScanAMD(ivec3);
+        ivec4 addInvocationsExclusiveScanAMD(ivec4);
+
+        uint addInvocationsExclusiveScanAMD(uint);
+        uvec2 addInvocationsExclusiveScanAMD(uvec2);
+        uvec3 addInvocationsExclusiveScanAMD(uvec3);
+        uvec4 addInvocationsExclusiveScanAMD(uvec4);
+
+        double addInvocationsExclusiveScanAMD(double);
+        dvec2 addInvocationsExclusiveScanAMD(dvec2);
+        dvec3 addInvocationsExclusiveScanAMD(dvec3);
+        dvec4 addInvocationsExclusiveScanAMD(dvec4);
+
+        int64_t addInvocationsExclusiveScanAMD(int64_t);
+        i64vec2 addInvocationsExclusiveScanAMD(i64vec2);
+        i64vec3 addInvocationsExclusiveScanAMD(i64vec3);
+        i64vec4 addInvocationsExclusiveScanAMD(i64vec4);
+
+        uint64_t addInvocationsExclusiveScanAMD(uint64_t);
+        u64vec2 addInvocationsExclusiveScanAMD(u64vec2);
+        u64vec3 addInvocationsExclusiveScanAMD(u64vec3);
+        u64vec4 addInvocationsExclusiveScanAMD(u64vec4);
+
+        float16_t addInvocationsExclusiveScanAMD(float16_t);
+        f16vec2 addInvocationsExclusiveScanAMD(f16vec2);
+        f16vec3 addInvocationsExclusiveScanAMD(f16vec3);
+        f16vec4 addInvocationsExclusiveScanAMD(f16vec4);
+
+        int16_t addInvocationsExclusiveScanAMD(int16_t);
+        i16vec2 addInvocationsExclusiveScanAMD(i16vec2);
+        i16vec3 addInvocationsExclusiveScanAMD(i16vec3);
+        i16vec4 addInvocationsExclusiveScanAMD(i16vec4);
+
+        uint16_t addInvocationsExclusiveScanAMD(uint16_t);
+        u16vec2 addInvocationsExclusiveScanAMD(u16vec2);
+        u16vec3 addInvocationsExclusiveScanAMD(u16vec3);
+        u16vec4 addInvocationsExclusiveScanAMD(u16vec4);
+
+        float minInvocationsNonUniformAMD(float);
+        vec2 minInvocationsNonUniformAMD(vec2);
+        vec3 minInvocationsNonUniformAMD(vec3);
+        vec4 minInvocationsNonUniformAMD(vec4);
+
+        int minInvocationsNonUniformAMD(int);
+        ivec2 minInvocationsNonUniformAMD(ivec2);
+        ivec3 minInvocationsNonUniformAMD(ivec3);
+        ivec4 minInvocationsNonUniformAMD(ivec4);
+
+        uint minInvocationsNonUniformAMD(uint);
+        uvec2 minInvocationsNonUniformAMD(uvec2);
+        uvec3 minInvocationsNonUniformAMD(uvec3);
+        uvec4 minInvocationsNonUniformAMD(uvec4);
+
+        double minInvocationsNonUniformAMD(double);
+        dvec2 minInvocationsNonUniformAMD(dvec2);
+        dvec3 minInvocationsNonUniformAMD(dvec3);
+        dvec4 minInvocationsNonUniformAMD(dvec4);
+
+        int64_t minInvocationsNonUniformAMD(int64_t);
+        i64vec2 minInvocationsNonUniformAMD(i64vec2);
+        i64vec3 minInvocationsNonUniformAMD(i64vec3);
+        i64vec4 minInvocationsNonUniformAMD(i64vec4);
+
+        uint64_t minInvocationsNonUniformAMD(uint64_t);
+        u64vec2 minInvocationsNonUniformAMD(u64vec2);
+        u64vec3 minInvocationsNonUniformAMD(u64vec3);
+        u64vec4 minInvocationsNonUniformAMD(u64vec4);
+
+        float16_t minInvocationsNonUniformAMD(float16_t);
+        f16vec2 minInvocationsNonUniformAMD(f16vec2);
+        f16vec3 minInvocationsNonUniformAMD(f16vec3);
+        f16vec4 minInvocationsNonUniformAMD(f16vec4);
+
+        int16_t minInvocationsNonUniformAMD(int16_t);
+        i16vec2 minInvocationsNonUniformAMD(i16vec2);
+        i16vec3 minInvocationsNonUniformAMD(i16vec3);
+        i16vec4 minInvocationsNonUniformAMD(i16vec4);
+
+        uint16_t minInvocationsNonUniformAMD(uint16_t);
+        u16vec2 minInvocationsNonUniformAMD(u16vec2);
+        u16vec3 minInvocationsNonUniformAMD(u16vec3);
+        u16vec4 minInvocationsNonUniformAMD(u16vec4);
+
+        float minInvocationsInclusiveScanNonUniformAMD(float);
+        vec2 minInvocationsInclusiveScanNonUniformAMD(vec2);
+        vec3 minInvocationsInclusiveScanNonUniformAMD(vec3);
+        vec4 minInvocationsInclusiveScanNonUniformAMD(vec4);
+
+        int minInvocationsInclusiveScanNonUniformAMD(int);
+        ivec2 minInvocationsInclusiveScanNonUniformAMD(ivec2);
+        ivec3 minInvocationsInclusiveScanNonUniformAMD(ivec3);
+        ivec4 minInvocationsInclusiveScanNonUniformAMD(ivec4);
+
+        uint minInvocationsInclusiveScanNonUniformAMD(uint);
+        uvec2 minInvocationsInclusiveScanNonUniformAMD(uvec2);
+        uvec3 minInvocationsInclusiveScanNonUniformAMD(uvec3);
+        uvec4 minInvocationsInclusiveScanNonUniformAMD(uvec4);
+
+        double minInvocationsInclusiveScanNonUniformAMD(double);
+        dvec2 minInvocationsInclusiveScanNonUniformAMD(dvec2);
+        dvec3 minInvocationsInclusiveScanNonUniformAMD(dvec3);
+        dvec4 minInvocationsInclusiveScanNonUniformAMD(dvec4);
+
+        int64_t minInvocationsInclusiveScanNonUniformAMD(int64_t);
+        i64vec2 minInvocationsInclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 minInvocationsInclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 minInvocationsInclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t minInvocationsInclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 minInvocationsInclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 minInvocationsInclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 minInvocationsInclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t minInvocationsInclusiveScanNonUniformAMD(float16_t);
+        f16vec2 minInvocationsInclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 minInvocationsInclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 minInvocationsInclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t minInvocationsInclusiveScanNonUniformAMD(int16_t);
+        i16vec2 minInvocationsInclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 minInvocationsInclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 minInvocationsInclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t minInvocationsInclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 minInvocationsInclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 minInvocationsInclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 minInvocationsInclusiveScanNonUniformAMD(u16vec4);
+
+        float minInvocationsExclusiveScanNonUniformAMD(float);
+        vec2 minInvocationsExclusiveScanNonUniformAMD(vec2);
+        vec3 minInvocationsExclusiveScanNonUniformAMD(vec3);
+        vec4 minInvocationsExclusiveScanNonUniformAMD(vec4);
+
+        int minInvocationsExclusiveScanNonUniformAMD(int);
+        ivec2 minInvocationsExclusiveScanNonUniformAMD(ivec2);
+        ivec3 minInvocationsExclusiveScanNonUniformAMD(ivec3);
+        ivec4 minInvocationsExclusiveScanNonUniformAMD(ivec4);
+
+        uint minInvocationsExclusiveScanNonUniformAMD(uint);
+        uvec2 minInvocationsExclusiveScanNonUniformAMD(uvec2);
+        uvec3 minInvocationsExclusiveScanNonUniformAMD(uvec3);
+        uvec4 minInvocationsExclusiveScanNonUniformAMD(uvec4);
+
+        double minInvocationsExclusiveScanNonUniformAMD(double);
+        dvec2 minInvocationsExclusiveScanNonUniformAMD(dvec2);
+        dvec3 minInvocationsExclusiveScanNonUniformAMD(dvec3);
+        dvec4 minInvocationsExclusiveScanNonUniformAMD(dvec4);
+
+        int64_t minInvocationsExclusiveScanNonUniformAMD(int64_t);
+        i64vec2 minInvocationsExclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 minInvocationsExclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 minInvocationsExclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t minInvocationsExclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 minInvocationsExclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 minInvocationsExclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 minInvocationsExclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t minInvocationsExclusiveScanNonUniformAMD(float16_t);
+        f16vec2 minInvocationsExclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 minInvocationsExclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 minInvocationsExclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t minInvocationsExclusiveScanNonUniformAMD(int16_t);
+        i16vec2 minInvocationsExclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 minInvocationsExclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 minInvocationsExclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t minInvocationsExclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 minInvocationsExclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 minInvocationsExclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 minInvocationsExclusiveScanNonUniformAMD(u16vec4);
+
+        float maxInvocationsNonUniformAMD(float);
+        vec2 maxInvocationsNonUniformAMD(vec2);
+        vec3 maxInvocationsNonUniformAMD(vec3);
+        vec4 maxInvocationsNonUniformAMD(vec4);
+
+        int maxInvocationsNonUniformAMD(int);
+        ivec2 maxInvocationsNonUniformAMD(ivec2);
+        ivec3 maxInvocationsNonUniformAMD(ivec3);
+        ivec4 maxInvocationsNonUniformAMD(ivec4);
+
+        uint maxInvocationsNonUniformAMD(uint);
+        uvec2 maxInvocationsNonUniformAMD(uvec2);
+        uvec3 maxInvocationsNonUniformAMD(uvec3);
+        uvec4 maxInvocationsNonUniformAMD(uvec4);
+
+        double maxInvocationsNonUniformAMD(double);
+        dvec2 maxInvocationsNonUniformAMD(dvec2);
+        dvec3 maxInvocationsNonUniformAMD(dvec3);
+        dvec4 maxInvocationsNonUniformAMD(dvec4);
+
+        int64_t maxInvocationsNonUniformAMD(int64_t);
+        i64vec2 maxInvocationsNonUniformAMD(i64vec2);
+        i64vec3 maxInvocationsNonUniformAMD(i64vec3);
+        i64vec4 maxInvocationsNonUniformAMD(i64vec4);
+
+        uint64_t maxInvocationsNonUniformAMD(uint64_t);
+        u64vec2 maxInvocationsNonUniformAMD(u64vec2);
+        u64vec3 maxInvocationsNonUniformAMD(u64vec3);
+        u64vec4 maxInvocationsNonUniformAMD(u64vec4);
+
+        float16_t maxInvocationsNonUniformAMD(float16_t);
+        f16vec2 maxInvocationsNonUniformAMD(f16vec2);
+        f16vec3 maxInvocationsNonUniformAMD(f16vec3);
+        f16vec4 maxInvocationsNonUniformAMD(f16vec4);
+
+        int16_t maxInvocationsNonUniformAMD(int16_t);
+        i16vec2 maxInvocationsNonUniformAMD(i16vec2);
+        i16vec3 maxInvocationsNonUniformAMD(i16vec3);
+        i16vec4 maxInvocationsNonUniformAMD(i16vec4);
+
+        uint16_t maxInvocationsNonUniformAMD(uint16_t);
+        u16vec2 maxInvocationsNonUniformAMD(u16vec2);
+        u16vec3 maxInvocationsNonUniformAMD(u16vec3);
+        u16vec4 maxInvocationsNonUniformAMD(u16vec4);
+
+        float maxInvocationsInclusiveScanNonUniformAMD(float);
+        vec2 maxInvocationsInclusiveScanNonUniformAMD(vec2);
+        vec3 maxInvocationsInclusiveScanNonUniformAMD(vec3);
+        vec4 maxInvocationsInclusiveScanNonUniformAMD(vec4);
+
+        int maxInvocationsInclusiveScanNonUniformAMD(int);
+        ivec2 maxInvocationsInclusiveScanNonUniformAMD(ivec2);
+        ivec3 maxInvocationsInclusiveScanNonUniformAMD(ivec3);
+        ivec4 maxInvocationsInclusiveScanNonUniformAMD(ivec4);
+
+        uint maxInvocationsInclusiveScanNonUniformAMD(uint);
+        uvec2 maxInvocationsInclusiveScanNonUniformAMD(uvec2);
+        uvec3 maxInvocationsInclusiveScanNonUniformAMD(uvec3);
+        uvec4 maxInvocationsInclusiveScanNonUniformAMD(uvec4);
+
+        double maxInvocationsInclusiveScanNonUniformAMD(double);
+        dvec2 maxInvocationsInclusiveScanNonUniformAMD(dvec2);
+        dvec3 maxInvocationsInclusiveScanNonUniformAMD(dvec3);
+        dvec4 maxInvocationsInclusiveScanNonUniformAMD(dvec4);
+
+        int64_t maxInvocationsInclusiveScanNonUniformAMD(int64_t);
+        i64vec2 maxInvocationsInclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 maxInvocationsInclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 maxInvocationsInclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t maxInvocationsInclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 maxInvocationsInclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 maxInvocationsInclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 maxInvocationsInclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t maxInvocationsInclusiveScanNonUniformAMD(float16_t);
+        f16vec2 maxInvocationsInclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 maxInvocationsInclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 maxInvocationsInclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t maxInvocationsInclusiveScanNonUniformAMD(int16_t);
+        i16vec2 maxInvocationsInclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 maxInvocationsInclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 maxInvocationsInclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t maxInvocationsInclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 maxInvocationsInclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 maxInvocationsInclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 maxInvocationsInclusiveScanNonUniformAMD(u16vec4);
+
+        float maxInvocationsExclusiveScanNonUniformAMD(float);
+        vec2 maxInvocationsExclusiveScanNonUniformAMD(vec2);
+        vec3 maxInvocationsExclusiveScanNonUniformAMD(vec3);
+        vec4 maxInvocationsExclusiveScanNonUniformAMD(vec4);
+
+        int maxInvocationsExclusiveScanNonUniformAMD(int);
+        ivec2 maxInvocationsExclusiveScanNonUniformAMD(ivec2);
+        ivec3 maxInvocationsExclusiveScanNonUniformAMD(ivec3);
+        ivec4 maxInvocationsExclusiveScanNonUniformAMD(ivec4);
+
+        uint maxInvocationsExclusiveScanNonUniformAMD(uint);
+        uvec2 maxInvocationsExclusiveScanNonUniformAMD(uvec2);
+        uvec3 maxInvocationsExclusiveScanNonUniformAMD(uvec3);
+        uvec4 maxInvocationsExclusiveScanNonUniformAMD(uvec4);
+
+        double maxInvocationsExclusiveScanNonUniformAMD(double);
+        dvec2 maxInvocationsExclusiveScanNonUniformAMD(dvec2);
+        dvec3 maxInvocationsExclusiveScanNonUniformAMD(dvec3);
+        dvec4 maxInvocationsExclusiveScanNonUniformAMD(dvec4);
+
+        int64_t maxInvocationsExclusiveScanNonUniformAMD(int64_t);
+        i64vec2 maxInvocationsExclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 maxInvocationsExclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 maxInvocationsExclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t maxInvocationsExclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 maxInvocationsExclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 maxInvocationsExclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 maxInvocationsExclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t maxInvocationsExclusiveScanNonUniformAMD(float16_t);
+        f16vec2 maxInvocationsExclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 maxInvocationsExclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 maxInvocationsExclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t maxInvocationsExclusiveScanNonUniformAMD(int16_t);
+        i16vec2 maxInvocationsExclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 maxInvocationsExclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 maxInvocationsExclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t maxInvocationsExclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 maxInvocationsExclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 maxInvocationsExclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 maxInvocationsExclusiveScanNonUniformAMD(u16vec4);
+
+        float addInvocationsNonUniformAMD(float);
+        vec2 addInvocationsNonUniformAMD(vec2);
+        vec3 addInvocationsNonUniformAMD(vec3);
+        vec4 addInvocationsNonUniformAMD(vec4);
+
+        int addInvocationsNonUniformAMD(int);
+        ivec2 addInvocationsNonUniformAMD(ivec2);
+        ivec3 addInvocationsNonUniformAMD(ivec3);
+        ivec4 addInvocationsNonUniformAMD(ivec4);
+
+        uint addInvocationsNonUniformAMD(uint);
+        uvec2 addInvocationsNonUniformAMD(uvec2);
+        uvec3 addInvocationsNonUniformAMD(uvec3);
+        uvec4 addInvocationsNonUniformAMD(uvec4);
+
+        double addInvocationsNonUniformAMD(double);
+        dvec2 addInvocationsNonUniformAMD(dvec2);
+        dvec3 addInvocationsNonUniformAMD(dvec3);
+        dvec4 addInvocationsNonUniformAMD(dvec4);
+
+        int64_t addInvocationsNonUniformAMD(int64_t);
+        i64vec2 addInvocationsNonUniformAMD(i64vec2);
+        i64vec3 addInvocationsNonUniformAMD(i64vec3);
+        i64vec4 addInvocationsNonUniformAMD(i64vec4);
+
+        uint64_t addInvocationsNonUniformAMD(uint64_t);
+        u64vec2 addInvocationsNonUniformAMD(u64vec2);
+        u64vec3 addInvocationsNonUniformAMD(u64vec3);
+        u64vec4 addInvocationsNonUniformAMD(u64vec4);
+
+        float16_t addInvocationsNonUniformAMD(float16_t);
+        f16vec2 addInvocationsNonUniformAMD(f16vec2);
+        f16vec3 addInvocationsNonUniformAMD(f16vec3);
+        f16vec4 addInvocationsNonUniformAMD(f16vec4);
+
+        int16_t addInvocationsNonUniformAMD(int16_t);
+        i16vec2 addInvocationsNonUniformAMD(i16vec2);
+        i16vec3 addInvocationsNonUniformAMD(i16vec3);
+        i16vec4 addInvocationsNonUniformAMD(i16vec4);
+
+        uint16_t addInvocationsNonUniformAMD(uint16_t);
+        u16vec2 addInvocationsNonUniformAMD(u16vec2);
+        u16vec3 addInvocationsNonUniformAMD(u16vec3);
+        u16vec4 addInvocationsNonUniformAMD(u16vec4);
+
+        float addInvocationsInclusiveScanNonUniformAMD(float);
+        vec2 addInvocationsInclusiveScanNonUniformAMD(vec2);
+        vec3 addInvocationsInclusiveScanNonUniformAMD(vec3);
+        vec4 addInvocationsInclusiveScanNonUniformAMD(vec4);
+
+        int addInvocationsInclusiveScanNonUniformAMD(int);
+        ivec2 addInvocationsInclusiveScanNonUniformAMD(ivec2);
+        ivec3 addInvocationsInclusiveScanNonUniformAMD(ivec3);
+        ivec4 addInvocationsInclusiveScanNonUniformAMD(ivec4);
+
+        uint addInvocationsInclusiveScanNonUniformAMD(uint);
+        uvec2 addInvocationsInclusiveScanNonUniformAMD(uvec2);
+        uvec3 addInvocationsInclusiveScanNonUniformAMD(uvec3);
+        uvec4 addInvocationsInclusiveScanNonUniformAMD(uvec4);
+
+        double addInvocationsInclusiveScanNonUniformAMD(double);
+        dvec2 addInvocationsInclusiveScanNonUniformAMD(dvec2);
+        dvec3 addInvocationsInclusiveScanNonUniformAMD(dvec3);
+        dvec4 addInvocationsInclusiveScanNonUniformAMD(dvec4);
+
+        int64_t addInvocationsInclusiveScanNonUniformAMD(int64_t);
+        i64vec2 addInvocationsInclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 addInvocationsInclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 addInvocationsInclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t addInvocationsInclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 addInvocationsInclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 addInvocationsInclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 addInvocationsInclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t addInvocationsInclusiveScanNonUniformAMD(float16_t);
+        f16vec2 addInvocationsInclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 addInvocationsInclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 addInvocationsInclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t addInvocationsInclusiveScanNonUniformAMD(int16_t);
+        i16vec2 addInvocationsInclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 addInvocationsInclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 addInvocationsInclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t addInvocationsInclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 addInvocationsInclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 addInvocationsInclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 addInvocationsInclusiveScanNonUniformAMD(u16vec4);
+
+        float addInvocationsExclusiveScanNonUniformAMD(float);
+        vec2 addInvocationsExclusiveScanNonUniformAMD(vec2);
+        vec3 addInvocationsExclusiveScanNonUniformAMD(vec3);
+        vec4 addInvocationsExclusiveScanNonUniformAMD(vec4);
+
+        int addInvocationsExclusiveScanNonUniformAMD(int);
+        ivec2 addInvocationsExclusiveScanNonUniformAMD(ivec2);
+        ivec3 addInvocationsExclusiveScanNonUniformAMD(ivec3);
+        ivec4 addInvocationsExclusiveScanNonUniformAMD(ivec4);
+
+        uint addInvocationsExclusiveScanNonUniformAMD(uint);
+        uvec2 addInvocationsExclusiveScanNonUniformAMD(uvec2);
+        uvec3 addInvocationsExclusiveScanNonUniformAMD(uvec3);
+        uvec4 addInvocationsExclusiveScanNonUniformAMD(uvec4);
+
+        double addInvocationsExclusiveScanNonUniformAMD(double);
+        dvec2 addInvocationsExclusiveScanNonUniformAMD(dvec2);
+        dvec3 addInvocationsExclusiveScanNonUniformAMD(dvec3);
+        dvec4 addInvocationsExclusiveScanNonUniformAMD(dvec4);
+
+        int64_t addInvocationsExclusiveScanNonUniformAMD(int64_t);
+        i64vec2 addInvocationsExclusiveScanNonUniformAMD(i64vec2);
+        i64vec3 addInvocationsExclusiveScanNonUniformAMD(i64vec3);
+        i64vec4 addInvocationsExclusiveScanNonUniformAMD(i64vec4);
+
+        uint64_t addInvocationsExclusiveScanNonUniformAMD(uint64_t);
+        u64vec2 addInvocationsExclusiveScanNonUniformAMD(u64vec2);
+        u64vec3 addInvocationsExclusiveScanNonUniformAMD(u64vec3);
+        u64vec4 addInvocationsExclusiveScanNonUniformAMD(u64vec4);
+
+        float16_t addInvocationsExclusiveScanNonUniformAMD(float16_t);
+        f16vec2 addInvocationsExclusiveScanNonUniformAMD(f16vec2);
+        f16vec3 addInvocationsExclusiveScanNonUniformAMD(f16vec3);
+        f16vec4 addInvocationsExclusiveScanNonUniformAMD(f16vec4);
+
+        int16_t addInvocationsExclusiveScanNonUniformAMD(int16_t);
+        i16vec2 addInvocationsExclusiveScanNonUniformAMD(i16vec2);
+        i16vec3 addInvocationsExclusiveScanNonUniformAMD(i16vec3);
+        i16vec4 addInvocationsExclusiveScanNonUniformAMD(i16vec4);
+
+        uint16_t addInvocationsExclusiveScanNonUniformAMD(uint16_t);
+        u16vec2 addInvocationsExclusiveScanNonUniformAMD(u16vec2);
+        u16vec3 addInvocationsExclusiveScanNonUniformAMD(u16vec3);
+        u16vec4 addInvocationsExclusiveScanNonUniformAMD(u16vec4);
+
+        float swizzleInvocationsAMD(float, uvec4);
+        vec2 swizzleInvocationsAMD(vec2, uvec4);
+        vec3 swizzleInvocationsAMD(vec3, uvec4);
+        vec4 swizzleInvocationsAMD(vec4, uvec4);
+
+        int swizzleInvocationsAMD(int, uvec4);
+        ivec2 swizzleInvocationsAMD(ivec2, uvec4);
+        ivec3 swizzleInvocationsAMD(ivec3, uvec4);
+        ivec4 swizzleInvocationsAMD(ivec4, uvec4);
+
+        uint swizzleInvocationsAMD(uint, uvec4);
+        uvec2 swizzleInvocationsAMD(uvec2, uvec4);
+        uvec3 swizzleInvocationsAMD(uvec3, uvec4);
+        uvec4 swizzleInvocationsAMD(uvec4, uvec4);
+
+        float swizzleInvocationsMaskedAMD(float, uvec3);
+        vec2 swizzleInvocationsMaskedAMD(vec2, uvec3);
+        vec3 swizzleInvocationsMaskedAMD(vec3, uvec3);
+        vec4 swizzleInvocationsMaskedAMD(vec4, uvec3);
+
+        int swizzleInvocationsMaskedAMD(int, uvec3);
+        ivec2 swizzleInvocationsMaskedAMD(ivec2, uvec3);
+        ivec3 swizzleInvocationsMaskedAMD(ivec3, uvec3);
+        ivec4 swizzleInvocationsMaskedAMD(ivec4, uvec3);
+
+        uint swizzleInvocationsMaskedAMD(uint, uvec3);
+        uvec2 swizzleInvocationsMaskedAMD(uvec2, uvec3);
+        uvec3 swizzleInvocationsMaskedAMD(uvec3, uvec3);
+        uvec4 swizzleInvocationsMaskedAMD(uvec4, uvec3);
+
+        float writeInvocationAMD(float, float, uint);
+        vec2 writeInvocationAMD(vec2, vec2, uint);
+        vec3 writeInvocationAMD(vec3, vec3, uint);
+        vec4 writeInvocationAMD(vec4, vec4, uint);
+
+        int writeInvocationAMD(int, int, uint);
+        ivec2 writeInvocationAMD(ivec2, ivec2, uint);
+        ivec3 writeInvocationAMD(ivec3, ivec3, uint);
+        ivec4 writeInvocationAMD(ivec4, ivec4, uint);
+
+        uint writeInvocationAMD(uint, uint, uint);
+        uvec2 writeInvocationAMD(uvec2, uvec2, uint);
+        uvec3 writeInvocationAMD(uvec3, uvec3, uint);
+        uvec4 writeInvocationAMD(uvec4, uvec4, uint);
+
+        uint mbcntAMD(uint64_t);
+      };
+    }
   }
 
   override void initialize(
