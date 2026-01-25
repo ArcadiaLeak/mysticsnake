@@ -4090,6 +4090,82 @@ class TBuiltIns : TBuiltInParseables {
         u64vec4 expectEXT(u64vec4, u64vec4);
       };
     }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 130)) {
+      commonBuiltins ~= q{
+        float texture(sampler2DArrayShadow, vec4, float);
+        float texture(samplerCubeArrayShadow, vec4, float, float);
+        float textureLod(sampler2DArrayShadow, vec4, float);
+        float textureLod(samplerCubeShadow, vec4, float);
+        float textureLod(samplerCubeArrayShadow, vec4, float, float);
+        float textureLodOffset(sampler2DArrayShadow, vec4, float, ivec2);
+        float textureOffset(sampler2DArrayShadow, vec4, ivec2, float);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl64bits;
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        float64_t interpolateAtCentroid(float64_t);
+        f64vec2 interpolateAtCentroid(f64vec2);
+        f64vec3 interpolateAtCentroid(f64vec3);
+        f64vec4 interpolateAtCentroid(f64vec4);
+
+        float64_t interpolateAtSample(float64_t, int);
+        f64vec2 interpolateAtSample(f64vec2, int);
+        f64vec3 interpolateAtSample(f64vec3, int);
+        f64vec4 interpolateAtSample(f64vec4, int);
+
+        float64_t interpolateAtOffset(float64_t, f64vec2);
+        f64vec2 interpolateAtOffset(f64vec2, f64vec2);
+        f64vec3 interpolateAtOffset(f64vec3, f64vec2);
+        f64vec4 interpolateAtOffset(f64vec4, f64vec2);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
+      commonBuiltins ~= q{
+        void assumeEXT(bool);
+
+        bool expectEXT(bool, bool);
+        bvec2 expectEXT(bvec2, bvec2);
+        bvec3 expectEXT(bvec3, bvec3);
+        bvec4 expectEXT(bvec4, bvec4);
+
+        int expectEXT(int, int);
+        ivec2 expectEXT(ivec2, ivec2);
+        ivec3 expectEXT(ivec3, ivec3);
+        ivec4 expectEXT(ivec4, ivec4);
+
+        uint expectEXT(uint, uint);
+        uvec2 expectEXT(uvec2, uvec2);
+        uvec3 expectEXT(uvec3, uvec3);
+        uvec4 expectEXT(uvec4, uvec4);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
+      commonBuiltins ~= q{
+        vec4 textureWeightedQCOM(sampler2D, vec2, sampler2DArray);
+        vec4 textureWeightedQCOM(sampler2D, vec2, sampler1DArray);
+        vec4 textureBoxFilterQCOM(sampler2D, vec2, vec2);
+        vec4 textureBlockMatchSADQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+        vec4 textureBlockMatchSSDQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+
+        vec4 textureBlockMatchWindowSSDQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+        vec4 textureBlockMatchWindowSADQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+        vec4 textureBlockMatchGatherSSDQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+        vec4 textureBlockMatchGatherSADQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
+      };
+    }
+
+    if (spvVersion.vulkan == 0 && IncludeLegacy(version_, profile, spvVersion))
+      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= q{
+        vec4 ftransform();
+      };
   }
 
   override void initialize(
@@ -4149,6 +4225,14 @@ struct Versioning {
   int minCoreVersion;
   int numExtensions;
   string[] extensions;
+}
+
+enum ARBCompatibility = true;
+
+bool IncludeLegacy(int version_, glslang_profile_t profile, in SpvVersion spvVersion) {
+  return profile != glslang_profile_t.ES_PROFILE && (version_ <= 130 ||
+    (spvVersion.spv == 0 && version_ == 140 && ARBCompatibility) ||
+    profile == glslang_profile_t.COMPATIBILITY_PROFILE);
 }
 
 bool ValidVersion(
