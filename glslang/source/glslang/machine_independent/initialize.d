@@ -131,8 +131,8 @@ enum Versioning[] Es310Desktop450Version = [
 
 class TBuiltInParseables {
   protected {
-    string commonBuiltins;
-    string[EnumMembers!glslang_stage_t.length] stageBuiltins;
+    Appender!(char[]) commonBuiltins;
+    Appender!(char[])[EnumMembers!glslang_stage_t.length] stageBuiltins;
   }
 
   abstract void initialize(
@@ -179,7 +179,7 @@ class TBuiltIns : TBuiltInParseables {
     int version_, glslang_profile_t profile,
     in SpvVersion spvVersion
   ) {
-    auto forEachFunction(ref string decls, const(BuiltInFunction[]) functions) {
+    auto forEachFunction(ref Appender!(char[]) decls, const(BuiltInFunction[]) functions) {
       foreach (const ref fn; functions) {
         if (ValidVersion(fn, version_, profile, spvVersion))
           AddTabledBuiltin(decls, fn);
@@ -3063,7 +3063,7 @@ bool ValidVersion(
   return false;
 }
 
-void AddTabledBuiltin(ref string decls, in BuiltInFunction func) {
+void AddTabledBuiltin(ref Appender!(char[]) decls, in BuiltInFunction func) {
   static auto isScalarType(int type) {
     return (type & TypeStringColumnMask) == 0;
   }
