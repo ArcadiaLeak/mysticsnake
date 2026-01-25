@@ -549,7 +549,6 @@ class TBuiltIns : TBuiltInParseables {
         bvec2 notEqual(dvec2, dvec2);
         bvec3 notEqual(dvec3, dvec3);
         bvec4 notEqual(dvec4, dvec4);
-
       };
     }
 
@@ -744,7 +743,6 @@ class TBuiltIns : TBuiltInParseables {
         f64mat2 inverse(f64mat2);
         f64mat3 inverse(f64mat3);
         f64mat4 inverse(f64mat4);
-
       };
     }
 
@@ -911,7 +909,6 @@ class TBuiltIns : TBuiltInParseables {
         i64vec2 findMSB(u64vec2);
         i64vec3 findMSB(u64vec3);
         i64vec4 findMSB(u64vec4);
-        
       };
     }
 
@@ -1006,7 +1003,6 @@ class TBuiltIns : TBuiltInParseables {
         u16vec2 mid3(u16vec2, u16vec2, u16vec2);
         u16vec3 mid3(u16vec3, u16vec3, u16vec3);
         u16vec4 mid3(u16vec4, u16vec4, u16vec4);
-
       };
     }
 
@@ -1122,9 +1118,139 @@ class TBuiltIns : TBuiltInParseables {
         void atomicStore(coherent volatile nontemporal out float16_t, float16_t, int, int, int);
         void atomicStore(coherent volatile nontemporal out float, float, int, int, int);
         void atomicStore(coherent volatile nontemporal out double, double, int, int, int);
-
       };
     }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
+      commonBuiltins ~= q{
+        f16vec2 atomicAdd(coherent volatile nontemporal inout f16vec2, f16vec2);
+        f16vec4 atomicAdd(coherent volatile nontemporal inout f16vec4, f16vec4);
+        f16vec2 atomicMin(coherent volatile nontemporal inout f16vec2, f16vec2);
+        f16vec4 atomicMin(coherent volatile nontemporal inout f16vec4, f16vec4);
+        f16vec2 atomicMax(coherent volatile nontemporal inout f16vec2, f16vec2);
+        f16vec4 atomicMax(coherent volatile nontemporal inout f16vec4, f16vec4);
+        f16vec2 atomicExchange(coherent volatile nontemporal inout f16vec2, f16vec2);
+        f16vec4 atomicExchange(coherent volatile nontemporal inout f16vec4, f16vec4);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        int floatBitsToInt(highp float value);
+        ivec2 floatBitsToInt(highp vec2 value);
+        ivec3 floatBitsToInt(highp vec3 value);
+        ivec4 floatBitsToInt(highp vec4 value);
+
+        uint floatBitsToUint(highp float value);
+        uvec2 floatBitsToUint(highp vec2 value);
+        uvec3 floatBitsToUint(highp vec3 value);
+        uvec4 floatBitsToUint(highp vec4 value);
+
+        float intBitsToFloat(highp int value);
+        vec2 intBitsToFloat(highp ivec2 value);
+        vec3 intBitsToFloat(highp ivec3 value);
+        vec4 intBitsToFloat(highp ivec4 value);
+
+        float uintBitsToFloat(highp uint value);
+        vec2 uintBitsToFloat(highp uvec2 value);
+        vec3 uintBitsToFloat(highp uvec3 value);
+        vec4 uintBitsToFloat(highp uvec4 value);
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      commonBuiltins ~= q{
+        float fma(float, float, float);
+        vec2 fma(vec2, vec2, vec2);
+        vec3 fma(vec3, vec3, vec3);
+        vec4 fma(vec4, vec4, vec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        double fma(double, double, double);
+        dvec2 fma(dvec2, dvec2, dvec2);
+        dvec3 fma(dvec3, dvec3, dvec3);
+        dvec4 fma(dvec4, dvec4, dvec4);
+      };
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        float64_t fma(float64_t, float64_t, float64_t);
+        f64vec2 fma(f64vec2, f64vec2, f64vec2);
+        f64vec3 fma(f64vec3, f64vec3, f64vec3);
+        f64vec4 fma(f64vec4, f64vec4, f64vec4);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        float frexp(highp float, out highp int);
+        vec2 frexp(highp vec2, out highp ivec2);
+        vec3 frexp(highp vec3, out highp ivec3);
+        vec4 frexp(highp vec4, out highp ivec4);
+
+        float ldexp(highp float, highp int);
+        vec2 ldexp(highp vec2, highp ivec2);
+        vec3 ldexp(highp vec3, highp ivec3);
+        vec4 ldexp(highp vec4, highp ivec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        double frexp(double, out int);
+        dvec2 frexp(dvec2, out ivec2);
+        dvec3 frexp(dvec3, out ivec3);
+        dvec4 frexp(dvec4, out ivec4);
+
+        double ldexp(double, int);
+        dvec2 ldexp(dvec2, ivec2);
+        dvec3 ldexp(dvec3, ivec3);
+        dvec4 ldexp(dvec4, ivec4);
+
+        double packDouble2x32(uvec2);
+        uvec2 unpackDouble2x32(double);
+      };
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        float64_t frexp(float64_t, out int);
+        f64vec2 frexp(f64vec2, out ivec2);
+        f64vec3 frexp(f64vec3, out ivec3);
+        f64vec4 frexp(f64vec4, out ivec4);
+
+        float64_t ldexp(float64_t, int);
+        f64vec2 ldexp(f64vec2, ivec2);
+        f64vec3 ldexp(f64vec3, ivec3);
+        f64vec4 ldexp(f64vec4, ivec4);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        highp uint packUnorm2x16(vec2);
+        vec2 unpackUnorm2x16(highp uint);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        highp uint packSnorm2x16(vec2);
+        vec2 unpackSnorm2x16(highp uint);
+        highp uint packHalf2x16(vec2);
+      };
+    }
+
+    
   }
 
   override void initialize(
