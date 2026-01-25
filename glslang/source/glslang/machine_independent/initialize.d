@@ -5,6 +5,10 @@ import glslang;
 import std.range;
 import std.traits;
 
+enum int TypeStringRowShift = 2;
+enum int TypeStringColumnMask = (1 << TypeStringRowShift) - 1;
+enum int TypeStringScalarMask = ~TypeStringColumnMask;
+
 class TBuiltInParseables {
   protected {
     string commonBuiltins;
@@ -147,5 +151,12 @@ bool ValidVersion(
 }
 
 void AddTabledBuiltin(string decls, in BuiltInFunction func) {
-  
+  static auto isScalarType(int type) {
+    return (type & TypeStringColumnMask) == 0;
+  }
+
+  const ArgClass ClassFixed = 
+    ArgClass.ClassLS | ArgClass.ClassXLS | ArgClass.ClassLS2 |
+    ArgClass.ClassFS | ArgClass.ClassFS2;
+
 }
