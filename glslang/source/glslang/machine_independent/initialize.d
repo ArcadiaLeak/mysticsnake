@@ -4235,6 +4235,144 @@ class TBuiltIns : TBuiltInParseables {
         void EndPrimitive();
       };
     }
+
+    bool esBarrier = (profile == glslang_profile_t.ES_PROFILE && version >= 310);
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) || esBarrier)
+      stageBuiltins[glslang_stage_t.STAGE_TESSCONTROL] ~= q{
+        void barrier();
+      };
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier)
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        void barrier();
+      };
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        void barrier();
+      };
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        void barrier();
+      };
+    }
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 130) || esBarrier)
+      commonBuiltins ~= q{
+        void memoryBarrier();
+      };
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier) {
+      commonBuiltins ~= q{
+        void memoryBarrierBuffer();
+      };
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        void memoryBarrierShared();
+        void groupMemoryBarrier();
+      };
+    }
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier) {
+      if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed) {
+        commonBuiltins ~= q{
+          void memoryBarrierAtomicCounter();
+        };
+      }
+      commonBuiltins ~= q{
+        void memoryBarrierImage();
+      };
+    }
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        void memoryBarrierShared();
+        void groupMemoryBarrier();
+      };
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        void memoryBarrierShared();
+        void groupMemoryBarrier();
+      };
+    }
+
+    commonBuiltins ~= q{
+      void controlBarrier(int, int, int, int);
+      void memoryBarrier(int, int, int);
+      void debugPrintfEXT();
+    };
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal float16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal float[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal float64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(fcoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        fcoopmatNV coopMatMulAddNV(fcoopmatNV A, fcoopmatNV B, fcoopmatNV C);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal int8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal int16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal int[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal int64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal ivec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal ivec4[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out icoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal int8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal int16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal int[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal int64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal ivec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal ivec4[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatLoadNV(out ucoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal int8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal int16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal int[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal int64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal ivec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal ivec4[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(icoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal int8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal int16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal int[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal int64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal ivec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal ivec4[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uint16_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uint[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uint64_t[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uvec2[] buf, uint element, uint stride, bool colMajor);
+        void coopMatStoreNV(ucoopmatNV m, volatile coherent nontemporal uvec4[] buf, uint element, uint stride, bool colMajor);
+
+        icoopmatNV coopMatMulAddNV(icoopmatNV A, icoopmatNV B, icoopmatNV C);
+        ucoopmatNV coopMatMulAddNV(ucoopmatNV A, ucoopmatNV B, ucoopmatNV C);
+      };
+    }
   }
 
   override void initialize(
