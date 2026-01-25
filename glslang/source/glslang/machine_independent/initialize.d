@@ -103,6 +103,12 @@ enum BuiltInFunction[] BaseFunctions = [
   BuiltInFunction(TOperator.EOpMix, "mix", 3, TypeIU, ArgClass.ClassLB, Es310Desktop450Version)
 ];
 
+enum BuiltInFunction[] DerivativeFunctions = [
+  BuiltInFunction(TOperator.EOpDPdx, "dFdx", 1, ArgType.TypeF, ArgClass.ClassRegular, []),
+  BuiltInFunction(TOperator.EOpDPdy, "dFdy", 1, ArgType.TypeF, ArgClass.ClassRegular, []),
+  BuiltInFunction(TOperator.EOpFwidth, "fwidth", 1, ArgType.TypeF, ArgClass.ClassRegular, [])
+];
+
 enum glslang_profile_t EDesktopProfile =
   glslang_profile_t.NO_PROFILE | glslang_profile_t.CORE_PROFILE | glslang_profile_t.COMPATIBILITY_PROFILE;
 
@@ -179,6 +185,11 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     forEachFunction(commonBuiltins, BaseFunctions);
+    forEachFunction(stageBuiltins[glslang_stage_t.STAGE_FRAGMENT], DerivativeFunctions);
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 450))
+      forEachFunction(stageBuiltins[glslang_stage_t.STAGE_COMPUTE], DerivativeFunctions);
   }
 
   override void initialize(
@@ -186,6 +197,556 @@ class TBuiltIns : TBuiltInParseables {
     in SpvVersion spvVersion
   ) {
     addTabledBuiltins(version_, profile, spvVersion);
+
+    string derivativeControls = q{
+      float dFdxFine(float p);
+      vec2 dFdxFine(vec2 p);
+      vec3 dFdxFine(vec3 p);
+      vec4 dFdxFine(vec4 p);
+
+      float dFdyFine(float p);
+      vec2 dFdyFine(vec2 p);
+      vec3 dFdyFine(vec3 p);
+      vec4 dFdyFine(vec4 p);
+
+      float fwidthFine(float p);
+      vec2 fwidthFine(vec2 p);
+      vec3 fwidthFine(vec3 p);
+      vec4 fwidthFine(vec4 p);
+
+      float dFdxCoarse(float p);
+      vec2 dFdxCoarse(vec2 p);
+      vec3 dFdxCoarse(vec3 p);
+      vec4 dFdxCoarse(vec4 p);
+
+      float dFdyCoarse(float p);
+      vec2 dFdyCoarse(vec2 p);
+      vec3 dFdyCoarse(vec3 p);
+      vec4 dFdyCoarse(vec4 p);
+
+      float fwidthCoarse(float p);
+      vec2 fwidthCoarse(vec2 p);
+      vec3 fwidthCoarse(vec3 p);
+      vec4 fwidthCoarse(vec4 p);
+    };
+
+    string derivativesAndControl16bits = q{
+      float16_t dFdx(float16_t);
+      f16vec2 dFdx(f16vec2);
+      f16vec3 dFdx(f16vec3);
+      f16vec4 dFdx(f16vec4);
+
+      float16_t dFdy(float16_t);
+      f16vec2 dFdy(f16vec2);
+      f16vec3 dFdy(f16vec3);
+      f16vec4 dFdy(f16vec4);
+
+      float16_t dFdxFine(float16_t);
+      f16vec2 dFdxFine(f16vec2);
+      f16vec3 dFdxFine(f16vec3);
+      f16vec4 dFdxFine(f16vec4);
+
+      float16_t dFdyFine(float16_t);
+      f16vec2 dFdyFine(f16vec2);
+      f16vec3 dFdyFine(f16vec3);
+      f16vec4 dFdyFine(f16vec4);
+
+      float16_t dFdxCoarse(float16_t);
+      f16vec2 dFdxCoarse(f16vec2);
+      f16vec3 dFdxCoarse(f16vec3);
+      f16vec4 dFdxCoarse(f16vec4);
+
+      float16_t dFdyCoarse(float16_t);
+      f16vec2 dFdyCoarse(f16vec2);
+      f16vec3 dFdyCoarse(f16vec3);
+      f16vec4 dFdyCoarse(f16vec4);
+
+      float16_t fwidth(float16_t);
+      f16vec2 fwidth(f16vec2);
+      f16vec3 fwidth(f16vec3);
+      f16vec4 fwidth(f16vec4);
+
+      float16_t fwidthFine(float16_t);
+      f16vec2 fwidthFine(f16vec2);
+      f16vec3 fwidthFine(f16vec3);
+      f16vec4 fwidthFine(f16vec4);
+
+      float16_t fwidthCoarse(float16_t);
+      f16vec2 fwidthCoarse(f16vec2);
+      f16vec3 fwidthCoarse(f16vec3);
+      f16vec4 fwidthCoarse(f16vec4);
+    };
+
+    string derivativesAndControl64bits = q{
+      float64_t dFdx(float64_t);
+      f64vec2 dFdx(f64vec2);
+      f64vec3 dFdx(f64vec3);
+      f64vec4 dFdx(f64vec4);
+
+      float64_t dFdy(float64_t);
+      f64vec2 dFdy(f64vec2);
+      f64vec3 dFdy(f64vec3);
+      f64vec4 dFdy(f64vec4);
+
+      float64_t dFdxFine(float64_t);
+      f64vec2 dFdxFine(f64vec2);
+      f64vec3 dFdxFine(f64vec3);
+      f64vec4 dFdxFine(f64vec4);
+
+      float64_t dFdyFine(float64_t);
+      f64vec2 dFdyFine(f64vec2);
+      f64vec3 dFdyFine(f64vec3);
+      f64vec4 dFdyFine(f64vec4);
+
+      float64_t dFdxCoarse(float64_t);
+      f64vec2 dFdxCoarse(f64vec2);
+      f64vec3 dFdxCoarse(f64vec3);
+      f64vec4 dFdxCoarse(f64vec4);
+
+      float64_t dFdyCoarse(float64_t);
+      f64vec2 dFdyCoarse(f64vec2);
+      f64vec3 dFdyCoarse(f64vec3);
+      f64vec4 dFdyCoarse(f64vec4);
+
+      float64_t fwidth(float64_t);
+      f64vec2 fwidth(f64vec2);
+      f64vec3 fwidth(f64vec3);
+      f64vec4 fwidth(f64vec4);
+
+      float64_t fwidthFine(float64_t);
+      f64vec2 fwidthFine(f64vec2);
+      f64vec3 fwidthFine(f64vec3);
+      f64vec4 fwidthFine(f64vec4);
+
+      float64_t fwidthCoarse(float64_t);
+      f64vec2 fwidthCoarse(f64vec2);
+      f64vec3 fwidthCoarse(f64vec3);
+      f64vec4 fwidthCoarse(f64vec4);
+    };
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        double sqrt(double);
+        dvec2 sqrt(dvec2);
+        dvec3 sqrt(dvec3);
+        dvec4 sqrt(dvec4);
+
+        double inversesqrt(double);
+        dvec2 inversesqrt(dvec2);
+        dvec3 inversesqrt(dvec3);
+        dvec4 inversesqrt(dvec4);
+
+        double abs(double);
+        dvec2 abs(dvec2);
+        dvec3 abs(dvec3);
+        dvec4 abs(dvec4);
+
+        double sign(double);
+        dvec2 sign(dvec2);
+        dvec3 sign(dvec3);
+        dvec4 sign(dvec4);
+
+        double floor(double);
+        dvec2 floor(dvec2);
+        dvec3 floor(dvec3);
+        dvec4 floor(dvec4);
+
+        double trunc(double);
+        dvec2 trunc(dvec2);
+        dvec3 trunc(dvec3);
+        dvec4 trunc(dvec4);
+
+        double round(double);
+        dvec2 round(dvec2);
+        dvec3 round(dvec3);
+        dvec4 round(dvec4);
+
+        double roundEven(double);
+        dvec2 roundEven(dvec2);
+        dvec3 roundEven(dvec3);
+        dvec4 roundEven(dvec4);
+
+        double ceil(double);
+        dvec2 ceil(dvec2);
+        dvec3 ceil(dvec3);
+        dvec4 ceil(dvec4);
+
+        double fract(double);
+        dvec2 fract(dvec2);
+        dvec3 fract(dvec3);
+        dvec4 fract(dvec4);
+
+        double mod(double, double);
+        dvec2 mod(dvec2, double);
+        dvec3 mod(dvec3, double);
+        dvec4 mod(dvec4, double);
+        dvec2 mod(dvec2, dvec2);
+        dvec3 mod(dvec3, dvec3);
+        dvec4 mod(dvec4, dvec4);
+
+        double modf(double, out double);
+        dvec2 modf(dvec2, out dvec2);
+        dvec3 modf(dvec3, out dvec3);
+        dvec4 modf(dvec4, out dvec4);
+
+        double min(double, double);
+        dvec2 min(dvec2, double);
+        dvec3 min(dvec3, double);
+        dvec4 min(dvec4, double);
+        dvec2 min(dvec2, dvec2);
+        dvec3 min(dvec3, dvec3);
+        dvec4 min(dvec4, dvec4);
+
+        double max(double, double);
+        dvec2 max(dvec2, double);
+        dvec3 max(dvec3, double);
+        dvec4 max(dvec4, double);
+        dvec2 max(dvec2, dvec2);
+        dvec3 max(dvec3, dvec3);
+        dvec4 max(dvec4, dvec4);
+
+        double clamp(double, double, double);
+        dvec2 clamp(dvec2, double, double);
+        dvec3 clamp(dvec3, double, double);
+        dvec4 clamp(dvec4, double, double);
+        dvec2 clamp(dvec2, dvec2, dvec2);
+        dvec3 clamp(dvec3, dvec3, dvec3);
+        dvec4 clamp(dvec4, dvec4, dvec4);
+
+        double mix(double, double, double);
+        dvec2 mix(dvec2, dvec2, double);
+        dvec3 mix(dvec3, dvec3, double);
+        dvec4 mix(dvec4, dvec4, double);
+        dvec2 mix(dvec2, dvec2, dvec2);
+        dvec3 mix(dvec3, dvec3, dvec3);
+        dvec4 mix(dvec4, dvec4, dvec4);
+        double mix(double, double, bool);
+        dvec2 mix(dvec2, dvec2, bvec2);
+        dvec3 mix(dvec3, dvec3, bvec3);
+        dvec4 mix(dvec4, dvec4, bvec4);
+
+        double step(double, double);
+        dvec2 step(dvec2, dvec2);
+        dvec3 step(dvec3, dvec3);
+        dvec4 step(dvec4, dvec4);
+        dvec2 step(double, dvec2);
+        dvec3 step(double, dvec3);
+        dvec4 step(double, dvec4);
+
+        double smoothstep(double, double, double);
+        dvec2 smoothstep(dvec2, dvec2, dvec2);
+        dvec3 smoothstep(dvec3, dvec3, dvec3);
+        dvec4 smoothstep(dvec4, dvec4, dvec4);
+        dvec2 smoothstep(double, double, dvec2);
+        dvec3 smoothstep(double, double, dvec3);
+        dvec4 smoothstep(double, double, dvec4);
+
+        bool isnan(double);
+        bvec2 isnan(dvec2);
+        bvec3 isnan(dvec3);
+        bvec4 isnan(dvec4);
+
+        bool isinf(double);
+        bvec2 isinf(dvec2);
+        bvec3 isinf(dvec3);
+        bvec4 isinf(dvec4);
+
+        double length(double);
+        double length(dvec2);
+        double length(dvec3);
+        double length(dvec4);
+
+        double distance(double, double);
+        double distance(dvec2, dvec2);
+        double distance(dvec3, dvec3);
+        double distance(dvec4, dvec4);
+
+        double dot(double, double);
+        double dot(dvec2, dvec2);
+        double dot(dvec3, dvec3);
+        double dot(dvec4, dvec4);
+
+        dvec3 cross(dvec3, dvec3);
+
+        double normalize(double);
+        dvec2 normalize(dvec2);
+        dvec3 normalize(dvec3);
+        dvec4 normalize(dvec4);
+
+        double faceforward(double, double, double);
+        dvec2 faceforward(dvec2, dvec2, dvec2);
+        dvec3 faceforward(dvec3, dvec3, dvec3);
+        dvec4 faceforward(dvec4, dvec4, dvec4);
+
+        double reflect(double, double);
+        dvec2 reflect(dvec2, dvec2);
+        dvec3 reflect(dvec3, dvec3);
+        dvec4 reflect(dvec4, dvec4);
+
+        double refract(double, double, double);
+        dvec2 refract(dvec2, dvec2, double);
+        dvec3 refract(dvec3, dvec3, double);
+        dvec4 refract(dvec4, dvec4, double);
+
+        dmat2 matrixCompMult(dmat2, dmat2);
+        dmat3 matrixCompMult(dmat3, dmat3);
+        dmat4 matrixCompMult(dmat4, dmat4);
+        dmat2x3 matrixCompMult(dmat2x3, dmat2x3);
+        dmat2x4 matrixCompMult(dmat2x4, dmat2x4);
+        dmat3x2 matrixCompMult(dmat3x2, dmat3x2);
+        dmat3x4 matrixCompMult(dmat3x4, dmat3x4);
+        dmat4x2 matrixCompMult(dmat4x2, dmat4x2);
+        dmat4x3 matrixCompMult(dmat4x3, dmat4x3);
+
+        dmat2 outerProduct(dvec2, dvec2);
+        dmat3 outerProduct(dvec3, dvec3);
+        dmat4 outerProduct(dvec4, dvec4);
+        dmat2x3 outerProduct(dvec3, dvec2);
+        dmat3x2 outerProduct(dvec2, dvec3);
+        dmat2x4 outerProduct(dvec4, dvec2);
+        dmat4x2 outerProduct(dvec2, dvec4);
+        dmat3x4 outerProduct(dvec4, dvec3);
+        dmat4x3 outerProduct(dvec3, dvec4);
+
+        dmat2 transpose(dmat2);
+        dmat3 transpose(dmat3);
+        dmat4 transpose(dmat4);
+        dmat2x3 transpose(dmat3x2);
+        dmat3x2 transpose(dmat2x3);
+        dmat2x4 transpose(dmat4x2);
+        dmat4x2 transpose(dmat2x4);
+        dmat3x4 transpose(dmat4x3);
+        dmat4x3 transpose(dmat3x4);
+
+        double determinant(dmat2);
+        double determinant(dmat3);
+        double determinant(dmat4);
+
+        dmat2 inverse(dmat2);
+        dmat3 inverse(dmat3);
+        dmat4 inverse(dmat4);
+
+        bvec2 lessThan(dvec2, dvec2);
+        bvec3 lessThan(dvec3, dvec3);
+        bvec4 lessThan(dvec4, dvec4);
+
+        bvec2 lessThanEqual(dvec2, dvec2);
+        bvec3 lessThanEqual(dvec3, dvec3);
+        bvec4 lessThanEqual(dvec4, dvec4);
+
+        bvec2 greaterThan(dvec2, dvec2);
+        bvec3 greaterThan(dvec3, dvec3);
+        bvec4 greaterThan(dvec4, dvec4);
+
+        bvec2 greaterThanEqual(dvec2, dvec2);
+        bvec3 greaterThanEqual(dvec3, dvec3);
+        bvec4 greaterThanEqual(dvec4, dvec4);
+
+        bvec2 equal(dvec2, dvec2);
+        bvec3 equal(dvec3, dvec3);
+        bvec4 equal(dvec4, dvec4);
+
+        bvec2 notEqual(dvec2, dvec2);
+        bvec3 notEqual(dvec3, dvec3);
+        bvec4 notEqual(dvec4, dvec4);
+
+      };
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        float64_t sqrt(float64_t);
+        f64vec2 sqrt(f64vec2);
+        f64vec3 sqrt(f64vec3);
+        f64vec4 sqrt(f64vec4);
+
+        float64_t inversesqrt(float64_t);
+        f64vec2 inversesqrt(f64vec2);
+        f64vec3 inversesqrt(f64vec3);
+        f64vec4 inversesqrt(f64vec4);
+
+        float64_t abs(float64_t);
+        f64vec2 abs(f64vec2);
+        f64vec3 abs(f64vec3);
+        f64vec4 abs(f64vec4);
+
+        float64_t sign(float64_t);
+        f64vec2 sign(f64vec2);
+        f64vec3 sign(f64vec3);
+        f64vec4 sign(f64vec4);
+
+        float64_t floor(float64_t);
+        f64vec2 floor(f64vec2);
+        f64vec3 floor(f64vec3);
+        f64vec4 floor(f64vec4);
+
+        float64_t trunc(float64_t);
+        f64vec2 trunc(f64vec2);
+        f64vec3 trunc(f64vec3);
+        f64vec4 trunc(f64vec4);
+
+        float64_t round(float64_t);
+        f64vec2 round(f64vec2);
+        f64vec3 round(f64vec3);
+        f64vec4 round(f64vec4);
+
+        float64_t roundEven(float64_t);
+        f64vec2 roundEven(f64vec2);
+        f64vec3 roundEven(f64vec3);
+        f64vec4 roundEven(f64vec4);
+
+        float64_t ceil(float64_t);
+        f64vec2 ceil(f64vec2);
+        f64vec3 ceil(f64vec3);
+        f64vec4 ceil(f64vec4);
+
+        float64_t fract(float64_t);
+        f64vec2 fract(f64vec2);
+        f64vec3 fract(f64vec3);
+        f64vec4 fract(f64vec4);
+
+        float64_t mod(float64_t, float64_t);
+        f64vec2 mod(f64vec2, float64_t);
+        f64vec3 mod(f64vec3, float64_t);
+        f64vec4 mod(f64vec4, float64_t);
+        f64vec2 mod(f64vec2, f64vec2);
+        f64vec3 mod(f64vec3, f64vec3);
+        f64vec4 mod(f64vec4, f64vec4);
+
+        float64_t modf(float64_t, out float64_t);
+        f64vec2 modf(f64vec2, out f64vec2);
+        f64vec3 modf(f64vec3, out f64vec3);
+        f64vec4 modf(f64vec4, out f64vec4);
+
+        float64_t min(float64_t, float64_t);
+        f64vec2 min(f64vec2, float64_t);
+        f64vec3 min(f64vec3, float64_t);
+        f64vec4 min(f64vec4, float64_t);
+        f64vec2 min(f64vec2, f64vec2);
+        f64vec3 min(f64vec3, f64vec3);
+        f64vec4 min(f64vec4, f64vec4);
+
+        float64_t max(float64_t, float64_t);
+        f64vec2 max(f64vec2, float64_t);
+        f64vec3 max(f64vec3, float64_t);
+        f64vec4 max(f64vec4, float64_t);
+        f64vec2 max(f64vec2, f64vec2);
+        f64vec3 max(f64vec3, f64vec3);
+        f64vec4 max(f64vec4, f64vec4);
+
+        float64_t clamp(float64_t, float64_t, float64_t);
+        f64vec2 clamp(f64vec2, float64_t, float64_t);
+        f64vec3 clamp(f64vec3, float64_t, float64_t);
+        f64vec4 clamp(f64vec4, float64_t, float64_t);
+        f64vec2 clamp(f64vec2, f64vec2, f64vec2);
+        f64vec3 clamp(f64vec3, f64vec3, f64vec3);
+        f64vec4 clamp(f64vec4, f64vec4, f64vec4);
+
+        float64_t mix(float64_t, float64_t, float64_t);
+        f64vec2 mix(f64vec2, f64vec2, float64_t);
+        f64vec3 mix(f64vec3, f64vec3, float64_t);
+        f64vec4 mix(f64vec4, f64vec4, float64_t);
+        f64vec2 mix(f64vec2, f64vec2, f64vec2);
+        f64vec3 mix(f64vec3, f64vec3, f64vec3);
+        f64vec4 mix(f64vec4, f64vec4, f64vec4);
+        float64_t mix(float64_t, float64_t, bool);
+        f64vec2 mix(f64vec2, f64vec2, bvec2);
+        f64vec3 mix(f64vec3, f64vec3, bvec3);
+        f64vec4 mix(f64vec4, f64vec4, bvec4);
+
+        float64_t step(float64_t, float64_t);
+        f64vec2 step(f64vec2, f64vec2);
+        f64vec3 step(f64vec3, f64vec3);
+        f64vec4 step(f64vec4, f64vec4);
+        f64vec2 step(float64_t, f64vec2);
+        f64vec3 step(float64_t, f64vec3);
+        f64vec4 step(float64_t, f64vec4);
+
+        float64_t smoothstep(float64_t, float64_t, float64_t);
+        f64vec2 smoothstep(f64vec2, f64vec2, f64vec2);
+        f64vec3 smoothstep(f64vec3, f64vec3, f64vec3);
+        f64vec4 smoothstep(f64vec4, f64vec4, f64vec4);
+        f64vec2 smoothstep(float64_t, float64_t, f64vec2);
+        f64vec3 smoothstep(float64_t, float64_t, f64vec3);
+        f64vec4 smoothstep(float64_t, float64_t, f64vec4);
+
+        float64_t length(float64_t);
+        float64_t length(f64vec2);
+        float64_t length(f64vec3);
+        float64_t length(f64vec4);
+
+        float64_t distance(float64_t, float64_t);
+        float64_t distance(f64vec2, f64vec2);
+        float64_t distance(f64vec3, f64vec3);
+        float64_t distance(f64vec4, f64vec4);
+
+        float64_t dot(float64_t, float64_t);
+        float64_t dot(f64vec2, f64vec2);
+        float64_t dot(f64vec3, f64vec3);
+        float64_t dot(f64vec4, f64vec4);
+
+        f64vec3 cross(f64vec3, f64vec3);
+
+        float64_t normalize(float64_t);
+        f64vec2 normalize(f64vec2);
+        f64vec3 normalize(f64vec3);
+        f64vec4 normalize(f64vec4);
+
+        float64_t faceforward(float64_t, float64_t, float64_t);
+        f64vec2 faceforward(f64vec2, f64vec2, f64vec2);
+        f64vec3 faceforward(f64vec3, f64vec3, f64vec3);
+        f64vec4 faceforward(f64vec4, f64vec4, f64vec4);
+
+        float64_t reflect(float64_t, float64_t);
+        f64vec2 reflect(f64vec2, f64vec2 );
+        f64vec3 reflect(f64vec3, f64vec3 );
+        f64vec4 reflect(f64vec4, f64vec4 );
+
+        float64_t refract(float64_t, float64_t, float64_t);
+        f64vec2 refract(f64vec2, f64vec2, float64_t);
+        f64vec3 refract(f64vec3, f64vec3, float64_t);
+        f64vec4 refract(f64vec4, f64vec4, float64_t);
+
+        f64mat2 matrixCompMult(f64mat2, f64mat2);
+        f64mat3 matrixCompMult(f64mat3, f64mat3);
+        f64mat4 matrixCompMult(f64mat4, f64mat4);
+        f64mat2x3 matrixCompMult(f64mat2x3, f64mat2x3);
+        f64mat2x4 matrixCompMult(f64mat2x4, f64mat2x4);
+        f64mat3x2 matrixCompMult(f64mat3x2, f64mat3x2);
+        f64mat3x4 matrixCompMult(f64mat3x4, f64mat3x4);
+        f64mat4x2 matrixCompMult(f64mat4x2, f64mat4x2);
+        f64mat4x3 matrixCompMult(f64mat4x3, f64mat4x3);
+
+        f64mat2 outerProduct(f64vec2, f64vec2);
+        f64mat3 outerProduct(f64vec3, f64vec3);
+        f64mat4 outerProduct(f64vec4, f64vec4);
+        f64mat2x3 outerProduct(f64vec3, f64vec2);
+        f64mat3x2 outerProduct(f64vec2, f64vec3);
+        f64mat2x4 outerProduct(f64vec4, f64vec2);
+        f64mat4x2 outerProduct(f64vec2, f64vec4);
+        f64mat3x4 outerProduct(f64vec4, f64vec3);
+        f64mat4x3 outerProduct(f64vec3, f64vec4);
+
+        f64mat2 transpose(f64mat2);
+        f64mat3 transpose(f64mat3);
+        f64mat4 transpose(f64mat4);
+        f64mat2x3 transpose(f64mat3x2);
+        f64mat3x2 transpose(f64mat2x3);
+        f64mat2x4 transpose(f64mat4x2);
+        f64mat4x2 transpose(f64mat2x4);
+        f64mat3x4 transpose(f64mat4x3);
+        f64mat4x3 transpose(f64mat3x4);
+
+        float64_t determinant(f64mat2);
+        float64_t determinant(f64mat3);
+        float64_t determinant(f64mat4);
+
+        f64mat2 inverse(f64mat2);
+        f64mat3 inverse(f64mat3);
+        f64mat4 inverse(f64mat4);
+
+      };
+    }
   }
 
   override void initialize(
