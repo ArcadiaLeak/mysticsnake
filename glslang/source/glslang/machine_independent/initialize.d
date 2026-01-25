@@ -2985,6 +2985,1111 @@ class TBuiltIns : TBuiltInParseables {
         uint mbcntAMD(uint64_t);
       };
     }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 440) {
+      commonBuiltins ~= q{
+        float cubeFaceIndexAMD(vec3);
+        vec2 cubeFaceCoordAMD(vec3);
+        uint64_t timeAMD();
+
+        in int gl_SIMDGroupSizeAMD;
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins ~= q{
+        uint fragmentMaskFetchAMD(sampler2DMS, ivec2);
+        uint fragmentMaskFetchAMD(isampler2DMS, ivec2);
+        uint fragmentMaskFetchAMD(usampler2DMS, ivec2);
+
+        uint fragmentMaskFetchAMD(sampler2DMSArray, ivec3);
+        uint fragmentMaskFetchAMD(isampler2DMSArray, ivec3);
+        uint fragmentMaskFetchAMD(usampler2DMSArray, ivec3);
+
+        vec4 fragmentFetchAMD(sampler2DMS, ivec2, uint);
+        ivec4 fragmentFetchAMD(isampler2DMS, ivec2, uint);
+        uvec4 fragmentFetchAMD(usampler2DMS, ivec2, uint);
+
+        vec4 fragmentFetchAMD(sampler2DMSArray, ivec3, uint);
+        ivec4 fragmentFetchAMD(isampler2DMSArray, ivec3, uint);
+        uvec4 fragmentFetchAMD(usampler2DMSArray, ivec3, uint);
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 130) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 300)) {
+      commonBuiltins ~= q{
+        uint countLeadingZeros(uint);
+        uvec2 countLeadingZeros(uvec2);
+        uvec3 countLeadingZeros(uvec3);
+        uvec4 countLeadingZeros(uvec4);
+
+        uint countTrailingZeros(uint);
+        uvec2 countTrailingZeros(uvec2);
+        uvec3 countTrailingZeros(uvec3);
+        uvec4 countTrailingZeros(uvec4);
+
+        uint absoluteDifference(int, int);
+        uvec2 absoluteDifference(ivec2, ivec2);
+        uvec3 absoluteDifference(ivec3, ivec3);
+        uvec4 absoluteDifference(ivec4, ivec4);
+
+        uint16_t absoluteDifference(int16_t, int16_t);
+        u16vec2 absoluteDifference(i16vec2, i16vec2);
+        u16vec3 absoluteDifference(i16vec3, i16vec3);
+        u16vec4 absoluteDifference(i16vec4, i16vec4);
+
+        uint64_t absoluteDifference(int64_t, int64_t);
+        u64vec2 absoluteDifference(i64vec2, i64vec2);
+        u64vec3 absoluteDifference(i64vec3, i64vec3);
+        u64vec4 absoluteDifference(i64vec4, i64vec4);
+
+        uint absoluteDifference(uint, uint);
+        uvec2 absoluteDifference(uvec2, uvec2);
+        uvec3 absoluteDifference(uvec3, uvec3);
+        uvec4 absoluteDifference(uvec4, uvec4);
+
+        uint16_t absoluteDifference(uint16_t, uint16_t);
+        u16vec2 absoluteDifference(u16vec2, u16vec2);
+        u16vec3 absoluteDifference(u16vec3, u16vec3);
+        u16vec4 absoluteDifference(u16vec4, u16vec4);
+
+        uint64_t absoluteDifference(uint64_t, uint64_t);
+        u64vec2 absoluteDifference(u64vec2, u64vec2);
+        u64vec3 absoluteDifference(u64vec3, u64vec3);
+        u64vec4 absoluteDifference(u64vec4, u64vec4);
+
+        int addSaturate(int, int);
+        ivec2 addSaturate(ivec2, ivec2);
+        ivec3 addSaturate(ivec3, ivec3);
+        ivec4 addSaturate(ivec4, ivec4);
+
+        int16_t addSaturate(int16_t, int16_t);
+        i16vec2 addSaturate(i16vec2, i16vec2);
+        i16vec3 addSaturate(i16vec3, i16vec3);
+        i16vec4 addSaturate(i16vec4, i16vec4);
+
+        int64_t addSaturate(int64_t, int64_t);
+        i64vec2 addSaturate(i64vec2, i64vec2);
+        i64vec3 addSaturate(i64vec3, i64vec3);
+        i64vec4 addSaturate(i64vec4, i64vec4);
+
+        uint addSaturate(uint, uint);
+        uvec2 addSaturate(uvec2, uvec2);
+        uvec3 addSaturate(uvec3, uvec3);
+        uvec4 addSaturate(uvec4, uvec4);
+
+        uint16_t addSaturate(uint16_t, uint16_t);
+        u16vec2 addSaturate(u16vec2, u16vec2);
+        u16vec3 addSaturate(u16vec3, u16vec3);
+        u16vec4 addSaturate(u16vec4, u16vec4);
+
+        uint64_t addSaturate(uint64_t, uint64_t);
+        u64vec2 addSaturate(u64vec2, u64vec2);
+        u64vec3 addSaturate(u64vec3, u64vec3);
+        u64vec4 addSaturate(u64vec4, u64vec4);
+
+        int subtractSaturate(int, int);
+        ivec2 subtractSaturate(ivec2, ivec2);
+        ivec3 subtractSaturate(ivec3, ivec3);
+        ivec4 subtractSaturate(ivec4, ivec4);
+
+        int16_t subtractSaturate(int16_t, int16_t);
+        i16vec2 subtractSaturate(i16vec2, i16vec2);
+        i16vec3 subtractSaturate(i16vec3, i16vec3);
+        i16vec4 subtractSaturate(i16vec4, i16vec4);
+
+        int64_t subtractSaturate(int64_t, int64_t);
+        i64vec2 subtractSaturate(i64vec2, i64vec2);
+        i64vec3 subtractSaturate(i64vec3, i64vec3);
+        i64vec4 subtractSaturate(i64vec4, i64vec4);
+
+        uint subtractSaturate(uint, uint);
+        uvec2 subtractSaturate(uvec2, uvec2);
+        uvec3 subtractSaturate(uvec3, uvec3);
+        uvec4 subtractSaturate(uvec4, uvec4);
+
+        uint16_t subtractSaturate(uint16_t, uint16_t);
+        u16vec2 subtractSaturate(u16vec2, u16vec2);
+        u16vec3 subtractSaturate(u16vec3, u16vec3);
+        u16vec4 subtractSaturate(u16vec4, u16vec4);
+
+        uint64_t subtractSaturate(uint64_t, uint64_t);
+        u64vec2 subtractSaturate(u64vec2, u64vec2);
+        u64vec3 subtractSaturate(u64vec3, u64vec3);
+        u64vec4 subtractSaturate(u64vec4, u64vec4);
+
+        int average(int, int);
+        ivec2 average(ivec2, ivec2);
+        ivec3 average(ivec3, ivec3);
+        ivec4 average(ivec4, ivec4);
+
+        int16_t average(int16_t, int16_t);
+        i16vec2 average(i16vec2, i16vec2);
+        i16vec3 average(i16vec3, i16vec3);
+        i16vec4 average(i16vec4, i16vec4);
+
+        int64_t average(int64_t, int64_t);
+        i64vec2 average(i64vec2, i64vec2);
+        i64vec3 average(i64vec3, i64vec3);
+        i64vec4 average(i64vec4, i64vec4);
+
+        uint average(uint, uint);
+        uvec2 average(uvec2, uvec2);
+        uvec3 average(uvec3, uvec3);
+        uvec4 average(uvec4, uvec4);
+
+        uint16_t average(uint16_t, uint16_t);
+        u16vec2 average(u16vec2, u16vec2);
+        u16vec3 average(u16vec3, u16vec3);
+        u16vec4 average(u16vec4, u16vec4);
+
+        uint64_t average(uint64_t, uint64_t);
+        u64vec2 average(u64vec2, u64vec2);
+        u64vec3 average(u64vec3, u64vec3);
+        u64vec4 average(u64vec4, u64vec4);
+
+        int averageRounded(int, int);
+        ivec2 averageRounded(ivec2, ivec2);
+        ivec3 averageRounded(ivec3, ivec3);
+        ivec4 averageRounded(ivec4, ivec4);
+
+        int16_t averageRounded(int16_t, int16_t);
+        i16vec2 averageRounded(i16vec2, i16vec2);
+        i16vec3 averageRounded(i16vec3, i16vec3);
+        i16vec4 averageRounded(i16vec4, i16vec4);
+
+        int64_t averageRounded(int64_t, int64_t);
+        i64vec2 averageRounded(i64vec2, i64vec2);
+        i64vec3 averageRounded(i64vec3, i64vec3);
+        i64vec4 averageRounded(i64vec4, i64vec4);
+
+        uint averageRounded(uint, uint);
+        uvec2 averageRounded(uvec2, uvec2);
+        uvec3 averageRounded(uvec3, uvec3);
+        uvec4 averageRounded(uvec4, uvec4);
+
+        uint16_t averageRounded(uint16_t, uint16_t);
+        u16vec2 averageRounded(u16vec2, u16vec2);
+        u16vec3 averageRounded(u16vec3, u16vec3);
+        u16vec4 averageRounded(u16vec4, u16vec4);
+
+        uint64_t averageRounded(uint64_t, uint64_t);
+        u64vec2 averageRounded(u64vec2, u64vec2);
+        u64vec3 averageRounded(u64vec3, u64vec3);
+        u64vec4 averageRounded(u64vec4, u64vec4);
+
+        int multiply32x16(int, int);
+        ivec2 multiply32x16(ivec2, ivec2);
+        ivec3 multiply32x16(ivec3, ivec3);
+        ivec4 multiply32x16(ivec4, ivec4);
+
+        uint multiply32x16(uint, uint);
+        uvec2 multiply32x16(uvec2, uvec2);
+        uvec3 multiply32x16(uvec3, uvec3);
+        uvec4 multiply32x16(uvec4, uvec4);
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      commonBuiltins ~= q{
+        struct gl_TextureFootprint2DNV {
+          uvec2 anchor;
+          uvec2 offset;
+          uvec2 mask;
+          uint lod;
+          uint granularity;
+        };
+
+        struct gl_TextureFootprint3DNV {
+          uvec3 anchor;
+          uvec3 offset;
+          uvec2 mask;
+          uint lod;
+          uint granularity;
+        };
+
+        bool textureFootprintNV(sampler2D, vec2, int, bool, out gl_TextureFootprint2DNV);
+        bool textureFootprintNV(sampler3D, vec3, int, bool, out gl_TextureFootprint3DNV);
+        bool textureFootprintNV(sampler2D, vec2, int, bool, out gl_TextureFootprint2DNV, float);
+        bool textureFootprintNV(sampler3D, vec3, int, bool, out gl_TextureFootprint3DNV, float);
+        bool textureFootprintClampNV(sampler2D, vec2, float, int, bool, out gl_TextureFootprint2DNV);
+        bool textureFootprintClampNV(sampler3D, vec3, float, int, bool, out gl_TextureFootprint3DNV);
+        bool textureFootprintClampNV(sampler2D, vec2, float, int, bool, out gl_TextureFootprint2DNV, float);
+        bool textureFootprintClampNV(sampler3D, vec3, float, int, bool, out gl_TextureFootprint3DNV, float);
+        bool textureFootprintLodNV(sampler2D, vec2, float, int, bool, out gl_TextureFootprint2DNV);
+        bool textureFootprintLodNV(sampler3D, vec3, float, int, bool, out gl_TextureFootprint3DNV);
+        bool textureFootprintGradNV(sampler2D, vec2, vec2, vec2, int, bool, out gl_TextureFootprint2DNV);
+        bool textureFootprintGradClampNV(sampler2D, vec2, vec2, vec2, float, int, bool, out gl_TextureFootprint2DNV);
+      };   
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300 && version_ < 310) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 150 && version_ < 450)) {
+      commonBuiltins ~= q{
+        int mix(int, int, bool);
+        ivec2 mix(ivec2, ivec2, bvec2);
+        ivec3 mix(ivec3, ivec3, bvec3);
+        ivec4 mix(ivec4, ivec4, bvec4);
+        uint mix(uint, uint, bool );
+        uvec2 mix(uvec2, uvec2, bvec2);
+        uvec3 mix(uvec3, uvec3, bvec3);
+        uvec4 mix(uvec4, uvec4, bvec4);
+        bool mix(bool, bool, bool );
+        bvec2 mix(bvec2, bvec2, bvec2);
+        bvec3 mix(bvec3, bvec3, bvec3);
+        bvec4 mix(bvec4, bvec4, bvec4);
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      commonBuiltins ~= q{
+        float16_t radians(float16_t);
+        f16vec2 radians(f16vec2);
+        f16vec3 radians(f16vec3);
+        f16vec4 radians(f16vec4);
+
+        float16_t degrees(float16_t);
+        f16vec2 degrees(f16vec2);
+        f16vec3 degrees(f16vec3);
+        f16vec4 degrees(f16vec4);
+
+        float16_t sin(float16_t);
+        f16vec2 sin(f16vec2);
+        f16vec3 sin(f16vec3);
+        f16vec4 sin(f16vec4);
+
+        float16_t cos(float16_t);
+        f16vec2 cos(f16vec2);
+        f16vec3 cos(f16vec3);
+        f16vec4 cos(f16vec4);
+
+        float16_t tan(float16_t);
+        f16vec2 tan(f16vec2);
+        f16vec3 tan(f16vec3);
+        f16vec4 tan(f16vec4);
+
+        float16_t asin(float16_t);
+        f16vec2 asin(f16vec2);
+        f16vec3 asin(f16vec3);
+        f16vec4 asin(f16vec4);
+
+        float16_t acos(float16_t);
+        f16vec2 acos(f16vec2);
+        f16vec3 acos(f16vec3);
+        f16vec4 acos(f16vec4);
+
+        float16_t atan(float16_t, float16_t);
+        f16vec2 atan(f16vec2, f16vec2);
+        f16vec3 atan(f16vec3, f16vec3);
+        f16vec4 atan(f16vec4, f16vec4);
+
+        float16_t atan(float16_t);
+        f16vec2 atan(f16vec2);
+        f16vec3 atan(f16vec3);
+        f16vec4 atan(f16vec4);
+
+        float16_t sinh(float16_t);
+        f16vec2 sinh(f16vec2);
+        f16vec3 sinh(f16vec3);
+        f16vec4 sinh(f16vec4);
+
+        float16_t cosh(float16_t);
+        f16vec2 cosh(f16vec2);
+        f16vec3 cosh(f16vec3);
+        f16vec4 cosh(f16vec4);
+
+        float16_t tanh(float16_t);
+        f16vec2 tanh(f16vec2);
+        f16vec3 tanh(f16vec3);
+        f16vec4 tanh(f16vec4);
+
+        float16_t asinh(float16_t);
+        f16vec2 asinh(f16vec2);
+        f16vec3 asinh(f16vec3);
+        f16vec4 asinh(f16vec4);
+
+        float16_t acosh(float16_t);
+        f16vec2 acosh(f16vec2);
+        f16vec3 acosh(f16vec3);
+        f16vec4 acosh(f16vec4);
+
+        float16_t atanh(float16_t);
+        f16vec2 atanh(f16vec2);
+        f16vec3 atanh(f16vec3);
+        f16vec4 atanh(f16vec4);
+
+        float16_t pow(float16_t, float16_t);
+        f16vec2 pow(f16vec2, f16vec2);
+        f16vec3 pow(f16vec3, f16vec3);
+        f16vec4 pow(f16vec4, f16vec4);
+
+        float16_t exp(float16_t);
+        f16vec2 exp(f16vec2);
+        f16vec3 exp(f16vec3);
+        f16vec4 exp(f16vec4);
+
+        float16_t log(float16_t);
+        f16vec2 log(f16vec2);
+        f16vec3 log(f16vec3);
+        f16vec4 log(f16vec4);
+
+        float16_t exp2(float16_t);
+        f16vec2 exp2(f16vec2);
+        f16vec3 exp2(f16vec3);
+        f16vec4 exp2(f16vec4);
+
+        float16_t log2(float16_t);
+        f16vec2 log2(f16vec2);
+        f16vec3 log2(f16vec3);
+        f16vec4 log2(f16vec4);
+
+        float16_t sqrt(float16_t);
+        f16vec2 sqrt(f16vec2);
+        f16vec3 sqrt(f16vec3);
+        f16vec4 sqrt(f16vec4);
+
+        float16_t inversesqrt(float16_t);
+        f16vec2 inversesqrt(f16vec2);
+        f16vec3 inversesqrt(f16vec3);
+        f16vec4 inversesqrt(f16vec4);
+
+        float16_t abs(float16_t);
+        f16vec2 abs(f16vec2);
+        f16vec3 abs(f16vec3);
+        f16vec4 abs(f16vec4);
+
+        float16_t sign(float16_t);
+        f16vec2 sign(f16vec2);
+        f16vec3 sign(f16vec3);
+        f16vec4 sign(f16vec4);
+
+        float16_t floor(float16_t);
+        f16vec2 floor(f16vec2);
+        f16vec3 floor(f16vec3);
+        f16vec4 floor(f16vec4);
+
+        float16_t trunc(float16_t);
+        f16vec2 trunc(f16vec2);
+        f16vec3 trunc(f16vec3);
+        f16vec4 trunc(f16vec4);
+
+        float16_t round(float16_t);
+        f16vec2 round(f16vec2);
+        f16vec3 round(f16vec3);
+        f16vec4 round(f16vec4);
+
+        float16_t roundEven(float16_t);
+        f16vec2 roundEven(f16vec2);
+        f16vec3 roundEven(f16vec3);
+        f16vec4 roundEven(f16vec4);
+
+        float16_t ceil(float16_t);
+        f16vec2 ceil(f16vec2);
+        f16vec3 ceil(f16vec3);
+        f16vec4 ceil(f16vec4);
+
+        float16_t fract(float16_t);
+        f16vec2 fract(f16vec2);
+        f16vec3 fract(f16vec3);
+        f16vec4 fract(f16vec4);
+
+        float16_t mod(float16_t, float16_t);
+        f16vec2 mod(f16vec2, float16_t);
+        f16vec3 mod(f16vec3, float16_t);
+        f16vec4 mod(f16vec4, float16_t);
+        f16vec2 mod(f16vec2, f16vec2);
+        f16vec3 mod(f16vec3, f16vec3);
+        f16vec4 mod(f16vec4, f16vec4);
+
+        float16_t modf(float16_t, out float16_t);
+        f16vec2 modf(f16vec2, out f16vec2);
+        f16vec3 modf(f16vec3, out f16vec3);
+        f16vec4 modf(f16vec4, out f16vec4);
+
+        float16_t min(float16_t, float16_t);
+        f16vec2 min(f16vec2, float16_t);
+        f16vec3 min(f16vec3, float16_t);
+        f16vec4 min(f16vec4, float16_t);
+        f16vec2 min(f16vec2, f16vec2);
+        f16vec3 min(f16vec3, f16vec3);
+        f16vec4 min(f16vec4, f16vec4);
+
+        float16_t max(float16_t, float16_t);
+        f16vec2 max(f16vec2, float16_t);
+        f16vec3 max(f16vec3, float16_t);
+        f16vec4 max(f16vec4, float16_t);
+        f16vec2 max(f16vec2, f16vec2);
+        f16vec3 max(f16vec3, f16vec3);
+        f16vec4 max(f16vec4, f16vec4);
+
+        float16_t clamp(float16_t, float16_t, float16_t);
+        f16vec2 clamp(f16vec2, float16_t, float16_t);
+        f16vec3 clamp(f16vec3, float16_t, float16_t);
+        f16vec4 clamp(f16vec4, float16_t, float16_t);
+        f16vec2 clamp(f16vec2, f16vec2, f16vec2);
+        f16vec3 clamp(f16vec3, f16vec3, f16vec3);
+        f16vec4 clamp(f16vec4, f16vec4, f16vec4);
+
+        float16_t mix(float16_t, float16_t, float16_t);
+        f16vec2 mix(f16vec2, f16vec2, float16_t);
+        f16vec3 mix(f16vec3, f16vec3, float16_t);
+        f16vec4 mix(f16vec4, f16vec4, float16_t);
+        f16vec2 mix(f16vec2, f16vec2, f16vec2);
+        f16vec3 mix(f16vec3, f16vec3, f16vec3);
+        f16vec4 mix(f16vec4, f16vec4, f16vec4);
+        float16_t mix(float16_t, float16_t, bool);
+        f16vec2 mix(f16vec2, f16vec2, bvec2);
+        f16vec3 mix(f16vec3, f16vec3, bvec3);
+        f16vec4 mix(f16vec4, f16vec4, bvec4);
+
+        float16_t step(float16_t, float16_t);
+        f16vec2 step(f16vec2, f16vec2);
+        f16vec3 step(f16vec3, f16vec3);
+        f16vec4 step(f16vec4, f16vec4);
+        f16vec2 step(float16_t, f16vec2);
+        f16vec3 step(float16_t, f16vec3);
+        f16vec4 step(float16_t, f16vec4);
+
+        float16_t smoothstep(float16_t, float16_t, float16_t);
+        f16vec2 smoothstep(f16vec2, f16vec2, f16vec2);
+        f16vec3 smoothstep(f16vec3, f16vec3, f16vec3);
+        f16vec4 smoothstep(f16vec4, f16vec4, f16vec4);
+        f16vec2 smoothstep(float16_t, float16_t, f16vec2);
+        f16vec3 smoothstep(float16_t, float16_t, f16vec3);
+        f16vec4 smoothstep(float16_t, float16_t, f16vec4);
+
+        bool isnan(float16_t);
+        bvec2 isnan(f16vec2);
+        bvec3 isnan(f16vec3);
+        bvec4 isnan(f16vec4);
+
+        bool isinf(float16_t);
+        bvec2 isinf(f16vec2);
+        bvec3 isinf(f16vec3);
+        bvec4 isinf(f16vec4);
+
+        float16_t fma(float16_t, float16_t, float16_t);
+        f16vec2 fma(f16vec2, f16vec2, f16vec2);
+        f16vec3 fma(f16vec3, f16vec3, f16vec3);
+        f16vec4 fma(f16vec4, f16vec4, f16vec4);
+
+        float16_t frexp(float16_t, out int);
+        f16vec2 frexp(f16vec2, out ivec2);
+        f16vec3 frexp(f16vec3, out ivec3);
+        f16vec4 frexp(f16vec4, out ivec4);
+
+        float16_t ldexp(float16_t, in int);
+        f16vec2 ldexp(f16vec2, in ivec2);
+        f16vec3 ldexp(f16vec3, in ivec3);
+        f16vec4 ldexp(f16vec4, in ivec4);
+
+        uint packFloat2x16(f16vec2);
+        f16vec2 unpackFloat2x16(uint);
+
+        float16_t length(float16_t);
+        float16_t length(f16vec2);
+        float16_t length(f16vec3);
+        float16_t length(f16vec4);
+
+        float16_t distance(float16_t, float16_t);
+        float16_t distance(f16vec2, f16vec2);
+        float16_t distance(f16vec3, f16vec3);
+        float16_t distance(f16vec4, f16vec4);
+
+        float16_t dot(float16_t, float16_t);
+        float16_t dot(f16vec2, f16vec2);
+        float16_t dot(f16vec3, f16vec3);
+        float16_t dot(f16vec4, f16vec4);
+
+        f16vec3 cross(f16vec3, f16vec3);
+
+        float16_t normalize(float16_t);
+        f16vec2 normalize(f16vec2);
+        f16vec3 normalize(f16vec3);
+        f16vec4 normalize(f16vec4);
+
+        float16_t faceforward(float16_t, float16_t, float16_t);
+        f16vec2 faceforward(f16vec2, f16vec2, f16vec2);
+        f16vec3 faceforward(f16vec3, f16vec3, f16vec3);
+        f16vec4 faceforward(f16vec4, f16vec4, f16vec4);
+
+        float16_t reflect(float16_t, float16_t);
+        f16vec2 reflect(f16vec2, f16vec2);
+        f16vec3 reflect(f16vec3, f16vec3);
+        f16vec4 reflect(f16vec4, f16vec4);
+
+        float16_t refract(float16_t, float16_t, float16_t);
+        f16vec2 refract(f16vec2, f16vec2, float16_t);
+        f16vec3 refract(f16vec3, f16vec3, float16_t);
+        f16vec4 refract(f16vec4, f16vec4, float16_t);
+
+        f16mat2 matrixCompMult(f16mat2, f16mat2);
+        f16mat3 matrixCompMult(f16mat3, f16mat3);
+        f16mat4 matrixCompMult(f16mat4, f16mat4);
+        f16mat2x3 matrixCompMult(f16mat2x3, f16mat2x3);
+        f16mat2x4 matrixCompMult(f16mat2x4, f16mat2x4);
+        f16mat3x2 matrixCompMult(f16mat3x2, f16mat3x2);
+        f16mat3x4 matrixCompMult(f16mat3x4, f16mat3x4);
+        f16mat4x2 matrixCompMult(f16mat4x2, f16mat4x2);
+        f16mat4x3 matrixCompMult(f16mat4x3, f16mat4x3);
+
+        f16mat2 outerProduct(f16vec2, f16vec2);
+        f16mat3 outerProduct(f16vec3, f16vec3);
+        f16mat4 outerProduct(f16vec4, f16vec4);
+        f16mat2x3 outerProduct(f16vec3, f16vec2);
+        f16mat3x2 outerProduct(f16vec2, f16vec3);
+        f16mat2x4 outerProduct(f16vec4, f16vec2);
+        f16mat4x2 outerProduct(f16vec2, f16vec4);
+        f16mat3x4 outerProduct(f16vec4, f16vec3);
+        f16mat4x3 outerProduct(f16vec3, f16vec4);
+
+        f16mat2 transpose(f16mat2);
+        f16mat3 transpose(f16mat3);
+        f16mat4 transpose(f16mat4);
+        f16mat2x3 transpose(f16mat3x2);
+        f16mat3x2 transpose(f16mat2x3);
+        f16mat2x4 transpose(f16mat4x2);
+        f16mat4x2 transpose(f16mat2x4);
+        f16mat3x4 transpose(f16mat4x3);
+        f16mat4x3 transpose(f16mat3x4);
+
+        float16_t determinant(f16mat2);
+        float16_t determinant(f16mat3);
+        float16_t determinant(f16mat4);
+
+        f16mat2 inverse(f16mat2);
+        f16mat3 inverse(f16mat3);
+        f16mat4 inverse(f16mat4);
+
+        bvec2 lessThan(f16vec2, f16vec2);
+        bvec3 lessThan(f16vec3, f16vec3);
+        bvec4 lessThan(f16vec4, f16vec4);
+
+        bvec2 lessThanEqual(f16vec2, f16vec2);
+        bvec3 lessThanEqual(f16vec3, f16vec3);
+        bvec4 lessThanEqual(f16vec4, f16vec4);
+
+        bvec2 greaterThan(f16vec2, f16vec2);
+        bvec3 greaterThan(f16vec3, f16vec3);
+        bvec4 greaterThan(f16vec4, f16vec4);
+
+        bvec2 greaterThanEqual(f16vec2, f16vec2);
+        bvec3 greaterThanEqual(f16vec3, f16vec3);
+        bvec4 greaterThanEqual(f16vec4, f16vec4);
+
+        bvec2 equal(f16vec2, f16vec2);
+        bvec3 equal(f16vec3, f16vec3);
+        bvec4 equal(f16vec4, f16vec4);
+
+        bvec2 notEqual(f16vec2, f16vec2);
+        bvec3 notEqual(f16vec3, f16vec3);
+        bvec4 notEqual(f16vec4, f16vec4);
+
+        bfloat16_t dot(bfloat16_t, bfloat16_t);
+        bfloat16_t dot(bf16vec2, bf16vec2);
+        bfloat16_t dot(bf16vec3, bf16vec3);
+        bfloat16_t dot(bf16vec4, bf16vec4);
+
+        int16_t bfloat16BitsToIntEXT(bfloat16_t value);
+        i16vec2 bfloat16BitsToIntEXT(bf16vec2 value);
+        i16vec3 bfloat16BitsToIntEXT(bf16vec3 value);
+        i16vec4 bfloat16BitsToIntEXT(bf16vec4 value);
+
+        uint16_t bfloat16BitsToUintEXT(bfloat16_t value);
+        u16vec2 bfloat16BitsToUintEXT(bf16vec2 value);
+        u16vec3 bfloat16BitsToUintEXT(bf16vec3 value);
+        u16vec4 bfloat16BitsToUintEXT(bf16vec4 value);
+
+        bfloat16_t intBitsToBFloat16EXT(int16_t value);
+        bf16vec2 intBitsToBFloat16EXT(i16vec2 value);
+        bf16vec3 intBitsToBFloat16EXT(i16vec3 value);
+        bf16vec4 intBitsToBFloat16EXT(i16vec4 value);
+
+        bfloat16_t uintBitsToBFloat16EXT(uint16_t value);
+        bf16vec2 uintBitsToBFloat16EXT(u16vec2 value);
+        bf16vec3 uintBitsToBFloat16EXT(u16vec3 value);
+        bf16vec4 uintBitsToBFloat16EXT(u16vec4 value);
+
+      int8_t floate5m2BitsToIntEXT(floate5m2_t value);
+        i8vec2 floate5m2BitsToIntEXT(fe5m2vec2 value);
+        i8vec3 floate5m2BitsToIntEXT(fe5m2vec3 value);
+        i8vec4 floate5m2BitsToIntEXT(fe5m2vec4 value);
+
+        uint8_t floate5m2BitsToUintEXT(floate5m2_t value);
+        u8vec2 floate5m2BitsToUintEXT(fe5m2vec2 value);
+        u8vec3 floate5m2BitsToUintEXT(fe5m2vec3 value);
+        u8vec4 floate5m2BitsToUintEXT(fe5m2vec4 value);
+
+        floate5m2_t intBitsToFloate5m2EXT(int8_t value);
+        fe5m2vec2 intBitsToFloate5m2EXT(i8vec2 value);
+        fe5m2vec3 intBitsToFloate5m2EXT(i8vec3 value);
+        fe5m2vec4 intBitsToFloate5m2EXT(i8vec4 value);
+
+        floate5m2_t uintBitsToFloate5m2EXT(uint8_t value);
+        fe5m2vec2 uintBitsToFloate5m2EXT(u8vec2 value);
+        fe5m2vec3 uintBitsToFloate5m2EXT(u8vec3 value);
+        fe5m2vec4 uintBitsToFloate5m2EXT(u8vec4 value);
+
+      int8_t floate4m3BitsToIntEXT(floate4m3_t value);
+        i8vec2 floate4m3BitsToIntEXT(fe4m3vec2 value);
+        i8vec3 floate4m3BitsToIntEXT(fe4m3vec3 value);
+        i8vec4 floate4m3BitsToIntEXT(fe4m3vec4 value);
+
+        uint8_t floate4m3BitsToUintEXT(floate4m3_t value);
+        u8vec2 floate4m3BitsToUintEXT(fe4m3vec2 value);
+        u8vec3 floate4m3BitsToUintEXT(fe4m3vec3 value);
+        u8vec4 floate4m3BitsToUintEXT(fe4m3vec4 value);
+
+        floate4m3_t intBitsToFloate4m3EXT(int8_t value);
+        fe4m3vec2 intBitsToFloate4m3EXT(i8vec2 value);
+        fe4m3vec3 intBitsToFloate4m3EXT(i8vec3 value);
+        fe4m3vec4 intBitsToFloate4m3EXT(i8vec4 value);
+
+        floate4m3_t uintBitsToFloate4m3EXT(uint8_t value);
+        fe4m3vec2 uintBitsToFloate4m3EXT(u8vec2 value);
+        fe4m3vec3 uintBitsToFloate4m3EXT(u8vec3 value);
+        fe4m3vec4 uintBitsToFloate4m3EXT(u8vec4 value);
+
+        void saturatedConvertEXT();
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      commonBuiltins ~= q{
+        int8_t abs(int8_t);
+        i8vec2 abs(i8vec2);
+        i8vec3 abs(i8vec3);
+        i8vec4 abs(i8vec4);
+
+        int8_t sign(int8_t);
+        i8vec2 sign(i8vec2);
+        i8vec3 sign(i8vec3);
+        i8vec4 sign(i8vec4);
+
+        int8_t min(int8_t x, int8_t y);
+        i8vec2 min(i8vec2 x, int8_t y);
+        i8vec3 min(i8vec3 x, int8_t y);
+        i8vec4 min(i8vec4 x, int8_t y);
+        i8vec2 min(i8vec2 x, i8vec2 y);
+        i8vec3 min(i8vec3 x, i8vec3 y);
+        i8vec4 min(i8vec4 x, i8vec4 y);
+
+        uint8_t min(uint8_t x, uint8_t y);
+        u8vec2 min(u8vec2 x, uint8_t y);
+        u8vec3 min(u8vec3 x, uint8_t y);
+        u8vec4 min(u8vec4 x, uint8_t y);
+        u8vec2 min(u8vec2 x, u8vec2 y);
+        u8vec3 min(u8vec3 x, u8vec3 y);
+        u8vec4 min(u8vec4 x, u8vec4 y);
+
+        int8_t max(int8_t x, int8_t y);
+        i8vec2 max(i8vec2 x, int8_t y);
+        i8vec3 max(i8vec3 x, int8_t y);
+        i8vec4 max(i8vec4 x, int8_t y);
+        i8vec2 max(i8vec2 x, i8vec2 y);
+        i8vec3 max(i8vec3 x, i8vec3 y);
+        i8vec4 max(i8vec4 x, i8vec4 y);
+
+        uint8_t max(uint8_t x, uint8_t y);
+        u8vec2 max(u8vec2 x, uint8_t y);
+        u8vec3 max(u8vec3 x, uint8_t y);
+        u8vec4 max(u8vec4 x, uint8_t y);
+        u8vec2 max(u8vec2 x, u8vec2 y);
+        u8vec3 max(u8vec3 x, u8vec3 y);
+        u8vec4 max(u8vec4 x, u8vec4 y);
+
+        int8_t clamp(int8_t x, int8_t minVal, int8_t maxVal);
+        i8vec2 clamp(i8vec2 x, int8_t minVal, int8_t maxVal);
+        i8vec3 clamp(i8vec3 x, int8_t minVal, int8_t maxVal);
+        i8vec4 clamp(i8vec4 x, int8_t minVal, int8_t maxVal);
+        i8vec2 clamp(i8vec2 x, i8vec2 minVal, i8vec2 maxVal);
+        i8vec3 clamp(i8vec3 x, i8vec3 minVal, i8vec3 maxVal);
+        i8vec4 clamp(i8vec4 x, i8vec4 minVal, i8vec4 maxVal);
+
+        uint8_t clamp(uint8_t x, uint8_t minVal, uint8_t maxVal);
+        u8vec2 clamp(u8vec2 x, uint8_t minVal, uint8_t maxVal);
+        u8vec3 clamp(u8vec3 x, uint8_t minVal, uint8_t maxVal);
+        u8vec4 clamp(u8vec4 x, uint8_t minVal, uint8_t maxVal);
+        u8vec2 clamp(u8vec2 x, u8vec2 minVal, u8vec2 maxVal);
+        u8vec3 clamp(u8vec3 x, u8vec3 minVal, u8vec3 maxVal);
+        u8vec4 clamp(u8vec4 x, u8vec4 minVal, u8vec4 maxVal);
+
+        int8_t mix(int8_t,int8_t, bool);
+        i8vec2 mix(i8vec2, i8vec2, bvec2);
+        i8vec3 mix(i8vec3, i8vec3, bvec3);
+        i8vec4 mix(i8vec4, i8vec4, bvec4);
+        uint8_t mix(uint8_t, uint8_t, bool);
+        u8vec2 mix(u8vec2, u8vec2, bvec2);
+        u8vec3 mix(u8vec3, u8vec3, bvec3);
+        u8vec4 mix(u8vec4, u8vec4, bvec4);
+
+        bvec2 lessThan(i8vec2, i8vec2);
+        bvec3 lessThan(i8vec3, i8vec3);
+        bvec4 lessThan(i8vec4, i8vec4);
+        bvec2 lessThan(u8vec2, u8vec2);
+        bvec3 lessThan(u8vec3, u8vec3);
+        bvec4 lessThan(u8vec4, u8vec4);
+
+        bvec2 lessThanEqual(i8vec2, i8vec2);
+        bvec3 lessThanEqual(i8vec3, i8vec3);
+        bvec4 lessThanEqual(i8vec4, i8vec4);
+        bvec2 lessThanEqual(u8vec2, u8vec2);
+        bvec3 lessThanEqual(u8vec3, u8vec3);
+        bvec4 lessThanEqual(u8vec4, u8vec4);
+
+        bvec2 greaterThan(i8vec2, i8vec2);
+        bvec3 greaterThan(i8vec3, i8vec3);
+        bvec4 greaterThan(i8vec4, i8vec4);
+        bvec2 greaterThan(u8vec2, u8vec2);
+        bvec3 greaterThan(u8vec3, u8vec3);
+        bvec4 greaterThan(u8vec4, u8vec4);
+
+        bvec2 greaterThanEqual(i8vec2, i8vec2);
+        bvec3 greaterThanEqual(i8vec3, i8vec3);
+        bvec4 greaterThanEqual(i8vec4, i8vec4);
+        bvec2 greaterThanEqual(u8vec2, u8vec2);
+        bvec3 greaterThanEqual(u8vec3, u8vec3);
+        bvec4 greaterThanEqual(u8vec4, u8vec4);
+
+        bvec2 equal(i8vec2, i8vec2);
+        bvec3 equal(i8vec3, i8vec3);
+        bvec4 equal(i8vec4, i8vec4);
+        bvec2 equal(u8vec2, u8vec2);
+        bvec3 equal(u8vec3, u8vec3);
+        bvec4 equal(u8vec4, u8vec4);
+
+        bvec2 notEqual(i8vec2, i8vec2);
+        bvec3 notEqual(i8vec3, i8vec3);
+        bvec4 notEqual(i8vec4, i8vec4);
+        bvec2 notEqual(u8vec2, u8vec2);
+        bvec3 notEqual(u8vec3, u8vec3);
+        bvec4 notEqual(u8vec4, u8vec4);
+
+        int8_t bitfieldExtract(int8_t, int8_t, int8_t);
+        i8vec2 bitfieldExtract(i8vec2, int8_t, int8_t);
+        i8vec3 bitfieldExtract(i8vec3, int8_t, int8_t);
+        i8vec4 bitfieldExtract(i8vec4, int8_t, int8_t);
+
+        uint8_t bitfieldExtract(uint8_t, int8_t, int8_t);
+        u8vec2 bitfieldExtract(u8vec2, int8_t, int8_t);
+        u8vec3 bitfieldExtract(u8vec3, int8_t, int8_t);
+        u8vec4 bitfieldExtract(u8vec4, int8_t, int8_t);
+
+        int8_t bitfieldInsert(int8_t base, int8_t, int8_t, int8_t);
+        i8vec2 bitfieldInsert(i8vec2 base, i8vec2, int8_t, int8_t);
+        i8vec3 bitfieldInsert(i8vec3 base, i8vec3, int8_t, int8_t);
+        i8vec4 bitfieldInsert(i8vec4 base, i8vec4, int8_t, int8_t);
+
+        uint8_t bitfieldInsert(uint8_t base, uint8_t, int8_t, int8_t);
+        u8vec2 bitfieldInsert(u8vec2 base, u8vec2, int8_t, int8_t);
+        u8vec3 bitfieldInsert(u8vec3 base, u8vec3, int8_t, int8_t);
+        u8vec4 bitfieldInsert(u8vec4 base, u8vec4, int8_t, int8_t);
+
+        int8_t bitCount(int8_t);
+        i8vec2 bitCount(i8vec2);
+        i8vec3 bitCount(i8vec3);
+        i8vec4 bitCount(i8vec4);
+
+        int8_t bitCount(uint8_t);
+        i8vec2 bitCount(u8vec2);
+        i8vec3 bitCount(u8vec3);
+        i8vec4 bitCount(u8vec4);
+
+        int8_t findLSB(int8_t);
+        i8vec2 findLSB(i8vec2);
+        i8vec3 findLSB(i8vec3);
+        i8vec4 findLSB(i8vec4);
+
+        int8_t findLSB(uint8_t);
+        i8vec2 findLSB(u8vec2);
+        i8vec3 findLSB(u8vec3);
+        i8vec4 findLSB(u8vec4);
+
+        int8_t findMSB(int8_t);
+        i8vec2 findMSB(i8vec2);
+        i8vec3 findMSB(i8vec3);
+        i8vec4 findMSB(i8vec4);
+
+        int8_t findMSB(uint8_t);
+        i8vec2 findMSB(u8vec2);
+        i8vec3 findMSB(u8vec3);
+        i8vec4 findMSB(u8vec4);
+
+        int16_t abs(int16_t);
+        i16vec2 abs(i16vec2);
+        i16vec3 abs(i16vec3);
+        i16vec4 abs(i16vec4);
+
+        int16_t sign(int16_t);
+        i16vec2 sign(i16vec2);
+        i16vec3 sign(i16vec3);
+        i16vec4 sign(i16vec4);
+
+        int16_t min(int16_t x, int16_t y);
+        i16vec2 min(i16vec2 x, int16_t y);
+        i16vec3 min(i16vec3 x, int16_t y);
+        i16vec4 min(i16vec4 x, int16_t y);
+        i16vec2 min(i16vec2 x, i16vec2 y);
+        i16vec3 min(i16vec3 x, i16vec3 y);
+        i16vec4 min(i16vec4 x, i16vec4 y);
+
+        uint16_t min(uint16_t x, uint16_t y);
+        u16vec2 min(u16vec2 x, uint16_t y);
+        u16vec3 min(u16vec3 x, uint16_t y);
+        u16vec4 min(u16vec4 x, uint16_t y);
+        u16vec2 min(u16vec2 x, u16vec2 y);
+        u16vec3 min(u16vec3 x, u16vec3 y);
+        u16vec4 min(u16vec4 x, u16vec4 y);
+
+        int16_t max(int16_t x, int16_t y);
+        i16vec2 max(i16vec2 x, int16_t y);
+        i16vec3 max(i16vec3 x, int16_t y);
+        i16vec4 max(i16vec4 x, int16_t y);
+        i16vec2 max(i16vec2 x, i16vec2 y);
+        i16vec3 max(i16vec3 x, i16vec3 y);
+        i16vec4 max(i16vec4 x, i16vec4 y);
+
+        uint16_t max(uint16_t x, uint16_t y);
+        u16vec2 max(u16vec2 x, uint16_t y);
+        u16vec3 max(u16vec3 x, uint16_t y);
+        u16vec4 max(u16vec4 x, uint16_t y);
+        u16vec2 max(u16vec2 x, u16vec2 y);
+        u16vec3 max(u16vec3 x, u16vec3 y);
+        u16vec4 max(u16vec4 x, u16vec4 y);
+
+        int16_t clamp(int16_t x, int16_t minVal, int16_t maxVal);
+        i16vec2 clamp(i16vec2 x, int16_t minVal, int16_t maxVal);
+        i16vec3 clamp(i16vec3 x, int16_t minVal, int16_t maxVal);
+        i16vec4 clamp(i16vec4 x, int16_t minVal, int16_t maxVal);
+        i16vec2 clamp(i16vec2 x, i16vec2 minVal, i16vec2 maxVal);
+        i16vec3 clamp(i16vec3 x, i16vec3 minVal, i16vec3 maxVal);
+        i16vec4 clamp(i16vec4 x, i16vec4 minVal, i16vec4 maxVal);
+
+        uint16_t clamp(uint16_t x, uint16_t minVal, uint16_t maxVal);
+        u16vec2 clamp(u16vec2 x, uint16_t minVal, uint16_t maxVal);
+        u16vec3 clamp(u16vec3 x, uint16_t minVal, uint16_t maxVal);
+        u16vec4 clamp(u16vec4 x, uint16_t minVal, uint16_t maxVal);
+        u16vec2 clamp(u16vec2 x, u16vec2 minVal, u16vec2 maxVal);
+        u16vec3 clamp(u16vec3 x, u16vec3 minVal, u16vec3 maxVal);
+        u16vec4 clamp(u16vec4 x, u16vec4 minVal, u16vec4 maxVal);
+
+        int16_t mix(int16_t, int16_t, bool);
+        i16vec2 mix(i16vec2, i16vec2, bvec2);
+        i16vec3 mix(i16vec3, i16vec3, bvec3);
+        i16vec4 mix(i16vec4, i16vec4, bvec4);
+        uint16_t mix(uint16_t, uint16_t, bool);
+        u16vec2 mix(u16vec2, u16vec2, bvec2);
+        u16vec3 mix(u16vec3, u16vec3, bvec3);
+        u16vec4 mix(u16vec4, u16vec4, bvec4);
+
+        float16_t frexp(float16_t, out int16_t);
+        f16vec2 frexp(f16vec2, out i16vec2);
+        f16vec3 frexp(f16vec3, out i16vec3);
+        f16vec4 frexp(f16vec4, out i16vec4);
+
+        float16_t ldexp(float16_t, int16_t);
+        f16vec2 ldexp(f16vec2, i16vec2);
+        f16vec3 ldexp(f16vec3, i16vec3);
+        f16vec4 ldexp(f16vec4, i16vec4);
+
+        int16_t halfBitsToInt16(float16_t);
+        i16vec2 halfBitsToInt16(f16vec2);
+        i16vec3 halhBitsToInt16(f16vec3);
+        i16vec4 halfBitsToInt16(f16vec4);
+
+        uint16_t halfBitsToUint16(float16_t);
+        u16vec2 halfBitsToUint16(f16vec2);
+        u16vec3 halfBitsToUint16(f16vec3);
+        u16vec4 halfBitsToUint16(f16vec4);
+
+        int16_t float16BitsToInt16(float16_t);
+        i16vec2 float16BitsToInt16(f16vec2);
+        i16vec3 float16BitsToInt16(f16vec3);
+        i16vec4 float16BitsToInt16(f16vec4);
+
+        uint16_t float16BitsToUint16(float16_t);
+        u16vec2 float16BitsToUint16(f16vec2);
+        u16vec3 float16BitsToUint16(f16vec3);
+        u16vec4 float16BitsToUint16(f16vec4);
+
+        float16_t int16BitsToFloat16(int16_t);
+        f16vec2 int16BitsToFloat16(i16vec2);
+        f16vec3 int16BitsToFloat16(i16vec3);
+        f16vec4 int16BitsToFloat16(i16vec4);
+
+        float16_t uint16BitsToFloat16(uint16_t);
+        f16vec2 uint16BitsToFloat16(u16vec2);
+        f16vec3 uint16BitsToFloat16(u16vec3);
+        f16vec4 uint16BitsToFloat16(u16vec4);
+
+        float16_t int16BitsToHalf(int16_t);
+        f16vec2 int16BitsToHalf(i16vec2);
+        f16vec3 int16BitsToHalf(i16vec3);
+        f16vec4 int16BitsToHalf(i16vec4);
+
+        float16_t uint16BitsToHalf(uint16_t);
+        f16vec2 uint16BitsToHalf(u16vec2);
+        f16vec3 uint16BitsToHalf(u16vec3);
+        f16vec4 uint16BitsToHalf(u16vec4);
+
+        int packInt2x16(i16vec2);
+        uint packUint2x16(u16vec2);
+        int64_t packInt4x16(i16vec4);
+        uint64_t packUint4x16(u16vec4);
+        i16vec2 unpackInt2x16(int);
+        u16vec2 unpackUint2x16(uint);
+        i16vec4 unpackInt4x16(int64_t);
+        u16vec4 unpackUint4x16(uint64_t);
+
+        bvec2 lessThan(i16vec2, i16vec2);
+        bvec3 lessThan(i16vec3, i16vec3);
+        bvec4 lessThan(i16vec4, i16vec4);
+        bvec2 lessThan(u16vec2, u16vec2);
+        bvec3 lessThan(u16vec3, u16vec3);
+        bvec4 lessThan(u16vec4, u16vec4);
+
+        bvec2 lessThanEqual(i16vec2, i16vec2);
+        bvec3 lessThanEqual(i16vec3, i16vec3);
+        bvec4 lessThanEqual(i16vec4, i16vec4);
+        bvec2 lessThanEqual(u16vec2, u16vec2);
+        bvec3 lessThanEqual(u16vec3, u16vec3);
+        bvec4 lessThanEqual(u16vec4, u16vec4);
+
+        bvec2 greaterThan(i16vec2, i16vec2);
+        bvec3 greaterThan(i16vec3, i16vec3);
+        bvec4 greaterThan(i16vec4, i16vec4);
+        bvec2 greaterThan(u16vec2, u16vec2);
+        bvec3 greaterThan(u16vec3, u16vec3);
+        bvec4 greaterThan(u16vec4, u16vec4);
+
+        bvec2 greaterThanEqual(i16vec2, i16vec2);
+        bvec3 greaterThanEqual(i16vec3, i16vec3);
+        bvec4 greaterThanEqual(i16vec4, i16vec4);
+        bvec2 greaterThanEqual(u16vec2, u16vec2);
+        bvec3 greaterThanEqual(u16vec3, u16vec3);
+        bvec4 greaterThanEqual(u16vec4, u16vec4);
+
+        bvec2 equal(i16vec2, i16vec2);
+        bvec3 equal(i16vec3, i16vec3);
+        bvec4 equal(i16vec4, i16vec4);
+        bvec2 equal(u16vec2, u16vec2);
+        bvec3 equal(u16vec3, u16vec3);
+        bvec4 equal(u16vec4, u16vec4);
+
+        bvec2 notEqual(i16vec2, i16vec2);
+        bvec3 notEqual(i16vec3, i16vec3);
+        bvec4 notEqual(i16vec4, i16vec4);
+        bvec2 notEqual(u16vec2, u16vec2);
+        bvec3 notEqual(u16vec3, u16vec3);
+        bvec4 notEqual(u16vec4, u16vec4);
+
+        int16_t bitfieldExtract(int16_t, int16_t, int16_t);
+        i16vec2 bitfieldExtract(i16vec2, int16_t, int16_t);
+        i16vec3 bitfieldExtract(i16vec3, int16_t, int16_t);
+        i16vec4 bitfieldExtract(i16vec4, int16_t, int16_t);
+
+        uint16_t bitfieldExtract(uint16_t, int16_t, int16_t);
+        u16vec2 bitfieldExtract(u16vec2, int16_t, int16_t);
+        u16vec3 bitfieldExtract(u16vec3, int16_t, int16_t);
+        u16vec4 bitfieldExtract(u16vec4, int16_t, int16_t);
+
+        int16_t bitfieldInsert(int16_t base, int16_t, int16_t, int16_t);
+        i16vec2 bitfieldInsert(i16vec2 base, i16vec2, int16_t, int16_t);
+        i16vec3 bitfieldInsert(i16vec3 base, i16vec3, int16_t, int16_t);
+        i16vec4 bitfieldInsert(i16vec4 base, i16vec4, int16_t, int16_t);
+
+        uint16_t bitfieldInsert(uint16_t base, uint16_t, int16_t, int16_t);
+        u16vec2 bitfieldInsert(u16vec2 base, u16vec2, int16_t, int16_t);
+        u16vec3 bitfieldInsert(u16vec3 base, u16vec3, int16_t, int16_t);
+        u16vec4 bitfieldInsert(u16vec4 base, u16vec4, int16_t, int16_t);
+
+        int16_t bitCount(int16_t);
+        i16vec2 bitCount(i16vec2);
+        i16vec3 bitCount(i16vec3);
+        i16vec4 bitCount(i16vec4);
+
+        int16_t bitCount(uint16_t);
+        i16vec2 bitCount(u16vec2);
+        i16vec3 bitCount(u16vec3);
+        i16vec4 bitCount(u16vec4);
+
+        int16_t findLSB(int16_t);
+        i16vec2 findLSB(i16vec2);
+        i16vec3 findLSB(i16vec3);
+        i16vec4 findLSB(i16vec4);
+
+        int16_t findLSB(uint16_t);
+        i16vec2 findLSB(u16vec2);
+        i16vec3 findLSB(u16vec3);
+        i16vec4 findLSB(u16vec4);
+
+        int16_t findMSB(int16_t);
+        i16vec2 findMSB(i16vec2);
+        i16vec3 findMSB(i16vec3);
+        i16vec4 findMSB(i16vec4);
+
+        int16_t findMSB(uint16_t);
+        i16vec2 findMSB(u16vec2);
+        i16vec3 findMSB(u16vec3);
+        i16vec4 findMSB(u16vec4);
+
+        int16_t pack16(i8vec2);
+        uint16_t pack16(u8vec2);
+        int32_t pack32(i8vec4);
+        uint32_t pack32(u8vec4);
+        int32_t pack32(i16vec2);
+        uint32_t pack32(u16vec2);
+        int64_t pack64(i16vec4);
+        uint64_t pack64(u16vec4);
+        int64_t pack64(i32vec2);
+        uint64_t pack64(u32vec2);
+
+        i8vec2 unpack8(int16_t);
+        u8vec2 unpack8(uint16_t);
+        i8vec4 unpack8(int32_t);
+        u8vec4 unpack8(uint32_t);
+        i16vec2 unpack16(int32_t);
+        u16vec2 unpack16(uint32_t);
+        i16vec4 unpack16(int64_t);
+        u16vec4 unpack16(uint64_t);
+        i32vec2 unpack32(int64_t);
+        u32vec2 unpack32(uint64_t);
+
+        int8_t expectEXT(int8_t, int8_t);
+        i8vec2 expectEXT(i8vec2, i8vec2);
+        i8vec3 expectEXT(i8vec3, i8vec3);
+        i8vec4 expectEXT(i8vec4, i8vec4);
+
+        uint8_t expectEXT(uint8_t, uint8_t);
+        u8vec2 expectEXT(u8vec2, u8vec2);
+        u8vec3 expectEXT(u8vec3, u8vec3);
+        u8vec4 expectEXT(u8vec4, u8vec4);
+
+        int16_t expectEXT(int16_t, int16_t);
+        i16vec2 expectEXT(i16vec2, i16vec2);
+        i16vec3 expectEXT(i16vec3, i16vec3);
+        i16vec4 expectEXT(i16vec4, i16vec4);
+
+        uint16_t expectEXT(uint16_t, uint16_t);
+        u16vec2 expectEXT(u16vec2, u16vec2);
+        u16vec3 expectEXT(u16vec3, u16vec3);
+        u16vec4 expectEXT(u16vec4, u16vec4);
+
+        int64_t expectEXT(int64_t, int64_t);
+        i64vec2 expectEXT(i64vec2, i64vec2);
+        i64vec3 expectEXT(i64vec3, i64vec3);
+        i64vec4 expectEXT(i64vec4, i64vec4);
+
+        uint64_t expectEXT(uint64_t, uint64_t);
+        u64vec2 expectEXT(u64vec2, u64vec2);
+        u64vec3 expectEXT(u64vec3, u64vec3);
+        u64vec4 expectEXT(u64vec4, u64vec4);
+      };
+    }
   }
 
   override void initialize(
