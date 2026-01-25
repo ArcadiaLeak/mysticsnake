@@ -2,6 +2,7 @@ module glslang.machine_independent.initialize;
 
 import glslang;
 
+import std.range;
 import std.traits;
 
 class TBuiltInParseables {
@@ -55,7 +56,10 @@ class TBuiltIns : TBuiltInParseables {
     in SpvVersion spvVersion
   ) {
     auto foreachFunction(string decls, const(BuiltInFunction[]) functions) {
-
+      foreach (const ref fn; functions) {
+        if (ValidVersion(fn, version_, profile, spvVersion))
+          AddTabledBuiltin(decls, fn);
+      }
     }
   }
 
@@ -78,4 +82,70 @@ struct BuiltInFunction {
   TOperator op;
   string name;
   int numArguments;
+  ArgType types;
+  ArgClass classes;
+  const(Versioning[]) versioning;
+}
+
+enum ArgType {
+  TypeB = 1 << 0,
+  TypeF = 1 << 1,
+  TypeI = 1 << 2,
+  TypeU = 1 << 3,
+  TypeF16 = 1 << 4,
+  TypeF64 = 1 << 5,
+  TypeI8 = 1 << 6,
+  TypeI16 = 1 << 7,
+  TypeI64 = 1 << 8,
+  TypeU8 = 1 << 9,
+  TypeU16 = 1 << 10,
+  TypeU64 = 1 << 11,
+}
+
+enum ArgClass {
+  ClassRegular = 0,
+  ClassLS = 1 << 0,
+  ClassXLS = 1 << 1,
+  ClassLS2 = 1 << 2,
+  ClassFS = 1 << 3,
+  ClassFS2 = 1 << 4,
+  ClassLO = 1 << 5,
+  ClassB = 1 << 6,
+  ClassLB = 1 << 7,
+  ClassV1 = 1 << 8,
+  ClassFIO = 1 << 9,
+  ClassRS = 1 << 10,
+  ClassNS = 1 << 11,
+  ClassCVN = 1 << 12,
+  ClassFO = 1 << 13,
+  ClassV3 = 1 << 14,
+}
+
+struct Versioning {
+  glslang_profile_t profiles;
+  int minExtendedVersion;
+  int minCoreVersion;
+  int numExtensions;
+  string[] extensions;
+}
+
+bool ValidVersion(
+  in BuiltInFunction func, int version_,
+  glslang_profile_t profile, in SpvVersion
+) {
+  if (func.versioning.empty) return true;
+
+  foreach (const ref v; func.versioning) {
+    if ((v.profiles & profile) != 0) {
+      if (v.minCoreVersion <= version_ ||
+        (v.numExtensions > 0 && v.minExtendedVersion <= version_))
+        return true;
+    }
+  }
+
+  return false;
+}
+
+void AddTabledBuiltin(string decls, in BuiltInFunction func) {
+  
 }
