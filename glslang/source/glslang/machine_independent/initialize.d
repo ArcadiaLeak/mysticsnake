@@ -4166,6 +4166,75 @@ class TBuiltIns : TBuiltInParseables {
       stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= q{
         vec4 ftransform();
       };
+
+    Appender!(char[])* s;
+    if (version_ == 100)
+      s = &stageBuiltins[glslang_stage_t.STAGE_VERTEX];
+    else
+      s = &commonBuiltins;
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ == 100) ||
+      (profile == glslang_profile_t.CORE_PROFILE && version_ < 420) ||
+      profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
+      profile == glslang_profile_t.NO_PROFILE) {
+      if (spvVersion.spv == 0) {
+        s.put = q{
+          vec4 texture2DLod(sampler2D, vec2, float);
+          vec4 texture2DProjLod(sampler2D, vec3, float);
+          vec4 texture2DProjLod(sampler2D, vec4, float);
+          vec4 texture3DLod(sampler3D, vec3, float);
+          vec4 texture3DProjLod(sampler3D, vec4, float);
+          vec4 textureCubeLod(samplerCube, vec3, float);
+        };
+      }
+    }
+    if ((profile == glslang_profile_t.CORE_PROFILE && version_ < 420) ||
+      profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
+      profile == glslang_profile_t.NO_PROFILE) {
+      if (spvVersion.spv == 0) {
+        s.put = q{
+          vec4 texture1DLod(sampler1D, float, float);
+          vec4 texture1DProjLod(sampler1D, vec2, float);
+          vec4 texture1DProjLod(sampler1D, vec4, float);
+          vec4 shadow1DLod(sampler1DShadow, vec3, float);
+          vec4 shadow2DLod(sampler2DShadow, vec3, float);
+          vec4 shadow1DProjLod(sampler1DShadow, vec4, float);
+          vec4 shadow2DProjLod(sampler2DShadow, vec4, float);
+
+          vec4 texture1DGradARB(sampler1D, float, float, float);
+          vec4 texture1DProjGradARB(sampler1D, vec2, float, float);
+          vec4 texture1DProjGradARB(sampler1D, vec4, float, float);
+          vec4 texture2DGradARB(sampler2D, vec2, vec2, vec2);
+          vec4 texture2DProjGradARB(sampler2D, vec3, vec2, vec2);
+          vec4 texture2DProjGradARB(sampler2D, vec4, vec2, vec2);
+          vec4 texture3DGradARB(sampler3D, vec3, vec3, vec3);
+          vec4 texture3DProjGradARB(sampler3D, vec4, vec3, vec3);
+          vec4 textureCubeGradARB(samplerCube, vec3, vec3, vec3);
+          vec4 shadow1DGradARB(sampler1DShadow, vec3, float, float);
+          vec4 shadow1DProjGradARB(sampler1DShadow, vec4, float, float);
+          vec4 shadow2DGradARB(sampler2DShadow, vec3, vec2, vec2);
+          vec4 shadow2DProjGradARB(sampler2DShadow, vec4, vec2, vec2);
+          vec4 texture2DRectGradARB(sampler2DRect, vec2, vec2, vec2);
+          vec4 texture2DRectProjGradARB(sampler2DRect, vec3, vec2, vec2);
+          vec4 texture2DRectProjGradARB(sampler2DRect, vec4, vec2, vec2);
+          vec4 shadow2DRectGradARB(sampler2DRectShadow, vec3, vec2, vec2);
+          vec4 shadow2DRectProjGradARB(sampler2DRectShadow, vec4, vec2, vec2);
+        };
+      }
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= q{
+          void EmitStreamVertex(int);
+          void EndStreamPrimitive(int);
+        };
+      }
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= q{
+        void EmitVertex();
+        void EndPrimitive();
+      };
+    }
   }
 
   override void initialize(
