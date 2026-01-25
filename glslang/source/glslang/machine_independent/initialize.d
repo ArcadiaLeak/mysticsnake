@@ -747,6 +747,384 @@ class TBuiltIns : TBuiltInParseables {
 
       };
     }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      commonBuiltins ~= q{
+        int64_t abs(int64_t);
+        i64vec2 abs(i64vec2);
+        i64vec3 abs(i64vec3);
+        i64vec4 abs(i64vec4);
+
+        int64_t sign(int64_t);
+        i64vec2 sign(i64vec2);
+        i64vec3 sign(i64vec3);
+        i64vec4 sign(i64vec4);
+
+        int64_t min(int64_t, int64_t);
+        i64vec2 min(i64vec2, int64_t);
+        i64vec3 min(i64vec3, int64_t);
+        i64vec4 min(i64vec4, int64_t);
+        i64vec2 min(i64vec2, i64vec2);
+        i64vec3 min(i64vec3, i64vec3);
+        i64vec4 min(i64vec4, i64vec4);
+        uint64_t min(uint64_t, uint64_t);
+        u64vec2 min(u64vec2, uint64_t);
+        u64vec3 min(u64vec3, uint64_t);
+        u64vec4 min(u64vec4, uint64_t);
+        u64vec2 min(u64vec2, u64vec2);
+        u64vec3 min(u64vec3, u64vec3);
+        u64vec4 min(u64vec4, u64vec4);
+
+        int64_t max(int64_t, int64_t);
+        i64vec2 max(i64vec2, int64_t);
+        i64vec3 max(i64vec3, int64_t);
+        i64vec4 max(i64vec4, int64_t);
+        i64vec2 max(i64vec2, i64vec2);
+        i64vec3 max(i64vec3, i64vec3);
+        i64vec4 max(i64vec4, i64vec4);
+        uint64_t max(uint64_t, uint64_t);
+        u64vec2 max(u64vec2, uint64_t);
+        u64vec3 max(u64vec3, uint64_t);
+        u64vec4 max(u64vec4, uint64_t);
+        u64vec2 max(u64vec2, u64vec2);
+        u64vec3 max(u64vec3, u64vec3);
+        u64vec4 max(u64vec4, u64vec4);
+
+        int64_t clamp(int64_t, int64_t, int64_t);
+        i64vec2 clamp(i64vec2, int64_t, int64_t);
+        i64vec3 clamp(i64vec3, int64_t, int64_t);
+        i64vec4 clamp(i64vec4, int64_t, int64_t);
+        i64vec2 clamp(i64vec2, i64vec2, i64vec2);
+        i64vec3 clamp(i64vec3, i64vec3, i64vec3);
+        i64vec4 clamp(i64vec4, i64vec4, i64vec4);
+        uint64_t clamp(uint64_t, uint64_t, uint64_t);
+        u64vec2 clamp(u64vec2, uint64_t, uint64_t);
+        u64vec3 clamp(u64vec3, uint64_t, uint64_t);
+        u64vec4 clamp(u64vec4, uint64_t, uint64_t);
+        u64vec2 clamp(u64vec2, u64vec2, u64vec2);
+        u64vec3 clamp(u64vec3, u64vec3, u64vec3);
+        u64vec4 clamp(u64vec4, u64vec4, u64vec4);
+
+        int64_t mix(int64_t, int64_t, bool);
+        i64vec2 mix(i64vec2, i64vec2, bvec2);
+        i64vec3 mix(i64vec3, i64vec3, bvec3);
+        i64vec4 mix(i64vec4, i64vec4, bvec4);
+        uint64_t mix(uint64_t, uint64_t, bool);
+        u64vec2 mix(u64vec2, u64vec2, bvec2);
+        u64vec3 mix(u64vec3, u64vec3, bvec3);
+        u64vec4 mix(u64vec4, u64vec4, bvec4);
+
+        int64_t doubleBitsToInt64(float64_t);
+        i64vec2 doubleBitsToInt64(f64vec2);
+        i64vec3 doubleBitsToInt64(f64vec3);
+        i64vec4 doubleBitsToInt64(f64vec4);
+
+        uint64_t doubleBitsToUint64(float64_t);
+        u64vec2 doubleBitsToUint64(f64vec2);
+        u64vec3 doubleBitsToUint64(f64vec3);
+        u64vec4 doubleBitsToUint64(f64vec4);
+
+        float64_t int64BitsToDouble(int64_t);
+        f64vec2 int64BitsToDouble(i64vec2);
+        f64vec3 int64BitsToDouble(i64vec3);
+        f64vec4 int64BitsToDouble(i64vec4);
+
+        float64_t uint64BitsToDouble(uint64_t);
+        f64vec2 uint64BitsToDouble(u64vec2);
+        f64vec3 uint64BitsToDouble(u64vec3);
+        f64vec4 uint64BitsToDouble(u64vec4);
+
+        int64_t packInt2x32(ivec2);
+        uint64_t packUint2x32(uvec2);
+        ivec2 unpackInt2x32(int64_t);
+        uvec2 unpackUint2x32(uint64_t);
+
+        bvec2 lessThan(i64vec2, i64vec2);
+        bvec3 lessThan(i64vec3, i64vec3);
+        bvec4 lessThan(i64vec4, i64vec4);
+        bvec2 lessThan(u64vec2, u64vec2);
+        bvec3 lessThan(u64vec3, u64vec3);
+        bvec4 lessThan(u64vec4, u64vec4);
+
+        bvec2 lessThanEqual(i64vec2, i64vec2);
+        bvec3 lessThanEqual(i64vec3, i64vec3);
+        bvec4 lessThanEqual(i64vec4, i64vec4);
+        bvec2 lessThanEqual(u64vec2, u64vec2);
+        bvec3 lessThanEqual(u64vec3, u64vec3);
+        bvec4 lessThanEqual(u64vec4, u64vec4);
+
+        bvec2 greaterThan(i64vec2, i64vec2);
+        bvec3 greaterThan(i64vec3, i64vec3);
+        bvec4 greaterThan(i64vec4, i64vec4);
+        bvec2 greaterThan(u64vec2, u64vec2);
+        bvec3 greaterThan(u64vec3, u64vec3);
+        bvec4 greaterThan(u64vec4, u64vec4);
+
+        bvec2 greaterThanEqual(i64vec2, i64vec2);
+        bvec3 greaterThanEqual(i64vec3, i64vec3);
+        bvec4 greaterThanEqual(i64vec4, i64vec4);
+        bvec2 greaterThanEqual(u64vec2, u64vec2);
+        bvec3 greaterThanEqual(u64vec3, u64vec3);
+        bvec4 greaterThanEqual(u64vec4, u64vec4);
+
+        bvec2 equal(i64vec2, i64vec2);
+        bvec3 equal(i64vec3, i64vec3);
+        bvec4 equal(i64vec4, i64vec4);
+        bvec2 equal(u64vec2, u64vec2);
+        bvec3 equal(u64vec3, u64vec3);
+        bvec4 equal(u64vec4, u64vec4);
+
+        bvec2 notEqual(i64vec2, i64vec2);
+        bvec3 notEqual(i64vec3, i64vec3);
+        bvec4 notEqual(i64vec4, i64vec4);
+        bvec2 notEqual(u64vec2, u64vec2);
+        bvec3 notEqual(u64vec3, u64vec3);
+        bvec4 notEqual(u64vec4, u64vec4);
+
+        int64_t bitCount(int64_t);
+        i64vec2 bitCount(i64vec2);
+        i64vec3 bitCount(i64vec3);
+        i64vec4 bitCount(i64vec4);
+
+        int64_t bitCount(uint64_t);
+        i64vec2 bitCount(u64vec2);
+        i64vec3 bitCount(u64vec3);
+        i64vec4 bitCount(u64vec4);
+
+        int64_t findLSB(int64_t);
+        i64vec2 findLSB(i64vec2);
+        i64vec3 findLSB(i64vec3);
+        i64vec4 findLSB(i64vec4);
+
+        int64_t findLSB(uint64_t);
+        i64vec2 findLSB(u64vec2);
+        i64vec3 findLSB(u64vec3);
+        i64vec4 findLSB(u64vec4);
+
+        int64_t findMSB(int64_t);
+        i64vec2 findMSB(i64vec2);
+        i64vec3 findMSB(i64vec3);
+        i64vec4 findMSB(i64vec4);
+
+        int64_t findMSB(uint64_t);
+        i64vec2 findMSB(u64vec2);
+        i64vec3 findMSB(u64vec3);
+        i64vec4 findMSB(u64vec4);
+        
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
+      commonBuiltins ~= q{
+        float min3(float, float, float);
+        vec2 min3(vec2, vec2, vec2);
+        vec3 min3(vec3, vec3, vec3);
+        vec4 min3(vec4, vec4, vec4);
+
+        int min3(int, int, int);
+        ivec2 min3(ivec2, ivec2, ivec2);
+        ivec3 min3(ivec3, ivec3, ivec3);
+        ivec4 min3(ivec4, ivec4, ivec4);
+
+        uint min3(uint, uint, uint);
+        uvec2 min3(uvec2, uvec2, uvec2);
+        uvec3 min3(uvec3, uvec3, uvec3);
+        uvec4 min3(uvec4, uvec4, uvec4);
+
+        float max3(float, float, float);
+        vec2 max3(vec2, vec2, vec2);
+        vec3 max3(vec3, vec3, vec3);
+        vec4 max3(vec4, vec4, vec4);
+
+        int max3(int, int, int);
+        ivec2 max3(ivec2, ivec2, ivec2);
+        ivec3 max3(ivec3, ivec3, ivec3);
+        ivec4 max3(ivec4, ivec4, ivec4);
+
+        uint max3(uint, uint, uint);
+        uvec2 max3(uvec2, uvec2, uvec2);
+        uvec3 max3(uvec3, uvec3, uvec3);
+        uvec4 max3(uvec4, uvec4, uvec4);
+
+        float mid3(float, float, float);
+        vec2 mid3(vec2, vec2, vec2);
+        vec3 mid3(vec3, vec3, vec3);
+        vec4 mid3(vec4, vec4, vec4);
+
+        int mid3(int, int, int);
+        ivec2 mid3(ivec2, ivec2, ivec2);
+        ivec3 mid3(ivec3, ivec3, ivec3);
+        ivec4 mid3(ivec4, ivec4, ivec4);
+
+        uint mid3(uint, uint, uint);
+        uvec2 mid3(uvec2, uvec2, uvec2);
+        uvec3 mid3(uvec3, uvec3, uvec3);
+        uvec4 mid3(uvec4, uvec4, uvec4);
+
+        float16_t min3(float16_t, float16_t, float16_t);
+        f16vec2 min3(f16vec2, f16vec2, f16vec2);
+        f16vec3 min3(f16vec3, f16vec3, f16vec3);
+        f16vec4 min3(f16vec4, f16vec4, f16vec4);
+
+        float16_t max3(float16_t, float16_t, float16_t);
+        f16vec2 max3(f16vec2, f16vec2, f16vec2);
+        f16vec3 max3(f16vec3, f16vec3, f16vec3);
+        f16vec4 max3(f16vec4, f16vec4, f16vec4);
+
+        float16_t mid3(float16_t, float16_t, float16_t);
+        f16vec2 mid3(f16vec2, f16vec2, f16vec2);
+        f16vec3 mid3(f16vec3, f16vec3, f16vec3);
+        f16vec4 mid3(f16vec4, f16vec4, f16vec4);
+
+        int16_t min3(int16_t, int16_t, int16_t);
+        i16vec2 min3(i16vec2, i16vec2, i16vec2);
+        i16vec3 min3(i16vec3, i16vec3, i16vec3);
+        i16vec4 min3(i16vec4, i16vec4, i16vec4);
+
+        int16_t max3(int16_t, int16_t, int16_t);
+        i16vec2 max3(i16vec2, i16vec2, i16vec2);
+        i16vec3 max3(i16vec3, i16vec3, i16vec3);
+        i16vec4 max3(i16vec4, i16vec4, i16vec4);
+
+        int16_t mid3(int16_t, int16_t, int16_t);
+        i16vec2 mid3(i16vec2, i16vec2, i16vec2);
+        i16vec3 mid3(i16vec3, i16vec3, i16vec3);
+        i16vec4 mid3(i16vec4, i16vec4, i16vec4);
+
+        uint16_t min3(uint16_t, uint16_t, uint16_t);
+        u16vec2 min3(u16vec2, u16vec2, u16vec2);
+        u16vec3 min3(u16vec3, u16vec3, u16vec3);
+        u16vec4 min3(u16vec4, u16vec4, u16vec4);
+
+        uint16_t max3(uint16_t, uint16_t, uint16_t);
+        u16vec2 max3(u16vec2, u16vec2, u16vec2);
+        u16vec3 max3(u16vec3, u16vec3, u16vec3);
+        u16vec4 max3(u16vec4, u16vec4, u16vec4);
+
+        uint16_t mid3(uint16_t, uint16_t, uint16_t);
+        u16vec2 mid3(u16vec2, u16vec2, u16vec2);
+        u16vec3 mid3(u16vec3, u16vec3, u16vec3);
+        u16vec4 mid3(u16vec4, u16vec4, u16vec4);
+
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 430)) {
+      commonBuiltins ~= q{
+        uint atomicAdd(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicAdd(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicMin(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicMin(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicMax(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicMax(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicAnd(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicAnd(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicOr(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicOr(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicXor(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicXor(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicExchange(coherent volatile nontemporal inout uint, uint, int, int, int);
+        int atomicExchange(coherent volatile nontemporal inout int, int, int, int, int);
+
+        uint atomicCompSwap(coherent volatile nontemporal inout uint, uint, uint, int, int, int, int, int);
+        int atomicCompSwap(coherent volatile nontemporal inout int, int, int, int, int, int, int, int);
+
+        uint atomicLoad(coherent volatile nontemporal in uint, int, int, int);
+        int atomicLoad(coherent volatile nontemporal in int, int, int, int);
+
+        void atomicStore(coherent volatile nontemporal out uint, uint, int, int, int);
+        void atomicStore(coherent volatile nontemporal out int, int, int, int, int);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 440) {
+      commonBuiltins ~= q{
+        uint64_t atomicMin(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicMin(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicMin(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicMin(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+        float16_t atomicMin(coherent volatile nontemporal inout float16_t, float16_t);
+        float16_t atomicMin(coherent volatile nontemporal inout float16_t, float16_t, int, int, int);
+        float atomicMin(coherent volatile nontemporal inout float, float);
+        float atomicMin(coherent volatile nontemporal inout float, float, int, int, int);
+        double atomicMin(coherent volatile nontemporal inout double, double);
+        double atomicMin(coherent volatile nontemporal inout double, double, int, int, int);
+
+        uint64_t atomicMax(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicMax(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicMax(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicMax(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+        float16_t atomicMax(coherent volatile nontemporal inout float16_t, float16_t);
+        float16_t atomicMax(coherent volatile nontemporal inout float16_t, float16_t, int, int, int);
+        float atomicMax(coherent volatile nontemporal inout float, float);
+        float atomicMax(coherent volatile nontemporal inout float, float, int, int, int);
+        double atomicMax(coherent volatile nontemporal inout double, double);
+        double atomicMax(coherent volatile nontemporal inout double, double, int, int, int);
+
+        uint64_t atomicAnd(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicAnd(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicAnd(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicAnd(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+
+        uint64_t atomicOr (coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicOr (coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicOr (coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicOr (coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+
+        uint64_t atomicXor(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicXor(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicXor(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicXor(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+
+        uint64_t atomicAdd(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicAdd(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicAdd(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicAdd(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+        float16_t atomicAdd(coherent volatile nontemporal inout float16_t, float16_t);
+        float16_t atomicAdd(coherent volatile nontemporal inout float16_t, float16_t, int, int, int);
+        float atomicAdd(coherent volatile nontemporal inout float, float);
+        float atomicAdd(coherent volatile nontemporal inout float, float, int, int, int);
+        double atomicAdd(coherent volatile nontemporal inout double, double);
+        double atomicAdd(coherent volatile nontemporal inout double, double, int, int, int);
+
+        uint64_t atomicExchange(coherent volatile nontemporal inout uint64_t, uint64_t);
+        int64_t atomicExchange(coherent volatile nontemporal inout int64_t, int64_t);
+        uint64_t atomicExchange(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
+        int64_t atomicExchange(coherent volatile nontemporal inout int64_t, int64_t, int, int, int);
+        float16_t atomicExchange(coherent volatile nontemporal inout float16_t, float16_t);
+        float16_t atomicExchange(coherent volatile nontemporal inout float16_t, float16_t, int, int, int);
+        float atomicExchange(coherent volatile nontemporal inout float, float);
+        float atomicExchange(coherent volatile nontemporal inout float, float, int, int, int);
+        double atomicExchange(coherent volatile nontemporal inout double, double);
+        double atomicExchange(coherent volatile nontemporal inout double, double, int, int, int);
+
+        uint64_t atomicCompSwap(coherent volatile nontemporal inout uint64_t, uint64_t, uint64_t);
+        int64_t atomicCompSwap(coherent volatile nontemporal inout int64_t, int64_t, int64_t);
+        uint64_t atomicCompSwap(coherent volatile nontemporal inout uint64_t, uint64_t, uint64_t, int, int, int, int, int);
+        int64_t atomicCompSwap(coherent volatile nontemporal inout int64_t, int64_t, int64_t, int, int, int, int, int);
+
+        uint64_t atomicLoad(coherent volatile nontemporal in uint64_t, int, int, int);
+        int64_t atomicLoad(coherent volatile nontemporal in int64_t, int, int, int);
+        float16_t atomicLoad(coherent volatile nontemporal in float16_t, int, int, int);
+        float atomicLoad(coherent volatile nontemporal in float, int, int, int);
+        double atomicLoad(coherent volatile nontemporal in double, int, int, int);
+
+        void atomicStore(coherent volatile nontemporal out uint64_t, uint64_t, int, int, int);
+        void atomicStore(coherent volatile nontemporal out int64_t, int64_t, int, int, int);
+        void atomicStore(coherent volatile nontemporal out float16_t, float16_t, int, int, int);
+        void atomicStore(coherent volatile nontemporal out float, float, int, int, int);
+        void atomicStore(coherent volatile nontemporal out double, double, int, int, int);
+
+      };
+    }
   }
 
   override void initialize(
