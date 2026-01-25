@@ -5,6 +5,13 @@ import glslang;
 import std.range;
 import std.traits;
 
+enum string[] TypeString = [
+  "bool", "bvec2", "bvec3", "bvec4",
+  "float", "vec2", "vec3", "vec4",
+  "int", "ivec2", "ivec3", "ivec4",
+  "uint", "uvec2", "uvec3", "uvec4",
+];
+enum int TypeStringCount = TypeString.length;
 enum int TypeStringRowShift = 2;
 enum int TypeStringColumnMask = (1 << TypeStringRowShift) - 1;
 enum int TypeStringScalarMask = ~TypeStringColumnMask;
@@ -59,7 +66,7 @@ class TBuiltIns : TBuiltInParseables {
     int version_, glslang_profile_t profile,
     in SpvVersion spvVersion
   ) {
-    auto foreachFunction(string decls, const(BuiltInFunction[]) functions) {
+    auto foreachFunction(ref string decls, const(BuiltInFunction[]) functions) {
       foreach (const ref fn; functions) {
         if (ValidVersion(fn, version_, profile, spvVersion))
           AddTabledBuiltin(decls, fn);
@@ -150,7 +157,7 @@ bool ValidVersion(
   return false;
 }
 
-void AddTabledBuiltin(string decls, in BuiltInFunction func) {
+void AddTabledBuiltin(ref string decls, in BuiltInFunction func) {
   static auto isScalarType(int type) {
     return (type & TypeStringColumnMask) == 0;
   }
@@ -158,5 +165,62 @@ void AddTabledBuiltin(string decls, in BuiltInFunction func) {
   const ArgClass ClassFixed = 
     ArgClass.ClassLS | ArgClass.ClassXLS | ArgClass.ClassLS2 |
     ArgClass.ClassFS | ArgClass.ClassFS2;
+  for (int fixed = 0; fixed < ((func.classes & ClassFixed) > 0 ? 2 : 1); ++fixed) {
+    if (fixed == 0 && (func.classes & ArgClass.ClassXLS))
+      continue;
 
+    for (int type = 0; type < TypeStringCount; ++type) {
+      if ((func.types & (1 << (type >> TypeStringRowShift))) == 0)
+        continue;
+
+      if ((func.classes & ArgClass.ClassV1) && !isScalarType(type))
+        continue;
+
+      if ((func.classes & ArgClass.ClassV3) && (type & TypeStringColumnMask) != 2)
+        continue;
+
+      if (fixed == 1 && type == (type & TypeStringScalarMask) &&
+        (func.classes & ArgClass.ClassXLS) == 0)
+        continue;
+
+      if ((func.classes & ArgClass.ClassNS) && isScalarType(type))
+        continue;
+
+      if (func.classes & ArgClass.ClassB)
+        decls ~= TypeString[type & TypeStringColumnMask];
+      else if (func.classes & ArgClass.ClassRS)
+        decls ~= TypeString[type & TypeStringScalarMask];
+      else
+        decls ~= TypeString[type];
+      decls ~= " ";
+      decls ~= func.name;
+      decls ~= "(";
+
+      for (int arg = 0; arg < func.numArguments; ++arg) {
+        if (arg == func.numArguments - 1 && (func.classes & ArgClass.ClassLO))
+          decls ~= "out ";
+        if (arg == 0) {
+          if (func.classes & ArgClass.ClassCVN)
+              decls ~= "coherent volatile nontemporal ";
+          if (func.classes & ArgClass.ClassFIO)
+              decls ~= "inout ";
+          if (func.classes & ArgClass.ClassFO)
+              decls ~= "out ";
+        }
+        if ((func.classes & ArgClass.ClassLB) && arg == func.numArguments - 1)
+          decls ~= TypeString[type & TypeStringColumnMask];
+        else if (fixed && (
+          (arg == func.numArguments - 1 && (func.classes & (ArgClass.ClassLS | ArgClass.ClassXLS | ArgClass.ClassLS2))) ||
+          (arg == func.numArguments - 2 && (func.classes & ArgClass.ClassLS2)) ||
+          (arg == 0 && (func.classes & (ArgClass.ClassFS | ArgClass.ClassFS2))) ||
+          (arg == 1 && (func.classes & ArgClass.ClassFS2))))
+          decls ~= TypeString[type & TypeStringScalarMask];
+        else
+          decls ~= TypeString[type];
+        if (arg < func.numArguments - 1)
+          decls ~= ",";
+      }
+      decls ~= ");\n";
+    }
+  }
 }
