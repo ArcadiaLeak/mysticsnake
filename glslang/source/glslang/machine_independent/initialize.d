@@ -1250,7 +1250,707 @@ class TBuiltIns : TBuiltInParseables {
       };
     }
 
-    
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 300) {
+      commonBuiltins ~= q{
+        mediump vec2 unpackHalf2x16(highp uint);
+      };
+    } else if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        vec2 unpackHalf2x16(highp uint);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        highp uint packSnorm4x8(vec4);
+        highp uint packUnorm4x8(vec4);
+      };
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        mediump vec4 unpackSnorm4x8(highp uint);
+        mediump vec4 unpackUnorm4x8(highp uint);
+      };
+    } else if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        vec4 unpackSnorm4x8(highp uint);
+        vec4 unpackUnorm4x8(highp uint);
+      };
+    }
+
+    commonBuiltins ~= q{
+      mat2 matrixCompMult(mat2 x, mat2 y);
+      mat3 matrixCompMult(mat3 x, mat3 y);
+      mat4 matrixCompMult(mat4 x, mat4 y);
+    };
+
+    if (version_ >= 120) {
+      commonBuiltins ~= q{
+        mat2 outerProduct(vec2 c, vec2 r);
+        mat3 outerProduct(vec3 c, vec3 r);
+        mat4 outerProduct(vec4 c, vec4 r);
+        mat2x3 outerProduct(vec3 c, vec2 r);
+        mat3x2 outerProduct(vec2 c, vec3 r);
+        mat2x4 outerProduct(vec4 c, vec2 r);
+        mat4x2 outerProduct(vec2 c, vec4 r);
+        mat3x4 outerProduct(vec4 c, vec3 r);
+        mat4x3 outerProduct(vec3 c, vec4 r);
+
+        mat2 transpose(mat2 m);
+        mat3 transpose(mat3 m);
+        mat4 transpose(mat4 m);
+        mat2x3 transpose(mat3x2 m);
+        mat3x2 transpose(mat2x3 m);
+        mat2x4 transpose(mat4x2 m);
+        mat4x2 transpose(mat2x4 m);
+        mat3x4 transpose(mat4x3 m);
+        mat4x3 transpose(mat3x4 m);
+
+        mat2x3 matrixCompMult(mat2x3, mat2x3);
+        mat2x4 matrixCompMult(mat2x4, mat2x4);
+        mat3x2 matrixCompMult(mat3x2, mat3x2);
+        mat3x4 matrixCompMult(mat3x4, mat3x4);
+        mat4x2 matrixCompMult(mat4x2, mat4x2);
+        mat4x3 matrixCompMult(mat4x3, mat4x3);
+      };
+
+      if (version_ >= 150) {
+        commonBuiltins ~= q{
+          float determinant(mat2 m);
+          float determinant(mat3 m);
+          float determinant(mat4 m);
+
+          mat2 inverse(mat2 m);
+          mat3 inverse(mat3 m);
+          mat4 inverse(mat4 m);
+        };
+      }
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ == 100) ||
+      (profile == glslang_profile_t.CORE_PROFILE && version_ < 420) ||
+      profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
+      profile == glslang_profile_t.NO_PROFILE) {
+      if (spvVersion.spv == 0) {
+        commonBuiltins ~= q{
+          vec4 texture2D(sampler2D, vec2);
+
+          vec4 texture2DProj(sampler2D, vec3);
+          vec4 texture2DProj(sampler2D, vec4);
+
+          vec4 texture3D(sampler3D, vec3);
+          vec4 texture3DProj(sampler3D, vec4);
+
+          vec4 textureCube(samplerCube, vec3);
+        };
+      }
+    }
+
+    if ((profile == glslang_profile_t.CORE_PROFILE && version_ < 420) ||
+      profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
+      profile == glslang_profile_t.NO_PROFILE) {
+      if (spvVersion.spv == 0) {
+        commonBuiltins ~= q{
+          "vec4 texture1D(sampler1D, float);"
+
+          "vec4 texture1DProj(sampler1D, vec2);"
+          "vec4 texture1DProj(sampler1D, vec4);"
+
+          "vec4 shadow1D(sampler1DShadow, vec3);"
+          "vec4 shadow2D(sampler2DShadow, vec3);"
+          "vec4 shadow1DProj(sampler1DShadow, vec4);"
+          "vec4 shadow2DProj(sampler2DShadow, vec4);"
+
+          "vec4 texture2DRect(sampler2DRect, vec2);"
+          "vec4 texture2DRectProj(sampler2DRect, vec3);"
+          "vec4 texture2DRectProj(sampler2DRect, vec4);"
+          "vec4 shadow2DRect(sampler2DRectShadow, vec3);"
+          "vec4 shadow2DRectProj(sampler2DRectShadow, vec4);"
+
+          "vec4 texture1DArray(sampler1DArray, vec2);"
+          "vec4 texture2DArray(sampler2DArray, vec3);"
+          "vec4 shadow1DArray(sampler1DArrayShadow, vec3);"
+          "vec4 shadow2DArray(sampler2DArrayShadow, vec4);"
+          "vec4 texture1DArray(sampler1DArray, vec2, float);"
+          "vec4 texture2DArray(sampler2DArray, vec3, float);"
+          "vec4 shadow1DArray(sampler1DArrayShadow, vec3, float);"
+          "vec4 texture1DArrayLod(sampler1DArray, vec2, float);"
+          "vec4 texture2DArrayLod(sampler2DArray, vec3, float);"
+          "vec4 shadow1DArrayLod(sampler1DArrayShadow, vec3, float);"
+        };
+      }
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE) {
+      if (spvVersion.spv == 0) {
+        if (version_ < 300) {
+          commonBuiltins ~= q{
+            vec4 texture2D(samplerExternalOES, vec2 coord);
+            vec4 texture2DProj(samplerExternalOES, vec3);
+            vec4 texture2DProj(samplerExternalOES, vec4);
+          };
+        } else {
+          commonBuiltins ~= q{
+            highp ivec2 textureSize(samplerExternalOES, int lod);
+            vec4 texture(samplerExternalOES, vec2);
+            vec4 texture(samplerExternalOES, vec2, float bias);
+            vec4 textureProj(samplerExternalOES, vec3);
+            vec4 textureProj(samplerExternalOES, vec3, float bias);
+            vec4 textureProj(samplerExternalOES, vec4);
+            vec4 textureProj(samplerExternalOES, vec4, float bias);
+            vec4 texelFetch(samplerExternalOES, ivec2, int lod);
+          };
+        }
+        commonBuiltins ~= q{
+          highp ivec2 textureSize(__samplerExternal2DY2YEXT, int lod);
+          vec4 texture(__samplerExternal2DY2YEXT, vec2);
+          vec4 texture(__samplerExternal2DY2YEXT, vec2, float bias);
+          vec4 textureProj(__samplerExternal2DY2YEXT, vec3);
+          vec4 textureProj(__samplerExternal2DY2YEXT, vec3, float bias);
+          vec4 textureProj(__samplerExternal2DY2YEXT, vec4);
+          vec4 textureProj(__samplerExternal2DY2YEXT, vec4, float bias);
+          vec4 texelFetch(__samplerExternal2DY2YEXT sampler, ivec2, int lod);
+        };
+        commonBuiltins ~= q{
+          vec4 texture2DGradEXT(sampler2D, vec2, vec2, vec2);
+          vec4 texture2DProjGradEXT(sampler2D, vec3, vec2, vec2);
+          vec4 texture2DProjGradEXT(sampler2D, vec4, vec2, vec2);
+          vec4 textureCubeGradEXT(samplerCube, vec3, vec3, vec3);
+
+          float shadow2DEXT(sampler2DShadow, vec3);
+          float shadow2DProjEXT(sampler2DShadow, vec4);
+        };
+      }
+    }
+
+    if (spvVersion.spv == 0 && profile != glslang_profile_t.ES_PROFILE) {
+      commonBuiltins ~= q{
+        float noise1(float x);
+        float noise1(vec2 x);
+        float noise1(vec3 x);
+        float noise1(vec4 x);
+
+        vec2 noise2(float x);
+        vec2 noise2(vec2 x);
+        vec2 noise2(vec3 x);
+        vec2 noise2(vec4 x);
+
+        vec3 noise3(float x);
+        vec3 noise3(vec2 x);
+        vec3 noise3(vec3 x);
+        vec3 noise3(vec4 x);
+
+        vec4 noise4(float x);
+        vec4 noise4(vec2 x);
+        vec4 noise4(vec3 x);
+        vec4 noise4(vec4 x);
+      };
+    }
+
+    if (spvVersion.vulkan == 0) {
+      if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+        (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+        commonBuiltins ~= q{
+          uint atomicCounterIncrement(atomic_uint);
+          uint atomicCounterDecrement(atomic_uint);
+          uint atomicCounter(atomic_uint);
+        };
+      }
+      if (profile != glslang_profile_t.ES_PROFILE && version_ == 450) {
+        commonBuiltins ~= q{
+          uint atomicCounterAddARB(atomic_uint, uint);
+          uint atomicCounterSubtractARB(atomic_uint, uint);
+          uint atomicCounterMinARB(atomic_uint, uint);
+          uint atomicCounterMaxARB(atomic_uint, uint);
+          uint atomicCounterAndARB(atomic_uint, uint);
+          uint atomicCounterOrARB(atomic_uint, uint);
+          uint atomicCounterXorARB(atomic_uint, uint);
+          uint atomicCounterExchangeARB(atomic_uint, uint);
+          uint atomicCounterCompSwapARB(atomic_uint, uint, uint);
+        };
+      }
+
+      if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
+        commonBuiltins ~= q{
+          uint atomicCounterAdd(atomic_uint, uint);
+          uint atomicCounterSubtract(atomic_uint, uint);
+          uint atomicCounterMin(atomic_uint, uint);
+          uint atomicCounterMax(atomic_uint, uint);
+          uint atomicCounterAnd(atomic_uint, uint);
+          uint atomicCounterOr(atomic_uint, uint);
+          uint atomicCounterXor(atomic_uint, uint);
+          uint atomicCounterExchange(atomic_uint, uint);
+          uint atomicCounterCompSwap(atomic_uint, uint, uint);
+        };
+      }
+    } else if (spvVersion.vulkanRelaxed) {
+      if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+        (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+        commonBuiltins ~= q{
+          uint atomicCounterIncrement(volatile coherent nontemporal uint);
+          uint atomicCounterDecrement(volatile coherent nontemporal uint);
+          uint atomicCounter(volatile coherent nontemporal uint);
+        };
+      }
+      if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
+        commonBuiltins ~= q{
+          uint atomicCounterAdd(volatile coherent nontemporal uint, uint);
+          uint atomicCounterSubtract(volatile coherent nontemporal uint, uint);
+          uint atomicCounterMin(volatile coherent nontemporal uint, uint);
+          uint atomicCounterMax(volatile coherent nontemporal uint, uint);
+          uint atomicCounterAnd(volatile coherent nontemporal uint, uint);
+          uint atomicCounterOr(volatile coherent nontemporal uint, uint);
+          uint atomicCounterXor(volatile coherent nontemporal uint, uint);
+          uint atomicCounterExchange(volatile coherent nontemporal uint, uint);
+          uint atomicCounterCompSwap(volatile coherent nontemporal uint, uint, uint);
+        };
+      }
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        int bitfieldExtract(int, int, int);
+        ivec2 bitfieldExtract(ivec2, int, int);
+        ivec3 bitfieldExtract(ivec3, int, int);
+        ivec4 bitfieldExtract(ivec4, int, int);
+
+        uint bitfieldExtract(uint, int, int);
+        uvec2 bitfieldExtract(uvec2, int, int);
+        uvec3 bitfieldExtract(uvec3, int, int);
+        uvec4 bitfieldExtract(uvec4, int, int);
+
+        int bitfieldInsert(int base, int, int, int);
+        ivec2 bitfieldInsert(ivec2 base, ivec2, int, int);
+        ivec3 bitfieldInsert(ivec3 base, ivec3, int, int);
+        ivec4 bitfieldInsert(ivec4 base, ivec4, int, int);
+
+        uint bitfieldInsert(uint base, uint, int, int);
+        uvec2 bitfieldInsert(uvec2 base, uvec2, int, int);
+        uvec3 bitfieldInsert(uvec3 base, uvec3, int, int);
+        uvec4 bitfieldInsert(uvec4 base, uvec4, int, int);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        int findLSB(int);
+        ivec2 findLSB(ivec2);
+        ivec3 findLSB(ivec3);
+        ivec4 findLSB(ivec4);
+
+        int findLSB(uint);
+        ivec2 findLSB(uvec2);
+        ivec3 findLSB(uvec3);
+        ivec4 findLSB(uvec4);
+      };
+    } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        lowp int findLSB(int);
+        lowp ivec2 findLSB(ivec2);
+        lowp ivec3 findLSB(ivec3);
+        lowp ivec4 findLSB(ivec4);
+
+        lowp int findLSB(uint);
+        lowp ivec2 findLSB(uvec2);
+        lowp ivec3 findLSB(uvec3);
+        lowp ivec4 findLSB(uvec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        int bitCount(int);
+        ivec2 bitCount(ivec2);
+        ivec3 bitCount(ivec3);
+        ivec4 bitCount(ivec4);
+
+        int bitCount(uint);
+        ivec2 bitCount(uvec2);
+        ivec3 bitCount(uvec3);
+        ivec4 bitCount(uvec4);
+
+        int findMSB(highp int);
+        ivec2 findMSB(highp ivec2);
+        ivec3 findMSB(highp ivec3);
+        ivec4 findMSB(highp ivec4);
+
+        int findMSB(highp uint);
+        ivec2 findMSB(highp uvec2);
+        ivec3 findMSB(highp uvec3);
+        ivec4 findMSB(highp uvec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150 && version_ < 450) {
+      commonBuiltins ~= q{
+        int64_t packInt2x32(ivec2);
+        uint64_t packUint2x32(uvec2);
+        ivec2 unpackInt2x32(int64_t);
+        uvec2 unpackUint2x32(uint64_t);
+
+        uint packFloat2x16(f16vec2);
+        f16vec2 unpackFloat2x16(uint);
+
+        int64_t doubleBitsToInt64(double);
+        i64vec2 doubleBitsToInt64(dvec2);
+        i64vec3 doubleBitsToInt64(dvec3);
+        i64vec4 doubleBitsToInt64(dvec4);
+
+        uint64_t doubleBitsToUint64(double);
+        u64vec2 doubleBitsToUint64(dvec2);
+        u64vec3 doubleBitsToUint64(dvec3);
+        u64vec4 doubleBitsToUint64(dvec4);
+
+        double int64BitsToDouble(int64_t);
+        dvec2 int64BitsToDouble(i64vec2);
+        dvec3 int64BitsToDouble(i64vec3);
+        dvec4 int64BitsToDouble(i64vec4);
+
+        double uint64BitsToDouble(uint64_t);
+        dvec2 uint64BitsToDouble(u64vec2);
+        dvec3 uint64BitsToDouble(u64vec3);
+        dvec4 uint64BitsToDouble(u64vec4);
+
+        bvec2 lessThan(i64vec2, i64vec2);
+        bvec3 lessThan(i64vec3, i64vec3);
+        bvec4 lessThan(i64vec4, i64vec4);
+        bvec2 lessThan(u64vec2, u64vec2);
+        bvec3 lessThan(u64vec3, u64vec3);
+        bvec4 lessThan(u64vec4, u64vec4);
+
+        bvec2 lessThanEqual(i64vec2, i64vec2);
+        bvec3 lessThanEqual(i64vec3, i64vec3);
+        bvec4 lessThanEqual(i64vec4, i64vec4);
+        bvec2 lessThanEqual(u64vec2, u64vec2);
+        bvec3 lessThanEqual(u64vec3, u64vec3);
+        bvec4 lessThanEqual(u64vec4, u64vec4);
+
+        bvec2 greaterThan(i64vec2, i64vec2);
+        bvec3 greaterThan(i64vec3, i64vec3);
+        bvec4 greaterThan(i64vec4, i64vec4);
+        bvec2 greaterThan(u64vec2, u64vec2);
+        bvec3 greaterThan(u64vec3, u64vec3);
+        bvec4 greaterThan(u64vec4, u64vec4);
+
+        bvec2 greaterThanEqual(i64vec2, i64vec2);
+        bvec3 greaterThanEqual(i64vec3, i64vec3);
+        bvec4 greaterThanEqual(i64vec4, i64vec4);
+        bvec2 greaterThanEqual(u64vec2, u64vec2);
+        bvec3 greaterThanEqual(u64vec3, u64vec3);
+        bvec4 greaterThanEqual(u64vec4, u64vec4);
+
+        bvec2 equal(i64vec2, i64vec2);
+        bvec3 equal(i64vec3, i64vec3);
+        bvec4 equal(i64vec4, i64vec4);
+        bvec2 equal(u64vec2, u64vec2);
+        bvec3 equal(u64vec3, u64vec3);
+        bvec4 equal(u64vec4, u64vec4);
+
+        bvec2 notEqual(i64vec2, i64vec2);
+        bvec3 notEqual(i64vec3, i64vec3);
+        bvec4 notEqual(i64vec4, i64vec4);
+        bvec2 notEqual(u64vec2, u64vec2);
+        bvec3 notEqual(u64vec3, u64vec3);
+        bvec4 notEqual(u64vec4, u64vec4);
+
+        bvec2 lessThan(f16vec2, f16vec2);
+        bvec3 lessThan(f16vec3, f16vec3);
+        bvec4 lessThan(f16vec4, f16vec4);
+
+        bvec2 lessThanEqual(f16vec2, f16vec2);
+        bvec3 lessThanEqual(f16vec3, f16vec3);
+        bvec4 lessThanEqual(f16vec4, f16vec4);
+
+        bvec2 greaterThan(f16vec2, f16vec2);
+        bvec3 greaterThan(f16vec3, f16vec3);
+        bvec4 greaterThan(f16vec4, f16vec4);
+
+        bvec2 greaterThanEqual(f16vec2, f16vec2);
+        bvec3 greaterThanEqual(f16vec3, f16vec3);
+        bvec4 greaterThanEqual(f16vec4, f16vec4);
+
+        bvec2 equal(f16vec2, f16vec2);
+        bvec3 equal(f16vec3, f16vec3);
+        bvec4 equal(f16vec4, f16vec4);
+
+        bvec2 notEqual(f16vec2, f16vec2);
+        bvec3 notEqual(f16vec3, f16vec3);
+        bvec4 notEqual(f16vec4, f16vec4);
+
+        bvec2 lessThan(dvec2, dvec2);
+        bvec3 lessThan(dvec3, dvec3);
+        bvec4 lessThan(dvec4, dvec4);
+
+        bvec2 lessThanEqual(dvec2, dvec2);
+        bvec3 lessThanEqual(dvec3, dvec3);
+        bvec4 lessThanEqual(dvec4, dvec4);
+
+        bvec2 greaterThan(dvec2, dvec2);
+        bvec3 greaterThan(dvec3, dvec3);
+        bvec4 greaterThan(dvec4, dvec4);
+
+        bvec2 greaterThanEqual(dvec2, dvec2);
+        bvec3 greaterThanEqual(dvec3, dvec3);
+        bvec4 greaterThanEqual(dvec4, dvec4);
+
+        bvec2 equal(dvec2, dvec2);
+        bvec3 equal(dvec3, dvec3);
+        bvec4 equal(dvec4, dvec4);
+
+        bvec2 notEqual(dvec2, dvec2);
+        bvec3 notEqual(dvec3, dvec3);
+        bvec4 notEqual(dvec4, dvec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      commonBuiltins ~= q{
+        bool anyThreadNV(bool);
+        bool allThreadsNV(bool);
+        bool allThreadsEqualNV(bool);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      commonBuiltins ~= q{
+        uint uaddCarry(highp uint, highp uint, out lowp uint carry);
+        uvec2 uaddCarry(highp uvec2, highp uvec2, out lowp uvec2 carry);
+        uvec3 uaddCarry(highp uvec3, highp uvec3, out lowp uvec3 carry);
+        uvec4 uaddCarry(highp uvec4, highp uvec4, out lowp uvec4 carry);
+
+        uint usubBorrow(highp uint, highp uint, out lowp uint borrow);
+        uvec2 usubBorrow(highp uvec2, highp uvec2, out lowp uvec2 borrow);
+        uvec3 usubBorrow(highp uvec3, highp uvec3, out lowp uvec3 borrow);
+        uvec4 usubBorrow(highp uvec4, highp uvec4, out lowp uvec4 borrow);
+
+        void umulExtended(highp uint, highp uint, out highp uint, out highp uint lsb);
+        void umulExtended(highp uvec2, highp uvec2, out highp uvec2, out highp uvec2 lsb);
+        void umulExtended(highp uvec3, highp uvec3, out highp uvec3, out highp uvec3 lsb);
+        void umulExtended(highp uvec4, highp uvec4, out highp uvec4, out highp uvec4 lsb);
+
+        void imulExtended(highp int, highp int, out highp int, out highp int lsb);
+        void imulExtended(highp ivec2, highp ivec2, out highp ivec2, out highp ivec2 lsb);
+        void imulExtended(highp ivec3, highp ivec3, out highp ivec3, out highp ivec3 lsb);
+        void imulExtended(highp ivec4, highp ivec4, out highp ivec4, out highp ivec4 lsb);
+
+        int bitfieldReverse(highp int);
+        ivec2 bitfieldReverse(highp ivec2);
+        ivec3 bitfieldReverse(highp ivec3);
+        ivec4 bitfieldReverse(highp ivec4);
+
+        uint bitfieldReverse(highp uint);
+        uvec2 bitfieldReverse(highp uvec2);
+        uvec3 bitfieldReverse(highp uvec3);
+        uvec4 bitfieldReverse(highp uvec4);
+      };
+    }
+
+    if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      commonBuiltins ~= q{
+        lowp int bitCount(int);
+        lowp ivec2 bitCount(ivec2);
+        lowp ivec3 bitCount(ivec3);
+        lowp ivec4 bitCount(ivec4);
+
+        lowp int bitCount(uint);
+        lowp ivec2 bitCount(uvec2);
+        lowp ivec3 bitCount(uvec3);
+        lowp ivec4 bitCount(uvec4);
+
+        lowp int findMSB(highp int);
+        lowp ivec2 findMSB(highp ivec2);
+        lowp ivec3 findMSB(highp ivec3);
+        lowp ivec4 findMSB(highp ivec4);
+
+        lowp int findMSB(highp uint);
+        lowp ivec2 findMSB(highp uvec2);
+        lowp ivec3 findMSB(highp uvec3);
+        lowp ivec4 findMSB(highp uvec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins ~= q{
+        uint64_t ballotARB(bool);
+
+        float readInvocationARB(float, uint);
+        vec2 readInvocationARB(vec2, uint);
+        vec3 readInvocationARB(vec3, uint);
+        vec4 readInvocationARB(vec4, uint);
+
+        int readInvocationARB(int, uint);
+        ivec2 readInvocationARB(ivec2, uint);
+        ivec3 readInvocationARB(ivec3, uint);
+        ivec4 readInvocationARB(ivec4, uint);
+
+        uint readInvocationARB(uint, uint);
+        uvec2 readInvocationARB(uvec2, uint);
+        uvec3 readInvocationARB(uvec3, uint);
+        uvec4 readInvocationARB(uvec4, uint);
+
+        float readFirstInvocationARB(float);
+        vec2 readFirstInvocationARB(vec2);
+        vec3 readFirstInvocationARB(vec3);
+        vec4 readFirstInvocationARB(vec4);
+
+        int readFirstInvocationARB(int);
+        ivec2 readFirstInvocationARB(ivec2);
+        ivec3 readFirstInvocationARB(ivec3);
+        ivec4 readFirstInvocationARB(ivec4);
+
+        uint readFirstInvocationARB(uint);
+        uvec2 readFirstInvocationARB(uvec2);
+        uvec3 readFirstInvocationARB(uvec3);
+        uvec4 readFirstInvocationARB(uvec4);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
+      commonBuiltins ~= q{
+        bool anyInvocationARB(bool);
+        bool allInvocationsARB(bool);
+        bool allInvocationsEqualARB(bool);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 450)) {
+      commonBuiltins ~= q{
+        uint dotEXT(uvec2 a, uvec2 b);
+        int dotEXT(ivec2 a, ivec2 b);
+        int dotEXT(ivec2 a, uvec2 b);
+        int dotEXT(uvec2 a, ivec2 b);
+
+        uint dotEXT(uvec3 a, uvec3 b);
+        int dotEXT(ivec3 a, ivec3 b);
+        int dotEXT(ivec3 a, uvec3 b);
+        int dotEXT(uvec3 a, ivec3 b);
+
+        uint dotEXT(uvec4 a, uvec4 b);
+        int dotEXT(ivec4 a, ivec4 b);
+        int dotEXT(ivec4 a, uvec4 b);
+        int dotEXT(uvec4 a, ivec4 b);
+
+        uint dotPacked4x8EXT(uint a, uint b);
+        int dotPacked4x8EXT(int a, uint b);
+        int dotPacked4x8EXT(uint a, int b);
+        int dotPacked4x8EXT(int a, int b);
+
+        uint dotEXT(u8vec2 a, u8vec2 b);
+        int dotEXT(i8vec2 a, u8vec2 b);
+        int dotEXT(u8vec2 a, i8vec2 b);
+        int dotEXT(i8vec2 a, i8vec2 b);
+
+        uint dotEXT(u8vec3 a, u8vec3 b);
+        int dotEXT(i8vec3 a, u8vec3 b);
+        int dotEXT(u8vec3 a, i8vec3 b);
+        int dotEXT(i8vec3 a, i8vec3 b);
+
+        uint dotEXT(u8vec4 a, u8vec4 b);
+        int dotEXT(i8vec4 a, u8vec4 b);
+        int dotEXT(u8vec4 a, i8vec4 b);
+        int dotEXT(i8vec4 a, i8vec4 b);
+
+        uint dotEXT(u16vec2 a, u16vec2 b);
+        int dotEXT(i16vec2 a, u16vec2 b);
+        int dotEXT(u16vec2 a, i16vec2 b);
+        int dotEXT(i16vec2 a, i16vec2 b);
+
+        uint dotEXT(u16vec3 a, u16vec3 b);
+        int dotEXT(i16vec3 a, u16vec3 b);
+        int dotEXT(u16vec3 a, i16vec3 b);
+        int dotEXT(i16vec3 a, i16vec3 b);
+
+        uint dotEXT(u16vec4 a, u16vec4 b);
+        int dotEXT(i16vec4 a, u16vec4 b);
+        int dotEXT(u16vec4 a, i16vec4 b);
+        int dotEXT(i16vec4 a, i16vec4 b);
+
+        uint64_t dotEXT(u64vec2 a, u64vec2 b);
+        int64_t dotEXT(i64vec2 a, u64vec2 b);
+        int64_t dotEXT(u64vec2 a, i64vec2 b);
+        int64_t dotEXT(i64vec2 a, i64vec2 b);
+
+        uint64_t dotEXT(u64vec3 a, u64vec3 b);
+        int64_t dotEXT(i64vec3 a, u64vec3 b);
+        int64_t dotEXT(u64vec3 a, i64vec3 b);
+        int64_t dotEXT(i64vec3 a, i64vec3 b);
+
+        uint64_t dotEXT(u64vec4 a, u64vec4 b);
+        int64_t dotEXT(i64vec4 a, u64vec4 b);
+        int64_t dotEXT(u64vec4 a, i64vec4 b);
+        int64_t dotEXT(i64vec4 a, i64vec4 b);
+
+        uint dotAccSatEXT(uvec2 a, uvec2 b, uint c);
+        int dotAccSatEXT(ivec2 a, uvec2 b, int c);
+        int dotAccSatEXT(uvec2 a, ivec2 b, int c);
+        int dotAccSatEXT(ivec2 a, ivec2 b, int c);
+
+        uint dotAccSatEXT(uvec3 a, uvec3 b, uint c);
+        int dotAccSatEXT(ivec3 a, uvec3 b, int c);
+        int dotAccSatEXT(uvec3 a, ivec3 b, int c);
+        int dotAccSatEXT(ivec3 a, ivec3 b, int c);
+
+        uint dotAccSatEXT(uvec4 a, uvec4 b, uint c);
+        int dotAccSatEXT(ivec4 a, uvec4 b, int c);
+        int dotAccSatEXT(uvec4 a, ivec4 b, int c);
+        int dotAccSatEXT(ivec4 a, ivec4 b, int c);
+
+        uint dotPacked4x8AccSatEXT(uint a, uint b, uint c);
+        int dotPacked4x8AccSatEXT(int a, uint b, int c);
+        int dotPacked4x8AccSatEXT(uint a, int b, int c);
+        int dotPacked4x8AccSatEXT(int a, int b, int c);
+
+        uint dotAccSatEXT(u8vec2 a, u8vec2 b, uint c);
+        int dotAccSatEXT(i8vec2 a, u8vec2 b, int c);
+        int dotAccSatEXT(u8vec2 a, i8vec2 b, int c);
+        int dotAccSatEXT(i8vec2 a, i8vec2 b, int c);
+
+        uint dotAccSatEXT(u8vec3 a, u8vec3 b, uint c);
+        int dotAccSatEXT(i8vec3 a, u8vec3 b, int c);
+        int dotAccSatEXT(u8vec3 a, i8vec3 b, int c);
+        int dotAccSatEXT(i8vec3 a, i8vec3 b, int c);
+
+        uint dotAccSatEXT(u8vec4 a, u8vec4 b, uint c);
+        int dotAccSatEXT(i8vec4 a, u8vec4 b, int c);
+        int dotAccSatEXT(u8vec4 a, i8vec4 b, int c);
+        int dotAccSatEXT(i8vec4 a, i8vec4 b, int c);
+
+        uint dotAccSatEXT(u16vec2 a, u16vec2 b, uint c);
+        int dotAccSatEXT(i16vec2 a, u16vec2 b, int c);
+        int dotAccSatEXT(u16vec2 a, i16vec2 b, int c);
+        int dotAccSatEXT(i16vec2 a, i16vec2 b, int c);
+
+        uint dotAccSatEXT(u16vec3 a, u16vec3 b, uint c);
+        int dotAccSatEXT(i16vec3 a, u16vec3 b, int c);
+        int dotAccSatEXT(u16vec3 a, i16vec3 b, int c);
+        int dotAccSatEXT(i16vec3 a, i16vec3 b, int c);
+
+        uint dotAccSatEXT(u16vec4 a, u16vec4 b, uint c);
+        int dotAccSatEXT(i16vec4 a, u16vec4 b, int c);
+        int dotAccSatEXT(u16vec4 a, i16vec4 b, int c);
+        int dotAccSatEXT(i16vec4 a, i16vec4 b, int c);
+
+        uint64_t dotAccSatEXT(u64vec2 a, u64vec2 b, uint64_t c);
+        int64_t dotAccSatEXT(i64vec2 a, u64vec2 b, int64_t c);
+        int64_t dotAccSatEXT(u64vec2 a, i64vec2 b, int64_t c);
+        int64_t dotAccSatEXT(i64vec2 a, i64vec2 b, int64_t c);
+
+        uint64_t dotAccSatEXT(u64vec3 a, u64vec3 b, uint64_t c);
+        int64_t dotAccSatEXT(i64vec3 a, u64vec3 b, int64_t c);
+        int64_t dotAccSatEXT(u64vec3 a, i64vec3 b, int64_t c);
+        int64_t dotAccSatEXT(i64vec3 a, i64vec3 b, int64_t c);
+
+        uint64_t dotAccSatEXT(u64vec4 a, u64vec4 b, uint64_t c);
+        int64_t dotAccSatEXT(i64vec4 a, u64vec4 b, int64_t c);
+        int64_t dotAccSatEXT(u64vec4 a, i64vec4 b, int64_t c);
+        int64_t dotAccSatEXT(i64vec4 a, i64vec4 b, int64_t c);
+      };
+    }
   }
 
   override void initialize(
