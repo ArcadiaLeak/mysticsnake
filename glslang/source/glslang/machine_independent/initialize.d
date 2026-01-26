@@ -4373,52 +4373,187 @@ class TBuiltIns : TBuiltInParseables {
         icoopmatNV coopMatMulAddNV(icoopmatNV A, icoopmatNV B, icoopmatNV C);
         ucoopmatNV coopMatMulAddNV(ucoopmatNV A, ucoopmatNV B, ucoopmatNV C);
       };
-    }
 
-    Appender!(char[]) cooperativeMatrixFuncs = appender!(char[]);
+      Appender!(char[]) cooperativeMatrixFuncs = appender!(char[]);
 
-    {
-      enum string[] allTypes = [
-        "float", "vec2", "vec4",
-        "float16_t", "f16vec2", "f16vec4",
-        "bfloat16_t", "bf16vec2", "bf16vec4",
-        "floate5m2_t", "fe5m2vec2", "fe5m2vec4",
-        "floate4m3_t", "fe4m3vec2", "fe4m3vec4",
-        "double", "dvec2", "dvec4",
-        "int8_t", "i8vec2", "i8vec4",
-        "int16_t", "i16vec2", "i16vec4",
-        "int", "ivec2", "ivec4",
-        "int64_t", "i64vec2", "i64vec4",
-        "uint8_t", "u8vec2", "u8vec4",
-        "uint16_t", "u16vec2", "u16vec4",
-        "uint", "uvec2", "uvec4",
-        "uint64_t", "u64vec2", "u64vec4",
-      ];
+      {
+        enum string[] allTypes = [
+          "float", "vec2", "vec4",
+          "float16_t", "f16vec2", "f16vec4",
+          "bfloat16_t", "bf16vec2", "bf16vec4",
+          "floate5m2_t", "fe5m2vec2", "fe5m2vec4",
+          "floate4m3_t", "fe4m3vec2", "fe4m3vec4",
+          "double", "dvec2", "dvec4",
+          "int8_t", "i8vec2", "i8vec4",
+          "int16_t", "i16vec2", "i16vec4",
+          "int", "ivec2", "ivec4",
+          "int64_t", "i64vec2", "i64vec4",
+          "uint8_t", "u8vec2", "u8vec4",
+          "uint16_t", "u16vec2", "u16vec4",
+          "uint", "uvec2", "uvec4",
+          "uint64_t", "u64vec2", "u64vec4",
+        ];
 
-      foreach (elemTy; ["uint", "uint64_t"]) {
-        foreach (t; allTypes) {
+        foreach (elemTy; ["uint", "uint64_t"]) {
+          foreach (t; allTypes) {
+            cooperativeMatrixFuncs ~= iq{
+              void coopMatLoad(out coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
+              void coopMatStore(coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
+            }.text;
+          }
           cooperativeMatrixFuncs ~= iq{
-            void coopMatLoad(out coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
-            void coopMatStore(coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
+            void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
+            void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
+            void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, __function f);
+            void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v, __function f);
+            void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
+            void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
           }.text;
         }
-        cooperativeMatrixFuncs ~= iq{
-          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
-          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
-          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, __function f);
-          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v, __function f);
-          void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
-          void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
+      }
+
+      cooperativeMatrixFuncs ~= q{
+        coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C);
+        coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C, int matrixOperands);
+      };
+
+      commonBuiltins ~= cooperativeMatrixFuncs[];
+
+      commonBuiltins ~= q{
+        const int gl_MatrixUseA = 0;
+        const int gl_MatrixUseB = 1;
+        const int gl_MatrixUseAccumulator = 2;
+        const int gl_MatrixOperandsSaturatingAccumulation = 0x10;
+        const int gl_CooperativeMatrixLayoutRowMajor = 0;
+        const int gl_CooperativeMatrixLayoutColumnMajor = 1;
+        const int gl_CooperativeMatrixLayoutRowBlockedInterleavedARM = 4202;
+        const int gl_CooperativeMatrixLayoutColumnBlockedInterleavedARM = 4203;
+
+        void coopMatTransposeNV(out coopmat, coopmat);
+        void coopMatReduceNV(out coopmat, coopmat, int, __function);
+        void coopMatPerElementNV();
+
+        const int gl_CooperativeMatrixReduceRowNV = 0x1;
+        const int gl_CooperativeMatrixReduceColumnNV = 0x2;
+        const int gl_CooperativeMatrixReduceRowAndColumnNV = 0x3;
+        const int gl_CooperativeMatrixReduce2x2NV = 0x4;
+
+        const int gl_CooperativeMatrixClampModeUndefinedNV = 0x0;
+        const int gl_CooperativeMatrixClampModeConstantNV = 0x1;
+        const int gl_CooperativeMatrixClampModeClampToEdgeNV = 0x2;
+        const int gl_CooperativeMatrixClampModeRepeatNV = 0x3;
+        const int gl_CooperativeMatrixClampModeMirrorRepeatNV = 0x4;
+      };
+
+      {
+        Appender!(char[]) coopMatConvFuncs = appender!(char[]);
+
+        enum string[] eltTypes = [
+          "uint32_t", "uint", "int32_t", "int", "float32_t", "float", "float16_t"
+        ];
+
+        foreach (srcEltTy; eltTypes) {
+          foreach (dstEltTy; eltTypes) {
+            coopMatConvFuncs ~= iq{
+              void bitcastQCOM($(srcEltTy) SrcArr[], $(dstEltTy) DstArr[]);
+            }.text;
+          }
+        }
+
+        foreach (
+          eltTy; ["float32_t", "float16_t", "int8_t",
+            "uint8_t", "uint32_t", "uint", "int32_t", "int"]
+        ) {
+          coopMatConvFuncs ~= iq{
+            void vectorToCoopmatQCOM($(eltTy) SrcVec[], coopmat CM);
+            void coopmatToVectorQCOM(coopmat CM, $(eltTy) Dstvec[]);
+          }.text;
+        }
+
+        foreach (eltTy; ["uint32_t", "uint", "int32_t", "int",
+          "float32_t", "float", "float16_t"]
+        ) {
+          coopMatConvFuncs ~= iq{
+            void extractSubArrayQCOM($(eltTy) arr[], uint index, $(eltTy) subarr[]);
+          }.text;
+        }
+
+        commonBuiltins ~= coopMatConvFuncs[];
+      }
+
+      commonBuiltins ~= q{
+        tensorLayoutNV createTensorLayoutNV(uint Dim);
+        tensorLayoutNV createTensorLayoutNV(uint Dim, uint Mode);
+
+        tensorLayoutNV setTensorLayoutBlockSizeNV(tensorLayoutNV t, uint blockSize0);
+        tensorLayoutNV setTensorLayoutBlockSizeNV(tensorLayoutNV t, uint blockSize0, uint blockSize1);
+        tensorLayoutNV setTensorLayoutBlockSizeNV(tensorLayoutNV t, uint blockSize0, uint blockSize1, uint blockSize2);
+        tensorLayoutNV setTensorLayoutBlockSizeNV(tensorLayoutNV t, uint blockSize0, uint blockSize1, uint blockSize2, uint blockSize3);
+        tensorLayoutNV setTensorLayoutBlockSizeNV(tensorLayoutNV t, uint blockSize0, uint blockSize1, uint blockSize2, uint blockSize3, uint blockSize4);
+
+        tensorLayoutNV setTensorLayoutDimensionNV(tensorLayoutNV t, uint dim0);
+        tensorLayoutNV setTensorLayoutDimensionNV(tensorLayoutNV t, uint dim0, uint dim1);
+        tensorLayoutNV setTensorLayoutDimensionNV(tensorLayoutNV t, uint dim0, uint dim1, uint dim2);
+        tensorLayoutNV setTensorLayoutDimensionNV(tensorLayoutNV t, uint dim0, uint dim1, uint dim2, uint dim3);
+        tensorLayoutNV setTensorLayoutDimensionNV(tensorLayoutNV t, uint dim0, uint dim1, uint dim2, uint dim3, uint dim4);
+
+        tensorLayoutNV setTensorLayoutStrideNV(tensorLayoutNV t, uint stride0);
+        tensorLayoutNV setTensorLayoutStrideNV(tensorLayoutNV t, uint stride0, uint stride1);
+        tensorLayoutNV setTensorLayoutStrideNV(tensorLayoutNV t, uint stride0, uint stride1, uint stride2);
+        tensorLayoutNV setTensorLayoutStrideNV(tensorLayoutNV t, uint stride0, uint stride1, uint stride2, uint stride3);
+        tensorLayoutNV setTensorLayoutStrideNV(tensorLayoutNV t, uint stride0, uint stride1, uint stride2, uint stride3, uint stride4);
+
+        tensorLayoutNV sliceTensorLayoutNV(tensorLayoutNV t, uint offset0, uint span0);
+        tensorLayoutNV sliceTensorLayoutNV(tensorLayoutNV t, uint offset0, uint span0, uint offset1, uint span1);
+        tensorLayoutNV sliceTensorLayoutNV(tensorLayoutNV t, uint offset0, uint span0, uint offset1, uint span1, uint offset2, uint span2);
+        tensorLayoutNV sliceTensorLayoutNV(tensorLayoutNV t, uint offset0, uint span0, uint offset1, uint span1, uint offset2, uint span2, uint offset3, uint span3);
+        tensorLayoutNV sliceTensorLayoutNV(tensorLayoutNV t, uint offset0, uint span0, uint offset1, uint span1, uint offset2, uint span2, uint offset3, uint span3, uint offset4, uint span4);
+
+        tensorLayoutNV setTensorLayoutClampValueNV(tensorLayoutNV t, uint value);
+
+        tensorViewNV createTensorViewNV(uint Dim);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions, uint p0);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions, uint p0, uint p1);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions, uint p0, uint p1, uint p2);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions, uint p0, uint p1, uint p2, uint p3);
+        tensorViewNV createTensorViewNV(uint Dim, bool HasDimensions, uint p0, uint p1, uint p2, uint p3, uint p4);
+
+        tensorViewNV setTensorViewDimensionsNV(tensorViewNV v, uint dim0);
+        tensorViewNV setTensorViewDimensionsNV(tensorViewNV v, uint dim0, uint dim1);
+        tensorViewNV setTensorViewDimensionsNV(tensorViewNV v, uint dim0, uint dim1, uint dim2);
+        tensorViewNV setTensorViewDimensionsNV(tensorViewNV v, uint dim0, uint dim1, uint dim2, uint dim3);
+        tensorViewNV setTensorViewDimensionsNV(tensorViewNV v, uint dim0, uint dim1, uint dim2, uint dim3, uint dim4);
+
+        tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0);
+        tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0, uint stride1);
+        tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0, uint stride1, uint stride2);
+        tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0, uint stride1, uint stride2, uint stride3);
+        tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0, uint stride1, uint stride2, uint stride3, uint stride4);
+
+        tensorViewNV setTensorViewClipNV(tensorViewNV v, uint clipRowOffset, uint clipRowSpan, uint clipColOffset, uint clipColSpan);
+      };
+
+      enum string[] tensorDataTypesARM = [
+        "bool",
+        "int8_t", "int16_t", "int32_t", "int64_t",
+        "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+        "float16_t", "float32_t", "float64_t"
+      ];
+      Appender!(char[]) ostream = appender!(char[]);
+      for (t; tensorDataTypesARM) {
+        ostream ~= iq{
+          void tensorReadARM(readonly tensorARM t, uint coords[], out $(t)  data, uint tensorOperands = 0U, ...);
+          void tensorWriteARM(writeonly tensorARM t, uint coords[], $(t) data, uint tensorOperands = 0U, ...);
+          void tensorReadARM(readonly tensorARM t, uint coords[], $(t) data[], uint tensorOperands = 0U, ...);
+          void tensorWriteARM(writeonly tensorARM t, uint coords[], $(t) data[], uint tensorOperands = 0U, ...);
         }.text;
       }
-    }
-
-    cooperativeMatrixFuncs ~= q{
-      coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C);
-      coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C, int matrixOperands);
-    };
-
-    commonBuiltins ~= cooperativeMatrixFuncs[];
+      ostream ~= q{
+        uint tensorSizeARM(readonly writeonly tensorARM t, uint dim);
+      };
+      commonBuiltins ~= ostream[];
+    }    
   }
 
   override void initialize(
