@@ -4655,9 +4655,157 @@ class TBuiltIns : TBuiltInParseables {
 
       foreach (offsetTy; coopVecOffsetTypes) {
         foreach (scalarAndVectorTy; scalarAndVectorTypes) {
-          
+          commonBuiltins ~= "void coopVecLoadNV(out coopvecNV v, volatile coherent "
+            ~ i"$(scalarAndVectorTy)[] buf, $(offsetTy) offset);".text;
+          commonBuiltins ~= "void coopVecStoreNV(coopvecNV v, volatile coherent "
+            ~ i"$(scalarAndVectorTy)[] buf, $(offsetTy) offset);".text;
         }
       }
+
+      commonBuiltins ~= q{
+        const int gl_CooperativeVectorMatrixLayoutRowMajorNV = 0;
+        const int gl_CooperativeVectorMatrixLayoutColumnMajorNV = 1;
+        const int gl_CooperativeVectorMatrixLayoutInferencingOptimalNV = 2;
+        const int gl_CooperativeVectorMatrixLayoutTrainingOptimalNV = 3;
+
+        const int gl_ComponentTypeFloat16NV = 0;
+        const int gl_ComponentTypeFloat32NV = 1;
+        const int gl_ComponentTypeFloat64NV = 2;
+        const int gl_ComponentTypeSignedInt8NV = 3;
+        const int gl_ComponentTypeSignedInt16NV = 4;
+        const int gl_ComponentTypeSignedInt32NV = 5;
+        const int gl_ComponentTypeSignedInt64NV = 6;
+        const int gl_ComponentTypeUnsignedInt8NV = 7;
+        const int gl_ComponentTypeUnsignedInt16NV = 8;
+        const int gl_ComponentTypeUnsignedInt32NV = 9;
+        const int gl_ComponentTypeUnsignedInt64NV = 10;
+        const int gl_ComponentTypeSignedInt8PackedNV = 1000491000;
+        const int gl_ComponentTypeUnsignedInt8PackedNV = 1000491001;
+        const int gl_ComponentTypeFloatE4M3NV = 1000491002;
+        const int gl_ComponentTypeFloatE5M2NV = 1000491003;
+      };
+    }
+
+    if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE || version_ == 100)) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        vec4 texture2D(sampler2D, vec2, float);
+        vec4 texture2DProj(sampler2D, vec3, float);
+        vec4 texture2DProj(sampler2D, vec4, float);
+        vec4 texture3D(sampler3D, vec3, float);
+        vec4 texture3DProj(sampler3D, vec4, float);
+        vec4 textureCube(samplerCube, vec3, float);
+      };
+    }
+    if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE && version_ > 100)) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        vec4 texture1D(sampler1D, float, float);
+        vec4 texture1DProj(sampler1D, vec2, float);
+        vec4 texture1DProj(sampler1D, vec4, float);
+        vec4 shadow1D(sampler1DShadow, vec3, float);
+        vec4 shadow2D(sampler2DShadow, vec3, float);
+        vec4 shadow1DProj(sampler1DShadow, vec4, float);
+        vec4 shadow2DProj(sampler2DShadow, vec4, float);
+      };
+    }
+    if (spvVersion.spv == 0 && profile == glslang_profile_t.ES_PROFILE) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        vec4 texture2DLodEXT(sampler2D, vec2, float);
+        vec4 texture2DProjLodEXT(sampler2D, vec3, float);
+        vec4 texture2DProjLodEXT(sampler2D, vec4, float);
+        vec4 textureCubeLodEXT(samplerCube, vec3, float);
+      };
+    }
+
+    if (spvVersion.vulkan > 0) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        lowp uint stencilAttachmentReadEXT();
+        lowp uint stencilAttachmentReadEXT(int);
+        highp float depthAttachmentReadEXT();
+        highp float depthAttachmentReadEXT(int);
+
+        vec4 colorAttachmentReadEXT(attachmentEXT);
+        vec4 colorAttachmentReadEXT(attachmentEXT, int);
+        ivec4 colorAttachmentReadEXT(iattachmentEXT);
+        ivec4 colorAttachmentReadEXT(iattachmentEXT, int);
+        uvec4 colorAttachmentReadEXT(uattachmentEXT);
+        uvec4 colorAttachmentReadEXT(uattachmentEXT, int);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 400) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativeControls;
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= "\n";
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        float interpolateAtCentroid(float);
+        vec2 interpolateAtCentroid(vec2);
+        vec3 interpolateAtCentroid(vec3);
+        vec4 interpolateAtCentroid(vec4);
+
+        float interpolateAtSample(float, int);
+        vec2 interpolateAtSample(vec2, int);
+        vec3 interpolateAtSample(vec3, int);
+        vec4 interpolateAtSample(vec4, int);
+
+        float interpolateAtOffset(float, vec2);
+        vec2 interpolateAtOffset(vec2, vec2);
+        vec3 interpolateAtOffset(vec3, vec2);
+        vec4 interpolateAtOffset(vec4, vec2);
+      };
+    }
+
+    stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      void beginInvocationInterlockARB(void);
+      void endInvocationInterlockARB(void);
+
+      bool helperInvocationEXT();
+    };
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        float interpolateAtVertexAMD(float, uint);
+        vec2 interpolateAtVertexAMD(vec2, uint);
+        vec3 interpolateAtVertexAMD(vec3, uint);
+        vec4 interpolateAtVertexAMD(vec4, uint);
+
+        int interpolateAtVertexAMD(int, uint);
+        ivec2 interpolateAtVertexAMD(ivec2, uint);
+        ivec3 interpolateAtVertexAMD(ivec3, uint);
+        ivec4 interpolateAtVertexAMD(ivec4, uint);
+
+        uint interpolateAtVertexAMD(uint, uint);
+        uvec2 interpolateAtVertexAMD(uvec2, uint);
+        uvec3 interpolateAtVertexAMD(uvec3, uint);
+        uvec4 interpolateAtVertexAMD(uvec4, uint);
+
+        float16_t interpolateAtVertexAMD(float16_t, uint);
+        f16vec2 interpolateAtVertexAMD(f16vec2, uint);
+        f16vec3 interpolateAtVertexAMD(f16vec3, uint);
+        f16vec4 interpolateAtVertexAMD(f16vec4, uint);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl16bits;
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        float16_t interpolateAtCentroid(float16_t);
+        f16vec2 interpolateAtCentroid(f16vec2);
+        f16vec3 interpolateAtCentroid(f16vec3);
+        f16vec4 interpolateAtCentroid(f16vec4);
+
+        float16_t interpolateAtSample(float16_t, int);
+        f16vec2 interpolateAtSample(f16vec2, int);
+        f16vec3 interpolateAtSample(f16vec3, int);
+        f16vec4 interpolateAtSample(f16vec4, int);
+
+        float16_t interpolateAtOffset(float16_t, f16vec2);
+        f16vec2 interpolateAtOffset(f16vec2, f16vec2);
+        f16vec3 interpolateAtOffset(f16vec3, f16vec2);
+        f16vec4 interpolateAtOffset(f16vec4, f16vec2);
+      };
     }
   }
 

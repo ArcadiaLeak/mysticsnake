@@ -1,3 +1,2 @@
-/mysticsnake
-*-test-library
-*.a
+/artifacts/
+Makefile
