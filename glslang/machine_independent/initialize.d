@@ -4734,7 +4734,6 @@ class TBuiltIns : TBuiltInParseables {
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 400) {
       stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativeControls;
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= "\n";
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
@@ -4806,6 +4805,590 @@ class TBuiltIns : TBuiltInParseables {
         f16vec3 interpolateAtOffset(f16vec3, f16vec2);
         f16vec4 interpolateAtOffset(f16vec4, f16vec2);
       };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins ~= q{
+        uvec2 clock2x32ARB();
+        uint64_t clockARB();
+        uvec2 clockRealtime2x32EXT();
+        uint64_t clockRealtimeEXT();
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450 && spvVersion.vulkan > 0) {
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+        uint fragmentMaskFetchAMD(subpassInputMS);
+        uint fragmentMaskFetchAMD(isubpassInputMS);
+        uint fragmentMaskFetchAMD(usubpassInputMS);
+
+        vec4 fragmentFetchAMD(subpassInputMS, uint);
+        ivec4 fragmentFetchAMD(isubpassInputMS, uint);
+        uvec4 fragmentFetchAMD(usubpassInputMS, uint);
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
+      commonBuiltins ~= q{
+        void rayQueryInitializeEXT(rayQueryEXT, accelerationStructureEXT, uint, uint, vec3, float, vec3, float);
+        void rayQueryTerminateEXT(rayQueryEXT);
+        void rayQueryGenerateIntersectionEXT(rayQueryEXT, float);
+        void rayQueryConfirmIntersectionEXT(rayQueryEXT);
+        bool rayQueryProceedEXT(rayQueryEXT);
+        uint rayQueryGetIntersectionTypeEXT(rayQueryEXT, bool);
+        float rayQueryGetRayTMinEXT(rayQueryEXT);
+        uint rayQueryGetRayFlagsEXT(rayQueryEXT);
+        vec3 rayQueryGetWorldRayOriginEXT(rayQueryEXT);
+        vec3 rayQueryGetWorldRayDirectionEXT(rayQueryEXT);
+        float rayQueryGetIntersectionTEXT(rayQueryEXT, bool);
+        int rayQueryGetIntersectionInstanceCustomIndexEXT(rayQueryEXT, bool);
+        int rayQueryGetIntersectionInstanceIdEXT(rayQueryEXT, bool);
+        uint rayQueryGetIntersectionInstanceShaderBindingTableRecordOffsetEXT(rayQueryEXT, bool);
+        int rayQueryGetIntersectionGeometryIndexEXT(rayQueryEXT, bool);
+        int rayQueryGetIntersectionPrimitiveIndexEXT(rayQueryEXT, bool);
+        vec2 rayQueryGetIntersectionBarycentricsEXT(rayQueryEXT, bool);
+        bool rayQueryGetIntersectionFrontFaceEXT(rayQueryEXT, bool);
+        bool rayQueryGetIntersectionCandidateAABBOpaqueEXT(rayQueryEXT);
+        vec3 rayQueryGetIntersectionObjectRayDirectionEXT(rayQueryEXT, bool);
+        vec3 rayQueryGetIntersectionObjectRayOriginEXT(rayQueryEXT, bool);
+        mat4x3 rayQueryGetIntersectionObjectToWorldEXT(rayQueryEXT, bool);
+        mat4x3 rayQueryGetIntersectionWorldToObjectEXT(rayQueryEXT, bool);
+        void rayQueryGetIntersectionTriangleVertexPositionsEXT(rayQueryEXT, bool, out vec3[3]);
+        int rayQueryGetIntersectionClusterIdNV(rayQueryEXT, bool);
+        vec3 rayQueryGetIntersectionSpherePositionNV(rayQueryEXT, bool);
+        float rayQueryGetIntersectionSphereRadiusNV(rayQueryEXT, bool);
+        float rayQueryGetIntersectionLSSHitValueNV(rayQueryEXT, bool);
+        void rayQueryGetIntersectionLSSPositionsNV(rayQueryEXT, bool, out vec3[2]);
+        void rayQueryGetIntersectionLSSRadiiNV(rayQueryEXT, bool, out float[2]);
+        bool rayQueryIsSphereHitNV(rayQueryEXT, bool);
+        bool rayQueryIsLSSHitNV(rayQueryEXT, bool);
+      };
+
+      stageBuiltins[glslang_stage_t.STAGE_RAYGEN] ~= q{
+        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void executeCallableNV(uint, int);
+        void executeCallableEXT(uint, int);
+        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitWithIndexNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissNV(hitObjectNV,uint,vec3,float,vec3,float);
+        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyNV(hitObjectNV);
+        void hitObjectExecuteShaderNV(hitObjectNV,int);
+        bool hitObjectIsEmptyNV(hitObjectNV);
+        bool hitObjectIsMissNV(hitObjectNV);
+        bool hitObjectIsHitNV(hitObjectNV);
+        float hitObjectGetRayTMinNV(hitObjectNV);
+        float hitObjectGetRayTMaxNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
+        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
+        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
+        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
+        int hitObjectGetInstanceIdNV(hitObjectNV);
+        int hitObjectGetGeometryIndexNV(hitObjectNV);
+        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
+        uint hitObjectGetHitKindNV(hitObjectNV);
+        void hitObjectGetAttributesNV(hitObjectNV,int);
+        float hitObjectGetCurrentTimeNV(hitObjectNV);
+        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
+        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
+        int hitObjectGetClusterIdNV(hitObjectNV);
+        void reorderThreadNV(uint, uint);
+        void reorderThreadNV(hitObjectNV);
+        void reorderThreadNV(hitObjectNV, uint, uint);
+        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
+        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
+        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
+        float hitObjectGetSphereRadiusNV(hitObjectNV);
+        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
+        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
+        bool hitObjectIsSphereHitNV(hitObjectNV);
+        bool hitObjectIsLSSHitNV(hitObjectNV);
+        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
+        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyEXT(hitObjectEXT);
+        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
+        bool hitObjectIsEmptyEXT(hitObjectEXT);
+        bool hitObjectIsMissEXT(hitObjectEXT);
+        bool hitObjectIsHitEXT(hitObjectEXT);
+        float hitObjectGetRayTMinEXT(hitObjectEXT);
+        float hitObjectGetRayTMaxEXT(hitObjectEXT);
+        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
+        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
+        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
+        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
+        int hitObjectGetInstanceIdEXT(hitObjectEXT);
+        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
+        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
+        uint hitObjectGetHitKindEXT(hitObjectEXT);
+        void hitObjectGetAttributesEXT(hitObjectEXT,int);
+        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
+        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
+        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
+        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
+        void hitObjectReorderExecuteEXT(hitObjectEXT,int);
+        void hitObjectReorderExecuteEXT(hitObjectEXT,uint,uint,int);
+        void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,uint,uint,int);
+        void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,uint,uint,int);
+        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
+        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
+        void reorderThreadEXT(uint, uint);
+        void reorderThreadEXT(hitObjectEXT);
+        void reorderThreadEXT(hitObjectEXT, uint, uint);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_INTERSECT] ~= q{
+        bool reportIntersectionNV(float, uint);
+        bool reportIntersectionEXT(float, uint);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_ANYHIT] ~= q{
+        void ignoreIntersectionNV();
+        void terminateRayNV();
+      };
+      stageBuiltins[glslang_stage_t.STAGE_CLOSESTHIT] ~= q{
+        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void executeCallableNV(uint, int);
+        void executeCallableEXT(uint, int);
+        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);
+        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyNV(hitObjectNV);
+        void hitObjectExecuteShaderNV(hitObjectNV, int);
+        bool hitObjectIsEmptyNV(hitObjectNV);
+        bool hitObjectIsMissNV(hitObjectNV);
+        bool hitObjectIsHitNV(hitObjectNV);
+        float hitObjectGetRayTMinNV(hitObjectNV);
+        float hitObjectGetRayTMaxNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
+        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
+        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
+        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
+        int hitObjectGetInstanceIdNV(hitObjectNV);
+        int hitObjectGetGeometryIndexNV(hitObjectNV);
+        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
+        uint hitObjectGetHitKindNV(hitObjectNV);
+        void hitObjectGetAttributesNV(hitObjectNV,int);
+        float hitObjectGetCurrentTimeNV(hitObjectNV);
+        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
+        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
+        int hitObjectGetClusterIdNV(hitObjectNV);
+        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
+        float hitObjectGetSphereRadiusNV(hitObjectNV);
+        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
+        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
+        bool hitObjectIsSphereHitNV(hitObjectNV);
+        bool hitObjectIsLSSHitNV(hitObjectNV);
+        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
+        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyEXT(hitObjectEXT);
+        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
+        bool hitObjectIsEmptyEXT(hitObjectEXT);
+        bool hitObjectIsMissEXT(hitObjectEXT);
+        bool hitObjectIsHitEXT(hitObjectEXT);
+        float hitObjectGetRayTMinEXT(hitObjectEXT);
+        float hitObjectGetRayTMaxEXT(hitObjectEXT);
+        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
+        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
+        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
+        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
+        int hitObjectGetInstanceIdEXT(hitObjectEXT);
+        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
+        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
+        uint hitObjectGetHitKindEXT(hitObjectEXT);
+        void hitObjectGetAttributesEXT(hitObjectEXT,int);
+        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
+        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
+        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
+        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
+        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT,uint, int);
+        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_MISS] ~= q{
+        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void executeCallableNV(uint, int);
+        void executeCallableEXT(uint, int);
+        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);
+        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyNV(hitObjectNV);
+        void hitObjectExecuteShaderNV(hitObjectNV, int);
+        bool hitObjectIsEmptyNV(hitObjectNV);
+        bool hitObjectIsMissNV(hitObjectNV);
+        bool hitObjectIsHitNV(hitObjectNV);
+        float hitObjectGetRayTMinNV(hitObjectNV);
+        float hitObjectGetRayTMaxNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
+        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
+        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
+        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
+        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
+        int hitObjectGetInstanceIdNV(hitObjectNV);
+        int hitObjectGetGeometryIndexNV(hitObjectNV);
+        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
+        uint hitObjectGetHitKindNV(hitObjectNV);
+        void hitObjectGetAttributesNV(hitObjectNV,int);
+        float hitObjectGetCurrentTimeNV(hitObjectNV);
+        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
+        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
+        int hitObjectGetClusterIdNV(hitObjectNV);
+        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
+        float hitObjectGetSphereRadiusNV(hitObjectNV);
+        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
+        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
+        bool hitObjectIsSphereHitNV(hitObjectNV);
+        bool hitObjectIsLSSHitNV(hitObjectNV);
+        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
+        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
+        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
+        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
+        void hitObjectRecordEmptyEXT(hitObjectEXT);
+        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
+        bool hitObjectIsEmptyEXT(hitObjectEXT);
+        bool hitObjectIsMissEXT(hitObjectEXT);
+        bool hitObjectIsHitEXT(hitObjectEXT);
+        float hitObjectGetRayTMinEXT(hitObjectEXT);
+        float hitObjectGetRayTMaxEXT(hitObjectEXT);
+        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
+        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
+        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
+        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
+        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
+        int hitObjectGetInstanceIdEXT(hitObjectEXT);
+        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
+        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
+        uint hitObjectGetHitKindEXT(hitObjectEXT);
+        void hitObjectGetAttributesEXT(hitObjectEXT,int);
+        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
+        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
+        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
+        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
+        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
+        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_CALLABLE] ~= q{
+        void executeCallableNV(uint, int);
+        void executeCallableEXT(uint, int);
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 450)) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativeControls;
+    }
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativesAndControl16bits;
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativesAndControl64bits;
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        void writePackedPrimitiveIndices4x8NV(uint, uint);
+      };
+    }
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        void EmitMeshTasksEXT(uint, uint, uint);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        void SetMeshOutputsEXT(uint, uint);
+      };
+    }
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 460) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
+        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
+      };
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
+        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
+      };
+    }
+
+    if (spvVersion.spv == 0) {
+      commonBuiltins ~= q{
+        struct gl_DepthRangeParameters {
+      };
+      if (profile == glslang_profile_t.ES_PROFILE) {
+        commonBuiltins ~= q{
+          highp float near;
+          highp float far;
+          highp float diff;
+        };
+      } else {
+        commonBuiltins ~= q{
+          commonBuiltins ~= q{
+            float near;
+            float far;
+            float diff;
+          };
+        };
+      }
+      commonBuiltins ~= q{
+        };
+        uniform gl_DepthRangeParameters gl_DepthRange;
+      };
+    }
+
+    if (spvVersion.spv == 0 && IncludeLegacy(version_, profile, spvVersion)) {
+      commonBuiltins ~= q{
+        uniform mat4 gl_ModelViewMatrix;
+        uniform mat4 gl_ProjectionMatrix;
+        uniform mat4 gl_ModelViewProjectionMatrix;
+
+        uniform mat3 gl_NormalMatrix;
+
+        uniform mat4 gl_ModelViewMatrixInverse;
+        uniform mat4 gl_ProjectionMatrixInverse;
+        uniform mat4 gl_ModelViewProjectionMatrixInverse;
+
+        uniform mat4 gl_ModelViewMatrixTranspose;
+        uniform mat4 gl_ProjectionMatrixTranspose;
+        uniform mat4 gl_ModelViewProjectionMatrixTranspose;
+
+        uniform mat4 gl_ModelViewMatrixInverseTranspose;
+        uniform mat4 gl_ProjectionMatrixInverseTranspose;
+        uniform mat4 gl_ModelViewProjectionMatrixInverseTranspose;
+
+        uniform float gl_NormalScale;
+
+        struct gl_PointParameters {
+          float size;
+          float sizeMin;
+          float sizeMax;
+          float fadeThresholdSize;
+          float distanceConstantAttenuation;
+          float distanceLinearAttenuation;
+          float distanceQuadraticAttenuation;
+        };
+
+        uniform gl_PointParameters gl_Point;
+
+        struct gl_MaterialParameters {
+          vec4 emission;
+          vec4 ambient;
+          vec4 diffuse;
+          vec4 specular;
+          float shininess;
+        };
+        uniform gl_MaterialParameters gl_FrontMaterial;
+        uniform gl_MaterialParameters gl_BackMaterial;
+
+        struct gl_LightSourceParameters {
+          vec4 ambient;
+          vec4 diffuse;
+          vec4 specular;
+          vec4 position;
+          vec4 halfVector;
+          vec3 spotDirection;
+          float spotExponent;
+          float spotCutoff;
+          float spotCosCutoff;
+          float constantAttenuation;
+          float linearAttenuation;
+          float quadraticAttenuation;
+        };
+
+        struct gl_LightModelParameters {
+          vec4 ambient;
+        };
+
+        uniform gl_LightModelParameters  gl_LightModel;
+
+        struct gl_LightModelProducts {
+          vec4 sceneColor;
+        };
+
+        uniform gl_LightModelProducts gl_FrontLightModelProduct;
+        uniform gl_LightModelProducts gl_BackLightModelProduct;
+
+        struct gl_LightProducts {
+          vec4 ambient;
+          vec4 diffuse;
+          vec4 specular;
+        };
+
+        struct gl_FogParameters {
+          vec4 color;
+          float density;
+          float start;
+          float end;
+          float scale;
+        };
+
+        uniform gl_FogParameters gl_Fog;
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        in highp uvec3 gl_NumWorkGroups;
+        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+
+        in highp uvec3 gl_WorkGroupID;
+        in highp uvec3 gl_LocalInvocationID;
+
+        in highp uvec3 gl_GlobalInvocationID;
+        in highp uint gl_LocalInvocationIndex;
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        in highp int gl_DeviceIndex;
+      };
+    }
+
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 460)) {
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+        in highp uvec2 gl_TileOffsetQCOM;
+        in highp uvec3 gl_TileDimensionQCOM;
+        in highp uvec2 gl_TileApronSizeQCOM;
+      };
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        out gl_MeshPerVertexNV {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+          float gl_CullDistance[];
+          perviewNV vec4 gl_PositionPerViewNV[];
+          perviewNV float gl_ClipDistancePerViewNV[][];
+          perviewNV float gl_CullDistancePerViewNV[][];
+        } gl_MeshVerticesNV[];
+
+        perprimitiveNV out gl_MeshPerPrimitiveNV {
+          int gl_PrimitiveID;
+          int gl_Layer;
+          int gl_ViewportIndex;
+          int gl_ViewportMask[];
+          perviewNV int gl_LayerPerViewNV[];
+          perviewNV int gl_ViewportMaskPerViewNV[][];
+        } gl_MeshPrimitivesNV[];
+
+        out uint gl_PrimitiveCountNV;
+        out uint gl_PrimitiveIndicesNV[];
+
+        in uint gl_MeshViewCountNV;
+        in uint gl_MeshViewIndicesNV[4];
+
+        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+
+        in highp uvec3 gl_WorkGroupID;
+        in highp uvec3 gl_LocalInvocationID;
+
+        in highp uvec3 gl_GlobalInvocationID;
+        in highp uint gl_LocalInvocationIndex;
+
+        out uint gl_PrimitivePointIndicesEXT[];
+        out uvec2 gl_PrimitiveLineIndicesEXT[];
+        out uvec3 gl_PrimitiveTriangleIndicesEXT[];
+        in highp uvec3 gl_NumWorkGroups;
+
+        out gl_MeshPerVertexEXT {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+          float gl_CullDistance[];
+        } gl_MeshVerticesEXT[];
+
+        perprimitiveEXT out gl_MeshPerPrimitiveEXT {
+          int gl_PrimitiveID;
+          int gl_Layer;
+          int gl_ViewportIndex;
+          bool gl_CullPrimitiveEXT;
+          int  gl_PrimitiveShadingRateEXT;
+        } gl_MeshPrimitivesEXT[];
+      };
+
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        out uint gl_TaskCountNV;
+
+        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+
+        in highp uvec3 gl_WorkGroupID;
+        in highp uvec3 gl_LocalInvocationID;
+
+        in highp uvec3 gl_GlobalInvocationID;
+        in highp uint gl_LocalInvocationIndex;
+
+        in uint gl_MeshViewCountNV;
+        in uint gl_MeshViewIndicesNV[4];
+        in highp uvec3 gl_NumWorkGroups;
+      };
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        in highp int gl_DeviceIndex;
+        in int gl_DrawIDARB;
+        in int gl_ViewIndex;
+      };
+
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        in highp int gl_DeviceIndex;
+        in int gl_DrawIDARB;
+      };
+
+      if (version_ >= 460) {
+        stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+          in int gl_DrawID;
+        };
+        stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+          in int gl_DrawID;
+        };
+      }
     }
   }
 
