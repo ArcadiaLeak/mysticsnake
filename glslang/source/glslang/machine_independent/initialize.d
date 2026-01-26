@@ -4541,7 +4541,7 @@ class TBuiltIns : TBuiltInParseables {
         "float16_t", "float32_t", "float64_t"
       ];
       Appender!(char[]) ostream = appender!(char[]);
-      for (t; tensorDataTypesARM) {
+      foreach (t; tensorDataTypesARM) {
         ostream ~= iq{
           void tensorReadARM(readonly tensorARM t, uint coords[], out $(t)  data, uint tensorOperands = 0U, ...);
           void tensorWriteARM(writeonly tensorARM t, uint coords[], $(t) data, uint tensorOperands = 0U, ...);
@@ -4553,7 +4553,112 @@ class TBuiltIns : TBuiltInParseables {
         uint tensorSizeARM(readonly writeonly tensorARM t, uint dim);
       };
       commonBuiltins ~= ostream[];
-    }    
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      enum string[] basicTypes = [
+        "int8_t",
+        "int16_t",
+        "int32_t",
+        "int64_t",
+        "uint8_t",
+        "uint16_t",
+        "uint32_t",
+        "uint64_t",
+        "float16_t",
+        "float32_t",
+        "float64_t"
+      ];
+      enum string[] coopVecOffsetTypes = [
+        "uint",
+        "uint64_t"
+      ];
+      foreach (offsetTy; coopVecOffsetTypes) {
+        foreach (basicTy; basicTypes) {
+          commonBuiltins ~=
+            "void coopVecMatMulNV(out coopvecNV result, coopvecNV v, int inputInterpretation, "
+              ~ i"$(basicTy)[] matrix, $(offsetTy) matrixOffset, int matrixInterpretation, ".text
+              ~ "uint M, uint K, int matrixLayout, bool transpose, uint matrixStride);\n";
+          
+          foreach (biasBasicType; basicTypes) {
+            commonBuiltins ~= "void coopVecMatMulAddNV(out coopvecNV result, coopvecNV v, int inputInterpretation, "
+              ~ i"$(basicTy)[] matrix, $(offsetTy) matrixOffset, int matrixInterpretation, ".text
+              ~ i"$(biasBasicType)[] bias, $(offsetTy) biasOffset, int biasInterpretation, ".text
+              ~ "uint M, uint K, int matrixLayout, bool transpose, uint matrixStride);\n";
+          }
+
+          commonBuiltins ~= "void coopVecOuterProductAccumulateNV(coopvecNV v1, coopvecNV v2, "
+            ~ i"$(basicTy)[] buf, $(offsetTy) offset, uint stride, int matrixLayout, int matrixInterpretation);\n".text;
+
+          commonBuiltins ~= "void coopVecReduceSumAccumulateNV(coopvecNV v, "
+            ~ i"$(basicTy)[] buf, $(offsetTy) offset);\n".text;
+        }
+      }
+      commonBuiltins ~= q{
+        coopvecNV fma(coopvecNV, coopvecNV, coopvecNV);
+        coopvecNV min(coopvecNV, coopvecNV);
+        coopvecNV max(coopvecNV, coopvecNV);
+        coopvecNV step(coopvecNV, coopvecNV);
+        coopvecNV exp(coopvecNV);            
+        coopvecNV log(coopvecNV);            
+        coopvecNV tanh(coopvecNV);            
+        coopvecNV atan(coopvecNV);            
+        coopvecNV clamp(coopvecNV, coopvecNV, coopvecNV);
+      };
+
+      enum string[] scalarAndVectorTypes = [
+        "int8_t",
+        "int16_t",
+        "int32_t",
+        "int64_t",
+        "uint8_t",
+        "uint16_t",
+        "uint32_t",
+        "uint64_t",
+        "float16_t",
+        "float32_t",
+        "float64_t",
+        "i8vec2",
+        "i16vec2",
+        "i32vec2",
+        "i64vec2",
+        "u8vec2",
+        "u16vec2",
+        "u32vec2",
+        "u64vec2",
+        "f16vec2",
+        "f32vec2",
+        "f64vec2",
+        "i8vec3",
+        "i16vec3",
+        "i32vec3",
+        "i64vec3",
+        "u8vec3",
+        "u16vec3",
+        "u32vec3",
+        "u64vec3",
+        "f16vec3",
+        "f32vec3",
+        "f64vec3",
+        "i8vec4",
+        "i16vec4",
+        "i32vec4",
+        "i64vec4",
+        "u8vec4",
+        "u16vec4",
+        "u32vec4",
+        "u64vec4",
+        "f16vec4",
+        "f32vec4",
+        "f64vec4"
+      ];
+
+      foreach (offsetTy; coopVecOffsetTypes) {
+        foreach (scalarAndVectorTy; scalarAndVectorTypes) {
+          
+        }
+      }
+    }
   }
 
   override void initialize(
