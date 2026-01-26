@@ -3,6 +3,7 @@ module glslang.machine_independent.initialize;
 import glslang;
 
 import std.algorithm.searching;
+import std.conv;
 import std.format;
 import std.range;
 import std.traits;
@@ -4236,7 +4237,7 @@ class TBuiltIns : TBuiltInParseables {
       };
     }
 
-    bool esBarrier = (profile == glslang_profile_t.ES_PROFILE && version >= 310);
+    bool esBarrier = (profile == glslang_profile_t.ES_PROFILE && version_ >= 310);
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) || esBarrier)
       stageBuiltins[glslang_stage_t.STAGE_TESSCONTROL] ~= q{
         void barrier();
@@ -4373,6 +4374,51 @@ class TBuiltIns : TBuiltInParseables {
         ucoopmatNV coopMatMulAddNV(ucoopmatNV A, ucoopmatNV B, ucoopmatNV C);
       };
     }
+
+    Appender!(char[]) cooperativeMatrixFuncs = appender!(char[]);
+
+    {
+      enum string[] allTypes = [
+        "float", "vec2", "vec4",
+        "float16_t", "f16vec2", "f16vec4",
+        "bfloat16_t", "bf16vec2", "bf16vec4",
+        "floate5m2_t", "fe5m2vec2", "fe5m2vec4",
+        "floate4m3_t", "fe4m3vec2", "fe4m3vec4",
+        "double", "dvec2", "dvec4",
+        "int8_t", "i8vec2", "i8vec4",
+        "int16_t", "i16vec2", "i16vec4",
+        "int", "ivec2", "ivec4",
+        "int64_t", "i64vec2", "i64vec4",
+        "uint8_t", "u8vec2", "u8vec4",
+        "uint16_t", "u16vec2", "u16vec4",
+        "uint", "uvec2", "uvec4",
+        "uint64_t", "u64vec2", "u64vec4",
+      ];
+
+      foreach (elemTy; ["uint", "uint64_t"]) {
+        foreach (t; allTypes) {
+          cooperativeMatrixFuncs ~= iq{
+            void coopMatLoad(out coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
+            void coopMatStore(coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
+          }.text;
+        }
+        cooperativeMatrixFuncs ~= iq{
+          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
+          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
+          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, __function f);
+          void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v, __function f);
+          void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
+          void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
+        }.text;
+      }
+    }
+
+    cooperativeMatrixFuncs ~= q{
+      coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C);
+      coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C, int matrixOperands);
+    };
+
+    commonBuiltins ~= cooperativeMatrixFuncs[];
   }
 
   override void initialize(
