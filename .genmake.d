@@ -8,14 +8,15 @@ import std.stdio : writeln;
 
 void main() {
 
-string glslangEntries = "glslang".dirEntries("*.d", SpanMode.breadth, false)
+string glslangSources = "glslang"
+	.dirEntries("*.d", SpanMode.breadth, false)
 	.map!(e => e.name)
 	.join(" ");
 
 string Makefile = i`
 
-artifacts/mysticsnake: $(glslangEntries)
-	dmd -od=artifacts -of=$@ -debug $^ -main
+artifacts/libmysticsnake_glslang.a: $(glslangSources)
+	dmd -of=$@ -debug $^ -lib
 
 `.text;
 
