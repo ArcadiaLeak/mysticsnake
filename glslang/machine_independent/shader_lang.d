@@ -605,17 +605,55 @@ class TSymbolTable {
   
 }
 
+TBuiltInParseables CreateBuiltInParseables(
+  TInfoSink infoSink, glslang_source_t source
+) {
+  return new TBuiltIns();
+}
+
+TParseContextBase CreateParseContext(
+  TSymbolTable symbolTable, TIntermediate intermediate, int version_,
+  glslang_profile_t profile, glslang_source_t source, glslang_stage_t language,
+  TInfoSink infoSink, in SpvVersion spvVersion, bool forwardCompatible,
+  glslang_messages_t messages, bool parsingBuiltIns, string sourceEntryPointName = ""
+) {
+  if (sourceEntryPointName.length == 0)
+    intermediate.setEntryPointName = "main";
+  return new TParseContext(
+    symbolTable, intermediate, parsingBuiltIns, version_, profile, spvVersion,
+    language, infoSink, forwardCompatible, messages, sourceEntryPointName
+  );
+}
+
 bool InitializeSymbolTables(
   TInfoSink infoSink, TSymbolTable[] commonTable,
   TSymbolTable[] symbolTables, int version_, glslang_profile_t profile,
   in SpvVersion spvVersion, glslang_source_t source
 ) {
   bool success = true;
-  scope builtInParseables = new TBuiltIns;
+  scope builtInParseables = CreateBuiltInParseables(
+    infoSink, source);
 
   if (builtInParseables is null) return false;
 
   builtInParseables.initialize(version_, profile, spvVersion);
 
+  success &= InitializeSymbolTable(
+    builtInParseables.getCommonString,
+    version_, profile, spvVersion, glslang_stage_t.STAGE_VERTEX, source,
+    infoSink, commonTable[EPrecisionClass.EPcGeneral]
+  );
+
   return success;
+}
+
+bool InitializeSymbolTable(
+  string builtIns, int version_, glslang_profile_t profile,
+  in SpvVersion spvVersion, glslang_stage_t language, glslang_source_t source,
+  TInfoSink infoSink, TSymbolTable symbolTables
+) {
+  scope intermediate = new TIntermediate(language, version_, profile);
+  intermediate.setSource = source;
+
+  return false;
 }

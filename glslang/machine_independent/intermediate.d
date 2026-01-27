@@ -84,6 +84,12 @@ class TIntermediate {
   void setOriginUpperLeft() { originUpperLeft = true; }
   bool getOriginUpperLeft() const { return originUpperLeft; }
 
+  void setEntryPointName(string ep) {
+    entryPointName = ep;
+    processes.addProcess("entry-point");
+    processes.addArgument(entryPointName);
+  }
+
   void setSpv(in SpvVersion s) {
     spvVersion = s;
 

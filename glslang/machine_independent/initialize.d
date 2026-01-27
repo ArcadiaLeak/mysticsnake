@@ -150,6 +150,9 @@ class TBuiltInParseables {
   abstract void initialize(
     TBuiltInResource resources, int version_, glslang_profile_t,
     in SpvVersion spvVersion, glslang_stage_t);
+
+  string getCommonString() const { return commonBuiltins[].idup; }
+  
 }
 
 class TBuiltIns : TBuiltInParseables {
