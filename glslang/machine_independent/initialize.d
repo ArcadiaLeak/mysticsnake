@@ -6166,6 +6166,229 @@ class TBuiltIns : TBuiltInParseables {
       `.outdent;
     }
   }
+
+  protected void addSubpassSampling(TSampler sampler, string typeName, int, glslang_profile_t) {
+    stageBuiltins.STAGE_FRAGMENT.put(prefixes[sampler.type]);
+    stageBuiltins.STAGE_FRAGMENT.put("vec4 subpassLoad");
+    stageBuiltins.STAGE_FRAGMENT.put("(");
+    stageBuiltins.STAGE_FRAGMENT.put(typeName.dup);
+    if (sampler.isMultiSample()) stageBuiltins.STAGE_FRAGMENT.put(", int");
+    stageBuiltins.STAGE_FRAGMENT.put(");\n");
+  }
+
+  protected void addImageFunctions(TSampler sampler, string typeName, int version_, glslang_profile_t profile) {
+    int dims = dimMap[sampler.dim];
+    if (sampler.arrayed && sampler.dim != TSamplerDim.EsdCube)
+      ++dims;
+
+    Appender!(char[]) imageParams = appender!(char[])(typeName.dup);
+    if (dims == 1)
+      imageParams.put(", int");
+    else {
+      imageParams.put(", ivec");
+      imageParams.put(postfixes[dims]);
+    }
+    if (sampler.isMultiSample())
+      imageParams.put(", int");
+
+    if (profile == glslang_profile_t.ES_PROFILE)
+      commonBuiltins.put("highp ");
+    commonBuiltins.put(prefixes[sampler.type]);
+    commonBuiltins.put("vec4 imageLoad(readonly volatile coherent nontemporal ");
+    commonBuiltins.put(imageParams[]);
+    commonBuiltins.put(");\n");
+
+    commonBuiltins.put("void imageStore(writeonly volatile coherent nontemporal ");
+    commonBuiltins.put(imageParams[]);
+    commonBuiltins.put(", ");
+    commonBuiltins.put(prefixes[sampler.type]);
+    commonBuiltins.put("vec4);\n");
+
+    if (!sampler.is1D() && !sampler.isBuffer() && profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins.put("int sparseImageLoadARB(readonly volatile coherent nontemporal ");
+      commonBuiltins.put(imageParams[]);
+      commonBuiltins.put(", out ");
+      commonBuiltins.put(prefixes[sampler.type]);
+      commonBuiltins.put("vec4");
+      commonBuiltins.put(");\n");
+    }
+
+    if ( profile != glslang_profile_t.ES_PROFILE ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      if (sampler.type == TBasicType.EbtInt || sampler.type == TBasicType.EbtUint || sampler.type == TBasicType.EbtInt64 || sampler.type == TBasicType.EbtUint64 ) {
+        string dataType;
+        switch (sampler.type) {
+          case(TBasicType.EbtInt): dataType = "highp int"; break;
+          case(TBasicType.EbtUint): dataType = "highp uint"; break;
+          case(TBasicType.EbtInt64): dataType = "highp int64_t"; break;
+          case(TBasicType.EbtUint64): dataType = "highp uint64_t"; break;
+          default: dataType = "";
+        }
+
+        const int numBuiltins = 7;
+
+        static string[numBuiltins] atomicFunc = [
+          " imageAtomicAdd(volatile coherent nontemporal ",
+          " imageAtomicMin(volatile coherent nontemporal ",
+          " imageAtomicMax(volatile coherent nontemporal ",
+          " imageAtomicAnd(volatile coherent nontemporal ",
+          " imageAtomicOr(volatile coherent nontemporal ",
+          " imageAtomicXor(volatile coherent nontemporal ",
+          " imageAtomicExchange(volatile coherent nontemporal "
+        ];
+
+        for (int j = 0; j < 2; ++j) {
+          for (size_t i = 0; i < numBuiltins; ++i) {
+            commonBuiltins.put(dataType.dup);
+            commonBuiltins.put(atomicFunc[i]);
+            commonBuiltins.put(imageParams[]);
+            commonBuiltins.put(", ");
+            commonBuiltins.put(dataType.dup);
+            if (j == 1) {
+              commonBuiltins.put(", int, int, int");
+            }
+            commonBuiltins.put(");\n");
+          }
+
+          commonBuiltins.put(dataType.dup);
+          commonBuiltins.put(" imageAtomicCompSwap(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", ");
+          commonBuiltins.put(dataType.dup);
+          commonBuiltins.put(", ");
+          commonBuiltins.put(dataType.dup);
+          if (j == 1) {
+            commonBuiltins.put(", int, int, int, int, int");
+          }
+          commonBuiltins.put(");\n");
+        }
+
+        commonBuiltins.put(dataType.dup);
+        commonBuiltins.put(" imageAtomicLoad(volatile coherent nontemporal ");
+        commonBuiltins.put(imageParams[]);
+        commonBuiltins.put(", int, int, int);\n");
+
+        commonBuiltins.put("void imageAtomicStore(volatile coherent nontemporal ");
+        commonBuiltins.put(imageParams[]);
+        commonBuiltins.put(", ");
+        commonBuiltins.put(dataType.dup);
+        commonBuiltins.put(", int, int, int);\n");
+      } else {
+        if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+          commonBuiltins.put("float imageAtomicExchange(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float);\n");
+        }
+
+        if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
+          const int numFp16Builtins = 4;
+          string[numFp16Builtins] atomicFp16Func = [
+            " imageAtomicAdd(volatile coherent nontemporal ",
+            " imageAtomicMin(volatile coherent nontemporal ",
+            " imageAtomicMax(volatile coherent nontemporal ",
+            " imageAtomicExchange(volatile coherent nontemporal "
+          ];
+          const int numFp16DataTypes = 2;
+          string[numFp16DataTypes] atomicFp16DataTypes = [
+            "f16vec2",
+            "f16vec4"
+          ];
+          for (int j = 0; j < numFp16DataTypes; ++j) {
+            for (int i = 0; i < numFp16Builtins; ++i) {
+              commonBuiltins.put(atomicFp16DataTypes[j]);
+              commonBuiltins.put(atomicFp16Func[i]);
+              commonBuiltins.put(imageParams[]);
+              commonBuiltins.put(", ");
+              commonBuiltins.put(atomicFp16DataTypes[j]);
+              commonBuiltins.put(");\n");
+            }
+          }
+        }
+
+        if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+          commonBuiltins.put("float imageAtomicAdd(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float);\n");
+
+          commonBuiltins.put("float imageAtomicAdd(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float");
+          commonBuiltins.put(", int, int, int);\n");
+
+          commonBuiltins.put("float imageAtomicExchange(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float);\n");
+
+          commonBuiltins.put("float imageAtomicExchange(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float");
+          commonBuiltins.put(", int, int, int);\n");
+
+          commonBuiltins.put("float imageAtomicLoad(readonly volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", int, int, int);\n");
+
+          commonBuiltins.put("void imageAtomicStore(writeonly volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float");
+          commonBuiltins.put(", int, int, int);\n");
+
+          commonBuiltins.put("float imageAtomicMin(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float);\n");
+
+          commonBuiltins.put("float imageAtomicMin(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float");
+          commonBuiltins.put(", int, int, int);\n");
+
+          commonBuiltins.put("float imageAtomicMax(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float);\n");
+
+          commonBuiltins.put("float imageAtomicMax(volatile coherent nontemporal ");
+          commonBuiltins.put(imageParams[]);
+          commonBuiltins.put(", float");
+          commonBuiltins.put(", int, int, int);\n");
+        }
+      }
+    }
+
+    if (sampler.dim == TSamplerDim.EsdRect || sampler.dim == TSamplerDim.EsdBuffer || sampler.shadow || sampler.isMultiSample())
+      return;
+
+    if (profile == glslang_profile_t.ES_PROFILE || version_ < 450)
+      return;
+
+    Appender!(char[]) imageLodParams = appender!(char[])(typeName.dup);;
+    if (dims == 1)
+      imageLodParams.put(", int");
+    else {
+      imageLodParams.put(", ivec");
+      imageLodParams.put(postfixes[dims]);
+    }
+    imageLodParams.put(", int");
+
+    commonBuiltins.put(prefixes[sampler.type]);
+    commonBuiltins.put("vec4 imageLoadLodAMD(readonly volatile coherent nontemporal ");
+    commonBuiltins.put(imageLodParams[]);
+    commonBuiltins.put(");\n");
+
+    commonBuiltins.put("void imageStoreLodAMD(writeonly volatile coherent nontemporal ");
+    commonBuiltins.put(imageLodParams[]);
+    commonBuiltins.put(", ");
+    commonBuiltins.put(prefixes[sampler.type]);
+    commonBuiltins.put("vec4);\n");
+
+    if (!sampler.is1D()) {
+      commonBuiltins.put("int sparseImageLoadLodAMD(readonly volatile coherent nontemporal ");
+      commonBuiltins.put(imageLodParams[]);
+      commonBuiltins.put(", out ");
+      commonBuiltins.put(prefixes[sampler.type]);
+      commonBuiltins.put("vec4");
+      commonBuiltins.put(");\n");
+    }
+  }
 }
 
 struct BuiltInFunction {
