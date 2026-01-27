@@ -6,6 +6,7 @@ import std.algorithm.searching;
 import std.conv;
 import std.format;
 import std.range;
+import std.string;
 import std.traits;
 
 enum string[] TypeString = [
@@ -201,7 +202,7 @@ class TBuiltIns : TBuiltInParseables {
   ) {
     addTabledBuiltins(version_, profile, spvVersion);
 
-    string derivativeControls = q{
+    string derivativeControls = `
       float dFdxFine(float p);
       vec2 dFdxFine(vec2 p);
       vec3 dFdxFine(vec3 p);
@@ -231,9 +232,9 @@ class TBuiltIns : TBuiltInParseables {
       vec2 fwidthCoarse(vec2 p);
       vec3 fwidthCoarse(vec3 p);
       vec4 fwidthCoarse(vec4 p);
-    };
+    `.outdent;
 
-    string derivativesAndControl16bits = q{
+    string derivativesAndControl16bits = `
       float16_t dFdx(float16_t);
       f16vec2 dFdx(f16vec2);
       f16vec3 dFdx(f16vec3);
@@ -278,9 +279,9 @@ class TBuiltIns : TBuiltInParseables {
       f16vec2 fwidthCoarse(f16vec2);
       f16vec3 fwidthCoarse(f16vec3);
       f16vec4 fwidthCoarse(f16vec4);
-    };
+    `.outdent;
 
-    string derivativesAndControl64bits = q{
+    string derivativesAndControl64bits = `
       float64_t dFdx(float64_t);
       f64vec2 dFdx(f64vec2);
       f64vec3 dFdx(f64vec3);
@@ -325,10 +326,10 @@ class TBuiltIns : TBuiltInParseables {
       f64vec2 fwidthCoarse(f64vec2);
       f64vec3 fwidthCoarse(f64vec3);
       f64vec4 fwidthCoarse(f64vec4);
-    };
+    `.outdent;
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         double sqrt(double);
         dvec2 sqrt(dvec2);
         dvec3 sqrt(dvec3);
@@ -552,11 +553,11 @@ class TBuiltIns : TBuiltInParseables {
         bvec2 notEqual(dvec2, dvec2);
         bvec3 notEqual(dvec3, dvec3);
         bvec4 notEqual(dvec4, dvec4);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float64_t sqrt(float64_t);
         f64vec2 sqrt(f64vec2);
         f64vec3 sqrt(f64vec3);
@@ -746,12 +747,12 @@ class TBuiltIns : TBuiltInParseables {
         f64mat2 inverse(f64mat2);
         f64mat3 inverse(f64mat3);
         f64mat4 inverse(f64mat4);
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int64_t abs(int64_t);
         i64vec2 abs(i64vec2);
         i64vec3 abs(i64vec3);
@@ -912,11 +913,11 @@ class TBuiltIns : TBuiltInParseables {
         i64vec2 findMSB(u64vec2);
         i64vec3 findMSB(u64vec3);
         i64vec4 findMSB(u64vec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float min3(float, float, float);
         vec2 min3(vec2, vec2, vec2);
         vec3 min3(vec3, vec3, vec3);
@@ -1006,12 +1007,12 @@ class TBuiltIns : TBuiltInParseables {
         u16vec2 mid3(u16vec2, u16vec2, u16vec2);
         u16vec3 mid3(u16vec3, u16vec3, u16vec3);
         u16vec4 mid3(u16vec4, u16vec4, u16vec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 430)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint atomicAdd(coherent volatile nontemporal inout uint, uint, int, int, int);
         int atomicAdd(coherent volatile nontemporal inout int, int, int, int, int);
 
@@ -1041,11 +1042,11 @@ class TBuiltIns : TBuiltInParseables {
 
         void atomicStore(coherent volatile nontemporal out uint, uint, int, int, int);
         void atomicStore(coherent volatile nontemporal out int, int, int, int, int);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 440) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint64_t atomicMin(coherent volatile nontemporal inout uint64_t, uint64_t);
         int64_t atomicMin(coherent volatile nontemporal inout int64_t, int64_t);
         uint64_t atomicMin(coherent volatile nontemporal inout uint64_t, uint64_t, int, int, int);
@@ -1121,11 +1122,11 @@ class TBuiltIns : TBuiltInParseables {
         void atomicStore(coherent volatile nontemporal out float16_t, float16_t, int, int, int);
         void atomicStore(coherent volatile nontemporal out float, float, int, int, int);
         void atomicStore(coherent volatile nontemporal out double, double, int, int, int);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         f16vec2 atomicAdd(coherent volatile nontemporal inout f16vec2, f16vec2);
         f16vec4 atomicAdd(coherent volatile nontemporal inout f16vec4, f16vec4);
         f16vec2 atomicMin(coherent volatile nontemporal inout f16vec2, f16vec2);
@@ -1134,12 +1135,12 @@ class TBuiltIns : TBuiltInParseables {
         f16vec4 atomicMax(coherent volatile nontemporal inout f16vec4, f16vec4);
         f16vec2 atomicExchange(coherent volatile nontemporal inout f16vec2, f16vec2);
         f16vec4 atomicExchange(coherent volatile nontemporal inout f16vec4, f16vec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int floatBitsToInt(highp float value);
         ivec2 floatBitsToInt(highp vec2 value);
         ivec3 floatBitsToInt(highp vec3 value);
@@ -1159,40 +1160,40 @@ class TBuiltIns : TBuiltInParseables {
         vec2 uintBitsToFloat(highp uvec2 value);
         vec3 uintBitsToFloat(highp uvec3 value);
         vec4 uintBitsToFloat(highp uvec4 value);
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float fma(float, float, float);
         vec2 fma(vec2, vec2, vec2);
         vec3 fma(vec3, vec3, vec3);
         vec4 fma(vec4, vec4, vec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         double fma(double, double, double);
         dvec2 fma(dvec2, dvec2, dvec2);
         dvec3 fma(dvec3, dvec3, dvec3);
         dvec4 fma(dvec4, dvec4, dvec4);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float64_t fma(float64_t, float64_t, float64_t);
         f64vec2 fma(f64vec2, f64vec2, f64vec2);
         f64vec3 fma(f64vec3, f64vec3, f64vec3);
         f64vec4 fma(f64vec4, f64vec4, f64vec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float frexp(highp float, out highp int);
         vec2 frexp(highp vec2, out highp ivec2);
         vec3 frexp(highp vec3, out highp ivec3);
@@ -1202,11 +1203,11 @@ class TBuiltIns : TBuiltInParseables {
         vec2 ldexp(highp vec2, highp ivec2);
         vec3 ldexp(highp vec3, highp ivec3);
         vec4 ldexp(highp vec4, highp ivec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         double frexp(double, out int);
         dvec2 frexp(dvec2, out ivec2);
         dvec3 frexp(dvec3, out ivec3);
@@ -1219,11 +1220,11 @@ class TBuiltIns : TBuiltInParseables {
 
         double packDouble2x32(uvec2);
         uvec2 unpackDouble2x32(double);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float64_t frexp(float64_t, out int);
         f64vec2 frexp(f64vec2, out ivec2);
         f64vec3 frexp(f64vec3, out ivec3);
@@ -1233,64 +1234,64 @@ class TBuiltIns : TBuiltInParseables {
         f64vec2 ldexp(f64vec2, ivec2);
         f64vec3 ldexp(f64vec3, ivec3);
         f64vec4 ldexp(f64vec4, ivec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         highp uint packUnorm2x16(vec2);
         vec2 unpackUnorm2x16(highp uint);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         highp uint packSnorm2x16(vec2);
         vec2 unpackSnorm2x16(highp uint);
         highp uint packHalf2x16(vec2);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 300) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         mediump vec2 unpackHalf2x16(highp uint);
-      };
+      `.outdent;
     } else if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         vec2 unpackHalf2x16(highp uint);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         highp uint packSnorm4x8(vec4);
         highp uint packUnorm4x8(vec4);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         mediump vec4 unpackSnorm4x8(highp uint);
         mediump vec4 unpackUnorm4x8(highp uint);
-      };
+      `.outdent;
     } else if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         vec4 unpackSnorm4x8(highp uint);
         vec4 unpackUnorm4x8(highp uint);
-      };
+      `.outdent;
     }
 
-    commonBuiltins ~= q{
+    commonBuiltins ~= `
       mat2 matrixCompMult(mat2 x, mat2 y);
       mat3 matrixCompMult(mat3 x, mat3 y);
       mat4 matrixCompMult(mat4 x, mat4 y);
-    };
+    `.outdent;
 
     if (version_ >= 120) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         mat2 outerProduct(vec2 c, vec2 r);
         mat3 outerProduct(vec3 c, vec3 r);
         mat4 outerProduct(vec4 c, vec4 r);
@@ -1317,10 +1318,10 @@ class TBuiltIns : TBuiltInParseables {
         mat3x4 matrixCompMult(mat3x4, mat3x4);
         mat4x2 matrixCompMult(mat4x2, mat4x2);
         mat4x3 matrixCompMult(mat4x3, mat4x3);
-      };
+      `.outdent;
 
       if (version_ >= 150) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           float determinant(mat2 m);
           float determinant(mat3 m);
           float determinant(mat4 m);
@@ -1328,7 +1329,7 @@ class TBuiltIns : TBuiltInParseables {
           mat2 inverse(mat2 m);
           mat3 inverse(mat3 m);
           mat4 inverse(mat4 m);
-        };
+        `.outdent;
       }
     }
 
@@ -1337,7 +1338,7 @@ class TBuiltIns : TBuiltInParseables {
       profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
       profile == glslang_profile_t.NO_PROFILE) {
       if (spvVersion.spv == 0) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           vec4 texture2D(sampler2D, vec2);
 
           vec4 texture2DProj(sampler2D, vec3);
@@ -1347,7 +1348,7 @@ class TBuiltIns : TBuiltInParseables {
           vec4 texture3DProj(sampler3D, vec4);
 
           vec4 textureCube(samplerCube, vec3);
-        };
+        `.outdent;
       }
     }
 
@@ -1355,7 +1356,7 @@ class TBuiltIns : TBuiltInParseables {
       profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
       profile == glslang_profile_t.NO_PROFILE) {
       if (spvVersion.spv == 0) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           "vec4 texture1D(sampler1D, float);"
 
           "vec4 texture1DProj(sampler1D, vec2);"
@@ -1382,20 +1383,20 @@ class TBuiltIns : TBuiltInParseables {
           "vec4 texture1DArrayLod(sampler1DArray, vec2, float);"
           "vec4 texture2DArrayLod(sampler2DArray, vec3, float);"
           "vec4 shadow1DArrayLod(sampler1DArrayShadow, vec3, float);"
-        };
+        `.outdent;
       }
     }
 
     if (profile == glslang_profile_t.ES_PROFILE) {
       if (spvVersion.spv == 0) {
         if (version_ < 300) {
-          commonBuiltins ~= q{
+          commonBuiltins ~= `
             vec4 texture2D(samplerExternalOES, vec2 coord);
             vec4 texture2DProj(samplerExternalOES, vec3);
             vec4 texture2DProj(samplerExternalOES, vec4);
-          };
+          `.outdent;
         } else {
-          commonBuiltins ~= q{
+          commonBuiltins ~= `
             highp ivec2 textureSize(samplerExternalOES, int lod);
             vec4 texture(samplerExternalOES, vec2);
             vec4 texture(samplerExternalOES, vec2, float bias);
@@ -1404,9 +1405,9 @@ class TBuiltIns : TBuiltInParseables {
             vec4 textureProj(samplerExternalOES, vec4);
             vec4 textureProj(samplerExternalOES, vec4, float bias);
             vec4 texelFetch(samplerExternalOES, ivec2, int lod);
-          };
+          `.outdent;
         }
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           highp ivec2 textureSize(__samplerExternal2DY2YEXT, int lod);
           vec4 texture(__samplerExternal2DY2YEXT, vec2);
           vec4 texture(__samplerExternal2DY2YEXT, vec2, float bias);
@@ -1415,8 +1416,8 @@ class TBuiltIns : TBuiltInParseables {
           vec4 textureProj(__samplerExternal2DY2YEXT, vec4);
           vec4 textureProj(__samplerExternal2DY2YEXT, vec4, float bias);
           vec4 texelFetch(__samplerExternal2DY2YEXT sampler, ivec2, int lod);
-        };
-        commonBuiltins ~= q{
+        `.outdent;
+        commonBuiltins ~= `
           vec4 texture2DGradEXT(sampler2D, vec2, vec2, vec2);
           vec4 texture2DProjGradEXT(sampler2D, vec3, vec2, vec2);
           vec4 texture2DProjGradEXT(sampler2D, vec4, vec2, vec2);
@@ -1424,12 +1425,12 @@ class TBuiltIns : TBuiltInParseables {
 
           float shadow2DEXT(sampler2DShadow, vec3);
           float shadow2DProjEXT(sampler2DShadow, vec4);
-        };
+        `.outdent;
       }
     }
 
     if (spvVersion.spv == 0 && profile != glslang_profile_t.ES_PROFILE) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float noise1(float x);
         float noise1(vec2 x);
         float noise1(vec3 x);
@@ -1449,20 +1450,20 @@ class TBuiltIns : TBuiltInParseables {
         vec4 noise4(vec2 x);
         vec4 noise4(vec3 x);
         vec4 noise4(vec4 x);
-      };
+      `.outdent;
     }
 
     if (spvVersion.vulkan == 0) {
       if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 300) ||
         (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           uint atomicCounterIncrement(atomic_uint);
           uint atomicCounterDecrement(atomic_uint);
           uint atomicCounter(atomic_uint);
-        };
+        `.outdent;
       }
       if (profile != glslang_profile_t.ES_PROFILE && version_ == 450) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           uint atomicCounterAddARB(atomic_uint, uint);
           uint atomicCounterSubtractARB(atomic_uint, uint);
           uint atomicCounterMinARB(atomic_uint, uint);
@@ -1472,11 +1473,11 @@ class TBuiltIns : TBuiltInParseables {
           uint atomicCounterXorARB(atomic_uint, uint);
           uint atomicCounterExchangeARB(atomic_uint, uint);
           uint atomicCounterCompSwapARB(atomic_uint, uint, uint);
-        };
+        `.outdent;
       }
 
       if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           uint atomicCounterAdd(atomic_uint, uint);
           uint atomicCounterSubtract(atomic_uint, uint);
           uint atomicCounterMin(atomic_uint, uint);
@@ -1486,19 +1487,19 @@ class TBuiltIns : TBuiltInParseables {
           uint atomicCounterXor(atomic_uint, uint);
           uint atomicCounterExchange(atomic_uint, uint);
           uint atomicCounterCompSwap(atomic_uint, uint, uint);
-        };
+        `.outdent;
       }
     } else if (spvVersion.vulkanRelaxed) {
       if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 300) ||
         (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           uint atomicCounterIncrement(volatile coherent nontemporal uint);
           uint atomicCounterDecrement(volatile coherent nontemporal uint);
           uint atomicCounter(volatile coherent nontemporal uint);
-        };
+        `.outdent;
       }
       if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           uint atomicCounterAdd(volatile coherent nontemporal uint, uint);
           uint atomicCounterSubtract(volatile coherent nontemporal uint, uint);
           uint atomicCounterMin(volatile coherent nontemporal uint, uint);
@@ -1508,13 +1509,13 @@ class TBuiltIns : TBuiltInParseables {
           uint atomicCounterXor(volatile coherent nontemporal uint, uint);
           uint atomicCounterExchange(volatile coherent nontemporal uint, uint);
           uint atomicCounterCompSwap(volatile coherent nontemporal uint, uint, uint);
-        };
+        `.outdent;
       }
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int bitfieldExtract(int, int, int);
         ivec2 bitfieldExtract(ivec2, int, int);
         ivec3 bitfieldExtract(ivec3, int, int);
@@ -1534,11 +1535,11 @@ class TBuiltIns : TBuiltInParseables {
         uvec2 bitfieldInsert(uvec2 base, uvec2, int, int);
         uvec3 bitfieldInsert(uvec3 base, uvec3, int, int);
         uvec4 bitfieldInsert(uvec4 base, uvec4, int, int);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int findLSB(int);
         ivec2 findLSB(ivec2);
         ivec3 findLSB(ivec3);
@@ -1548,9 +1549,9 @@ class TBuiltIns : TBuiltInParseables {
         ivec2 findLSB(uvec2);
         ivec3 findLSB(uvec3);
         ivec4 findLSB(uvec4);
-      };
+      `.outdent;
     } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         lowp int findLSB(int);
         lowp ivec2 findLSB(ivec2);
         lowp ivec3 findLSB(ivec3);
@@ -1560,11 +1561,11 @@ class TBuiltIns : TBuiltInParseables {
         lowp ivec2 findLSB(uvec2);
         lowp ivec3 findLSB(uvec3);
         lowp ivec4 findLSB(uvec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int bitCount(int);
         ivec2 bitCount(ivec2);
         ivec3 bitCount(ivec3);
@@ -1584,11 +1585,11 @@ class TBuiltIns : TBuiltInParseables {
         ivec2 findMSB(highp uvec2);
         ivec3 findMSB(highp uvec3);
         ivec4 findMSB(highp uvec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150 && version_ < 450) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int64_t packInt2x32(ivec2);
         uint64_t packUint2x32(uvec2);
         ivec2 unpackInt2x32(int64_t);
@@ -1706,20 +1707,20 @@ class TBuiltIns : TBuiltInParseables {
         bvec2 notEqual(dvec2, dvec2);
         bvec3 notEqual(dvec3, dvec3);
         bvec4 notEqual(dvec4, dvec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         bool anyThreadNV(bool);
         bool allThreadsNV(bool);
         bool allThreadsEqualNV(bool);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint uaddCarry(highp uint, highp uint, out lowp uint carry);
         uvec2 uaddCarry(highp uvec2, highp uvec2, out lowp uvec2 carry);
         uvec3 uaddCarry(highp uvec3, highp uvec3, out lowp uvec3 carry);
@@ -1749,11 +1750,11 @@ class TBuiltIns : TBuiltInParseables {
         uvec2 bitfieldReverse(highp uvec2);
         uvec3 bitfieldReverse(highp uvec3);
         uvec4 bitfieldReverse(highp uvec4);
-      };
+      `.outdent;
     }
 
     if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         lowp int bitCount(int);
         lowp ivec2 bitCount(ivec2);
         lowp ivec3 bitCount(ivec3);
@@ -1773,11 +1774,11 @@ class TBuiltIns : TBuiltInParseables {
         lowp ivec2 findMSB(highp uvec2);
         lowp ivec3 findMSB(highp uvec3);
         lowp ivec4 findMSB(highp uvec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint64_t ballotARB(bool);
 
         float readInvocationARB(float, uint);
@@ -1809,20 +1810,20 @@ class TBuiltIns : TBuiltInParseables {
         uvec2 readFirstInvocationARB(uvec2);
         uvec3 readFirstInvocationARB(uvec3);
         uvec4 readFirstInvocationARB(uvec4);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         bool anyInvocationARB(bool);
         bool allInvocationsARB(bool);
         bool allInvocationsEqualARB(bool);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 450)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint dotEXT(uvec2 a, uvec2 b);
         int dotEXT(ivec2 a, ivec2 b);
         int dotEXT(ivec2 a, uvec2 b);
@@ -1952,12 +1953,12 @@ class TBuiltIns : TBuiltInParseables {
         int64_t dotAccSatEXT(i64vec4 a, u64vec4 b, int64_t c);
         int64_t dotAccSatEXT(u64vec4 a, i64vec4 b, int64_t c);
         int64_t dotAccSatEXT(i64vec4 a, i64vec4 b, int64_t c);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void subgroupBarrier();
         void subgroupMemoryBarrier();
         void subgroupMemoryBarrierBuffer();
@@ -1974,7 +1975,7 @@ class TBuiltIns : TBuiltInParseables {
         uint subgroupBallotExclusiveBitCount(uvec4);
         uint subgroupBallotFindLSB(uvec4);
         uint subgroupBallotFindMSB(uvec4);
-      };
+      `.outdent;
 
       enum string[] subgroupOps = [
         "bool subgroupAllEqual(%s);\n",
@@ -2099,35 +2100,35 @@ class TBuiltIns : TBuiltInParseables {
         }
       }
 
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         void subgroupMemoryBarrierShared();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         void subgroupMemoryBarrierShared();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         void subgroupMemoryBarrierShared();
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         bool subgroupQuadAll(bool);
         bool subgroupQuadAny(bool);
-      };   
+      `.outdent;   
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         bool anyInvocation(bool);
         bool allInvocations(bool);
         bool allInvocationsEqual(bool);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float minInvocationsAMD(float);
         vec2 minInvocationsAMD(vec2);
         vec3 minInvocationsAMD(vec3);
@@ -2984,21 +2985,21 @@ class TBuiltIns : TBuiltInParseables {
         uvec4 writeInvocationAMD(uvec4, uvec4, uint);
 
         uint mbcntAMD(uint64_t);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 440) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float cubeFaceIndexAMD(vec3);
         vec2 cubeFaceCoordAMD(vec3);
         uint64_t timeAMD();
 
         in int gl_SIMDGroupSizeAMD;
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint fragmentMaskFetchAMD(sampler2DMS, ivec2);
         uint fragmentMaskFetchAMD(isampler2DMS, ivec2);
         uint fragmentMaskFetchAMD(usampler2DMS, ivec2);
@@ -3014,12 +3015,12 @@ class TBuiltIns : TBuiltInParseables {
         vec4 fragmentFetchAMD(sampler2DMSArray, ivec3, uint);
         ivec4 fragmentFetchAMD(isampler2DMSArray, ivec3, uint);
         uvec4 fragmentFetchAMD(usampler2DMSArray, ivec3, uint);
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 130) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 300)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uint countLeadingZeros(uint);
         uvec2 countLeadingZeros(uvec2);
         uvec3 countLeadingZeros(uvec3);
@@ -3189,12 +3190,12 @@ class TBuiltIns : TBuiltInParseables {
         uvec2 multiply32x16(uvec2, uvec2);
         uvec3 multiply32x16(uvec3, uvec3);
         uvec4 multiply32x16(uvec4, uvec4);
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         struct gl_TextureFootprint2DNV {
           uvec2 anchor;
           uvec2 offset;
@@ -3223,12 +3224,12 @@ class TBuiltIns : TBuiltInParseables {
         bool textureFootprintLodNV(sampler3D, vec3, float, int, bool, out gl_TextureFootprint3DNV);
         bool textureFootprintGradNV(sampler2D, vec2, vec2, vec2, int, bool, out gl_TextureFootprint2DNV);
         bool textureFootprintGradClampNV(sampler2D, vec2, vec2, vec2, float, int, bool, out gl_TextureFootprint2DNV);
-      };   
+      `.outdent;   
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300 && version_ < 310) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 150 && version_ < 450)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int mix(int, int, bool);
         ivec2 mix(ivec2, ivec2, bvec2);
         ivec3 mix(ivec3, ivec3, bvec3);
@@ -3241,12 +3242,12 @@ class TBuiltIns : TBuiltInParseables {
         bvec2 mix(bvec2, bvec2, bvec2);
         bvec3 mix(bvec3, bvec3, bvec3);
         bvec4 mix(bvec4, bvec4, bvec4);
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float16_t radians(float16_t);
         f16vec2 radians(f16vec2);
         f16vec3 radians(f16vec3);
@@ -3614,7 +3615,7 @@ class TBuiltIns : TBuiltInParseables {
         bf16vec3 uintBitsToBFloat16EXT(u16vec3 value);
         bf16vec4 uintBitsToBFloat16EXT(u16vec4 value);
 
-      int8_t floate5m2BitsToIntEXT(floate5m2_t value);
+        int8_t floate5m2BitsToIntEXT(floate5m2_t value);
         i8vec2 floate5m2BitsToIntEXT(fe5m2vec2 value);
         i8vec3 floate5m2BitsToIntEXT(fe5m2vec3 value);
         i8vec4 floate5m2BitsToIntEXT(fe5m2vec4 value);
@@ -3634,7 +3635,7 @@ class TBuiltIns : TBuiltInParseables {
         fe5m2vec3 uintBitsToFloate5m2EXT(u8vec3 value);
         fe5m2vec4 uintBitsToFloate5m2EXT(u8vec4 value);
 
-      int8_t floate4m3BitsToIntEXT(floate4m3_t value);
+        int8_t floate4m3BitsToIntEXT(floate4m3_t value);
         i8vec2 floate4m3BitsToIntEXT(fe4m3vec2 value);
         i8vec3 floate4m3BitsToIntEXT(fe4m3vec3 value);
         i8vec4 floate4m3BitsToIntEXT(fe4m3vec4 value);
@@ -3655,12 +3656,12 @@ class TBuiltIns : TBuiltInParseables {
         fe4m3vec4 uintBitsToFloate4m3EXT(u8vec4 value);
 
         void saturatedConvertEXT();
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         int8_t abs(int8_t);
         i8vec2 abs(i8vec2);
         i8vec3 abs(i8vec3);
@@ -4089,12 +4090,12 @@ class TBuiltIns : TBuiltInParseables {
         u64vec2 expectEXT(u64vec2, u64vec2);
         u64vec3 expectEXT(u64vec3, u64vec3);
         u64vec4 expectEXT(u64vec4, u64vec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 300) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 130)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         float texture(sampler2DArrayShadow, vec4, float);
         float texture(samplerCubeArrayShadow, vec4, float, float);
         float textureLod(sampler2DArrayShadow, vec4, float);
@@ -4102,12 +4103,12 @@ class TBuiltIns : TBuiltInParseables {
         float textureLod(samplerCubeArrayShadow, vec4, float, float);
         float textureLodOffset(sampler2DArrayShadow, vec4, float, ivec2);
         float textureOffset(sampler2DArrayShadow, vec4, ivec2, float);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
       stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl64bits;
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         float64_t interpolateAtCentroid(float64_t);
         f64vec2 interpolateAtCentroid(f64vec2);
         f64vec3 interpolateAtCentroid(f64vec3);
@@ -4122,12 +4123,12 @@ class TBuiltIns : TBuiltInParseables {
         f64vec2 interpolateAtOffset(f64vec2, f64vec2);
         f64vec3 interpolateAtOffset(f64vec3, f64vec2);
         f64vec4 interpolateAtOffset(f64vec4, f64vec2);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void assumeEXT(bool);
 
         bool expectEXT(bool, bool);
@@ -4144,12 +4145,12 @@ class TBuiltIns : TBuiltInParseables {
         uvec2 expectEXT(uvec2, uvec2);
         uvec3 expectEXT(uvec3, uvec3);
         uvec4 expectEXT(uvec4, uvec4);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         vec4 textureWeightedQCOM(sampler2D, vec2, sampler2DArray);
         vec4 textureWeightedQCOM(sampler2D, vec2, sampler1DArray);
         vec4 textureBoxFilterQCOM(sampler2D, vec2, vec2);
@@ -4160,13 +4161,13 @@ class TBuiltIns : TBuiltInParseables {
         vec4 textureBlockMatchWindowSADQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
         vec4 textureBlockMatchGatherSSDQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
         vec4 textureBlockMatchGatherSADQCOM(sampler2D, uvec2, sampler2D, uvec2, uvec2);
-      };
+      `.outdent;
     }
 
     if (spvVersion.vulkan == 0 && IncludeLegacy(version_, profile, spvVersion))
-      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
         vec4 ftransform();
-      };
+      `.outdent;
 
     Appender!(char[])* s;
     if (version_ == 100)
@@ -4178,21 +4179,21 @@ class TBuiltIns : TBuiltInParseables {
       profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
       profile == glslang_profile_t.NO_PROFILE) {
       if (spvVersion.spv == 0) {
-        s.put = q{
+        s.put = `
           vec4 texture2DLod(sampler2D, vec2, float);
           vec4 texture2DProjLod(sampler2D, vec3, float);
           vec4 texture2DProjLod(sampler2D, vec4, float);
           vec4 texture3DLod(sampler3D, vec3, float);
           vec4 texture3DProjLod(sampler3D, vec4, float);
           vec4 textureCubeLod(samplerCube, vec3, float);
-        };
+        `.outdent;
       }
     }
     if ((profile == glslang_profile_t.CORE_PROFILE && version_ < 420) ||
       profile == glslang_profile_t.COMPATIBILITY_PROFILE ||
       profile == glslang_profile_t.NO_PROFILE) {
       if (spvVersion.spv == 0) {
-        s.put = q{
+        s.put = `
           vec4 texture1DLod(sampler1D, float, float);
           vec4 texture1DProjLod(sampler1D, vec2, float);
           vec4 texture1DProjLod(sampler1D, vec4, float);
@@ -4219,85 +4220,85 @@ class TBuiltIns : TBuiltInParseables {
           vec4 texture2DRectProjGradARB(sampler2DRect, vec4, vec2, vec2);
           vec4 shadow2DRectGradARB(sampler2DRectShadow, vec3, vec2, vec2);
           vec4 shadow2DRectProjGradARB(sampler2DRectShadow, vec4, vec2, vec2);
-        };
+        `.outdent;
       }
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
       if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= q{
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
           void EmitStreamVertex(int);
           void EndStreamPrimitive(int);
-        };
+        `.outdent;
       }
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
         void EmitVertex();
         void EndPrimitive();
-      };
+      `.outdent;
     }
 
     bool esBarrier = (profile == glslang_profile_t.ES_PROFILE && version_ >= 310);
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) || esBarrier)
-      stageBuiltins[glslang_stage_t.STAGE_TESSCONTROL] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_TESSCONTROL] ~= `
         void barrier();
-      };
+      `.outdent;
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier)
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         void barrier();
-      };
+      `.outdent;
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         void barrier();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         void barrier();
-      };
+      `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 130) || esBarrier)
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void memoryBarrier();
-      };
+      `.outdent;
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void memoryBarrierBuffer();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
-      };
+      `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier) {
       if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           void memoryBarrierAtomicCounter();
-        };
+        `.outdent;
       }
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void memoryBarrierImage();
-      };
+      `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
-      };
+      `.outdent;
     }
 
-    commonBuiltins ~= q{
+    commonBuiltins ~= `
       void controlBarrier(int, int, int, int);
       void memoryBarrier(int, int, int);
       void debugPrintfEXT();
-    };
+    `.outdent;
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float16_t[] buf, uint element, uint stride, bool colMajor);
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float[] buf, uint element, uint stride, bool colMajor);
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
@@ -4372,7 +4373,7 @@ class TBuiltIns : TBuiltInParseables {
 
         icoopmatNV coopMatMulAddNV(icoopmatNV A, icoopmatNV B, icoopmatNV C);
         ucoopmatNV coopMatMulAddNV(ucoopmatNV A, ucoopmatNV B, ucoopmatNV C);
-      };
+      `.outdent;
 
       Appender!(char[]) cooperativeMatrixFuncs = appender!(char[]);
 
@@ -4396,30 +4397,30 @@ class TBuiltIns : TBuiltInParseables {
 
         foreach (elemTy; ["uint", "uint64_t"]) {
           foreach (t; allTypes) {
-            cooperativeMatrixFuncs ~= iq{
+            cooperativeMatrixFuncs ~= i`
               void coopMatLoad(out coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
               void coopMatStore(coopmat m, volatile coherent nontemporal $(t)[] buf, $(elemTy) element, uint stride, int matrixLayout);
-            }.text;
+            `.text.outdent;
           }
-          cooperativeMatrixFuncs ~= iq{
+          cooperativeMatrixFuncs ~= i`
             void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
             void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
             void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, __function f);
             void coopMatLoadTensorNV(inout coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v, __function f);
             void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t);
             void coopMatStoreTensorNV(coopmat m, volatile coherent nontemporal uint8_t[] buf, $(elemTy) element, tensorLayoutNV t, tensorViewNV v);
-          }.text;
+          `.text.outdent;
         }
       }
 
-      cooperativeMatrixFuncs ~= q{
+      cooperativeMatrixFuncs ~= `
         coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C);
         coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C, int matrixOperands);
-      };
+      `.outdent;
 
       commonBuiltins ~= cooperativeMatrixFuncs[];
 
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         const int gl_MatrixUseA = 0;
         const int gl_MatrixUseB = 1;
         const int gl_MatrixUseAccumulator = 2;
@@ -4443,7 +4444,7 @@ class TBuiltIns : TBuiltInParseables {
         const int gl_CooperativeMatrixClampModeClampToEdgeNV = 0x2;
         const int gl_CooperativeMatrixClampModeRepeatNV = 0x3;
         const int gl_CooperativeMatrixClampModeMirrorRepeatNV = 0x4;
-      };
+      `.outdent;
 
       {
         Appender!(char[]) coopMatConvFuncs = appender!(char[]);
@@ -4454,9 +4455,9 @@ class TBuiltIns : TBuiltInParseables {
 
         foreach (srcEltTy; eltTypes) {
           foreach (dstEltTy; eltTypes) {
-            coopMatConvFuncs ~= iq{
+            coopMatConvFuncs ~= i`
               void bitcastQCOM($(srcEltTy) SrcArr[], $(dstEltTy) DstArr[]);
-            }.text;
+            `.text.outdent;
           }
         }
 
@@ -4464,24 +4465,24 @@ class TBuiltIns : TBuiltInParseables {
           eltTy; ["float32_t", "float16_t", "int8_t",
             "uint8_t", "uint32_t", "uint", "int32_t", "int"]
         ) {
-          coopMatConvFuncs ~= iq{
+          coopMatConvFuncs ~= i`
             void vectorToCoopmatQCOM($(eltTy) SrcVec[], coopmat CM);
             void coopmatToVectorQCOM(coopmat CM, $(eltTy) Dstvec[]);
-          }.text;
+          `.text.outdent;
         }
 
         foreach (eltTy; ["uint32_t", "uint", "int32_t", "int",
           "float32_t", "float", "float16_t"]
         ) {
-          coopMatConvFuncs ~= iq{
+          coopMatConvFuncs ~= i`
             void extractSubArrayQCOM($(eltTy) arr[], uint index, $(eltTy) subarr[]);
-          }.text;
+          `.text.outdent;
         }
 
         commonBuiltins ~= coopMatConvFuncs[];
       }
 
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         tensorLayoutNV createTensorLayoutNV(uint Dim);
         tensorLayoutNV createTensorLayoutNV(uint Dim, uint Mode);
 
@@ -4532,7 +4533,7 @@ class TBuiltIns : TBuiltInParseables {
         tensorViewNV setTensorViewStrideNV(tensorViewNV v, uint stride0, uint stride1, uint stride2, uint stride3, uint stride4);
 
         tensorViewNV setTensorViewClipNV(tensorViewNV v, uint clipRowOffset, uint clipRowSpan, uint clipColOffset, uint clipColSpan);
-      };
+      `.outdent;
 
       enum string[] tensorDataTypesARM = [
         "bool",
@@ -4542,16 +4543,16 @@ class TBuiltIns : TBuiltInParseables {
       ];
       Appender!(char[]) ostream = appender!(char[]);
       foreach (t; tensorDataTypesARM) {
-        ostream ~= iq{
+        ostream ~= i`
           void tensorReadARM(readonly tensorARM t, uint coords[], out $(t)  data, uint tensorOperands = 0U, ...);
           void tensorWriteARM(writeonly tensorARM t, uint coords[], $(t) data, uint tensorOperands = 0U, ...);
           void tensorReadARM(readonly tensorARM t, uint coords[], $(t) data[], uint tensorOperands = 0U, ...);
           void tensorWriteARM(writeonly tensorARM t, uint coords[], $(t) data[], uint tensorOperands = 0U, ...);
-        }.text;
+        `.text.outdent;
       }
-      ostream ~= q{
+      ostream ~= `
         uint tensorSizeARM(readonly writeonly tensorARM t, uint dim);
-      };
+      `.outdent;
       commonBuiltins ~= ostream[];
     }
 
@@ -4594,7 +4595,7 @@ class TBuiltIns : TBuiltInParseables {
             ~ i"$(basicTy)[] buf, $(offsetTy) offset);\n".text;
         }
       }
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         coopvecNV fma(coopvecNV, coopvecNV, coopvecNV);
         coopvecNV min(coopvecNV, coopvecNV);
         coopvecNV max(coopvecNV, coopvecNV);
@@ -4604,7 +4605,7 @@ class TBuiltIns : TBuiltInParseables {
         coopvecNV tanh(coopvecNV);            
         coopvecNV atan(coopvecNV);            
         coopvecNV clamp(coopvecNV, coopvecNV, coopvecNV);
-      };
+      `.outdent;
 
       enum string[] scalarAndVectorTypes = [
         "int8_t",
@@ -4662,7 +4663,7 @@ class TBuiltIns : TBuiltInParseables {
         }
       }
 
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         const int gl_CooperativeVectorMatrixLayoutRowMajorNV = 0;
         const int gl_CooperativeVectorMatrixLayoutColumnMajorNV = 1;
         const int gl_CooperativeVectorMatrixLayoutInferencingOptimalNV = 2;
@@ -4683,21 +4684,21 @@ class TBuiltIns : TBuiltInParseables {
         const int gl_ComponentTypeUnsignedInt8PackedNV = 1000491001;
         const int gl_ComponentTypeFloatE4M3NV = 1000491002;
         const int gl_ComponentTypeFloatE5M2NV = 1000491003;
-      };
+      `.outdent;
     }
 
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE || version_ == 100)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         vec4 texture2D(sampler2D, vec2, float);
         vec4 texture2DProj(sampler2D, vec3, float);
         vec4 texture2DProj(sampler2D, vec4, float);
         vec4 texture3D(sampler3D, vec3, float);
         vec4 texture3DProj(sampler3D, vec4, float);
         vec4 textureCube(samplerCube, vec3, float);
-      };
+      `.outdent;
     }
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE && version_ > 100)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         vec4 texture1D(sampler1D, float, float);
         vec4 texture1DProj(sampler1D, vec2, float);
         vec4 texture1DProj(sampler1D, vec4, float);
@@ -4705,19 +4706,19 @@ class TBuiltIns : TBuiltInParseables {
         vec4 shadow2D(sampler2DShadow, vec3, float);
         vec4 shadow1DProj(sampler1DShadow, vec4, float);
         vec4 shadow2DProj(sampler2DShadow, vec4, float);
-      };
+      `.outdent;
     }
     if (spvVersion.spv == 0 && profile == glslang_profile_t.ES_PROFILE) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         vec4 texture2DLodEXT(sampler2D, vec2, float);
         vec4 texture2DProjLodEXT(sampler2D, vec3, float);
         vec4 texture2DProjLodEXT(sampler2D, vec4, float);
         vec4 textureCubeLodEXT(samplerCube, vec3, float);
-      };
+      `.outdent;
     }
 
     if (spvVersion.vulkan > 0) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         lowp uint stencilAttachmentReadEXT();
         lowp uint stencilAttachmentReadEXT(int);
         highp float depthAttachmentReadEXT();
@@ -4729,7 +4730,7 @@ class TBuiltIns : TBuiltInParseables {
         ivec4 colorAttachmentReadEXT(iattachmentEXT, int);
         uvec4 colorAttachmentReadEXT(uattachmentEXT);
         uvec4 colorAttachmentReadEXT(uattachmentEXT, int);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 400) {
@@ -4738,7 +4739,7 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         float interpolateAtCentroid(float);
         vec2 interpolateAtCentroid(vec2);
         vec3 interpolateAtCentroid(vec3);
@@ -4753,18 +4754,18 @@ class TBuiltIns : TBuiltInParseables {
         vec2 interpolateAtOffset(vec2, vec2);
         vec3 interpolateAtOffset(vec3, vec2);
         vec4 interpolateAtOffset(vec4, vec2);
-      };
+      `.outdent;
     }
 
-    stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+    stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
       void beginInvocationInterlockARB(void);
       void endInvocationInterlockARB(void);
 
       bool helperInvocationEXT();
-    };
+    `.outdent;
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         float interpolateAtVertexAMD(float, uint);
         vec2 interpolateAtVertexAMD(vec2, uint);
         vec3 interpolateAtVertexAMD(vec3, uint);
@@ -4784,12 +4785,12 @@ class TBuiltIns : TBuiltInParseables {
         f16vec2 interpolateAtVertexAMD(f16vec2, uint);
         f16vec3 interpolateAtVertexAMD(f16vec3, uint);
         f16vec4 interpolateAtVertexAMD(f16vec4, uint);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
       stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl16bits;
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         float16_t interpolateAtCentroid(float16_t);
         f16vec2 interpolateAtCentroid(f16vec2);
         f16vec3 interpolateAtCentroid(f16vec3);
@@ -4804,20 +4805,20 @@ class TBuiltIns : TBuiltInParseables {
         f16vec2 interpolateAtOffset(f16vec2, f16vec2);
         f16vec3 interpolateAtOffset(f16vec3, f16vec2);
         f16vec4 interpolateAtOffset(f16vec4, f16vec2);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uvec2 clock2x32ARB();
         uint64_t clockARB();
         uvec2 clockRealtime2x32EXT();
         uint64_t clockRealtimeEXT();
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450 && spvVersion.vulkan > 0) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
         uint fragmentMaskFetchAMD(subpassInputMS);
         uint fragmentMaskFetchAMD(isubpassInputMS);
         uint fragmentMaskFetchAMD(usubpassInputMS);
@@ -4825,11 +4826,11 @@ class TBuiltIns : TBuiltInParseables {
         vec4 fragmentFetchAMD(subpassInputMS, uint);
         ivec4 fragmentFetchAMD(isubpassInputMS, uint);
         uvec4 fragmentFetchAMD(usubpassInputMS, uint);
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         void rayQueryInitializeEXT(rayQueryEXT, accelerationStructureEXT, uint, uint, vec3, float, vec3, float);
         void rayQueryTerminateEXT(rayQueryEXT);
         void rayQueryGenerateIntersectionEXT(rayQueryEXT, float);
@@ -4862,9 +4863,9 @@ class TBuiltIns : TBuiltInParseables {
         void rayQueryGetIntersectionLSSRadiiNV(rayQueryEXT, bool, out float[2]);
         bool rayQueryIsSphereHitNV(rayQueryEXT, bool);
         bool rayQueryIsLSSHitNV(rayQueryEXT, bool);
-      };
+      `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_RAYGEN] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_RAYGEN] ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -4951,16 +4952,16 @@ class TBuiltIns : TBuiltInParseables {
         void reorderThreadEXT(uint, uint);
         void reorderThreadEXT(hitObjectEXT);
         void reorderThreadEXT(hitObjectEXT, uint, uint);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_INTERSECT] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_INTERSECT] ~= `
         bool reportIntersectionNV(float, uint);
         bool reportIntersectionEXT(float, uint);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_ANYHIT] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_ANYHIT] ~= `
         void ignoreIntersectionNV();
         void terminateRayNV();
-      };
-      stageBuiltins[glslang_stage_t.STAGE_CLOSESTHIT] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_CLOSESTHIT] ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -5033,8 +5034,8 @@ class TBuiltIns : TBuiltInParseables {
         void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
         void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT,uint, int);
         void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_MISS] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_MISS] ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -5107,11 +5108,11 @@ class TBuiltIns : TBuiltInParseables {
         void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
         void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
         void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_CALLABLE] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_CALLABLE] ~= `
         void executeCallableNV(uint, int);
         void executeCallableEXT(uint, int);
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
@@ -5125,58 +5126,56 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         void writePackedPrimitiveIndices4x8NV(uint, uint);
-      };
+      `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         void EmitMeshTasksEXT(uint, uint, uint);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         void SetMeshOutputsEXT(uint, uint);
-      };
+      `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 460) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
         vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
-      };
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
         vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
-      };
+      `.outdent;
     }
 
     if (spvVersion.spv == 0) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         struct gl_DepthRangeParameters {
-      };
+      `.outdent;
       if (profile == glslang_profile_t.ES_PROFILE) {
-        commonBuiltins ~= q{
+        commonBuiltins ~= `
           highp float near;
           highp float far;
           highp float diff;
-        };
+        `.outdent;
       } else {
-        commonBuiltins ~= q{
-          commonBuiltins ~= q{
-            float near;
-            float far;
-            float diff;
-          };
-        };
+        commonBuiltins ~= `
+          float near;
+          float far;
+          float diff;
+        `.outdent;
       }
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         };
         uniform gl_DepthRangeParameters gl_DepthRange;
-      };
+      `.outdent;
     }
 
     if (spvVersion.spv == 0 && IncludeLegacy(version_, profile, spvVersion)) {
-      commonBuiltins ~= q{
+      commonBuiltins ~= `
         uniform mat4 gl_ModelViewMatrix;
         uniform mat4 gl_ProjectionMatrix;
         uniform mat4 gl_ModelViewProjectionMatrix;
@@ -5262,12 +5261,12 @@ class TBuiltIns : TBuiltInParseables {
         };
 
         uniform gl_FogParameters gl_Fog;
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         in highp uvec3 gl_NumWorkGroups;
         const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
 
@@ -5276,28 +5275,28 @@ class TBuiltIns : TBuiltInParseables {
 
         in highp uvec3 gl_GlobalInvocationID;
         in highp uint gl_LocalInvocationIndex;
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         in highp int gl_DeviceIndex;
-      };
+      `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 460)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
         in highp uvec2 gl_TileOffsetQCOM;
         in highp uvec3 gl_TileDimensionQCOM;
         in highp uvec2 gl_TileApronSizeQCOM;
-      };
+      `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         out gl_MeshPerVertexNV {
           vec4 gl_Position;
           float gl_PointSize;
@@ -5350,9 +5349,9 @@ class TBuiltIns : TBuiltInParseables {
           bool gl_CullPrimitiveEXT;
           int  gl_PrimitiveShadingRateEXT;
         } gl_MeshPrimitivesEXT[];
-      };
+      `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         out uint gl_TaskCountNV;
 
         const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
@@ -5366,29 +5365,341 @@ class TBuiltIns : TBuiltInParseables {
         in uint gl_MeshViewCountNV;
         in uint gl_MeshViewIndicesNV[4];
         in highp uvec3 gl_NumWorkGroups;
-      };
+      `.outdent;
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
         in highp int gl_DeviceIndex;
         in int gl_DrawIDARB;
         in int gl_ViewIndex;
-      };
+      `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
         in highp int gl_DeviceIndex;
         in int gl_DrawIDARB;
-      };
+      `.outdent;
 
       if (version_ >= 460) {
-        stageBuiltins[glslang_stage_t.STAGE_MESH] ~= q{
+        stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
           in int gl_DrawID;
-        };
-        stageBuiltins[glslang_stage_t.STAGE_TASK] ~= q{
+        `.outdent;
+        stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
           in int gl_DrawID;
-        };
+        `.outdent;
       }
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE) {
+      if (version_ < 130) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          attribute vec4 gl_Color;
+          attribute vec4 gl_SecondaryColor;
+          attribute vec3 gl_Normal;
+          attribute vec4 gl_Vertex;
+          attribute vec4 gl_MultiTexCoord0;
+          attribute vec4 gl_MultiTexCoord1;
+          attribute vec4 gl_MultiTexCoord2;
+          attribute vec4 gl_MultiTexCoord3;
+          attribute vec4 gl_MultiTexCoord4;
+          attribute vec4 gl_MultiTexCoord5;
+          attribute vec4 gl_MultiTexCoord6;
+          attribute vec4 gl_MultiTexCoord7;
+          attribute float gl_FogCoord;
+        `.outdent;
+      } else if (IncludeLegacy(version_, profile, spvVersion)) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          in vec4 gl_Color;
+          in vec4 gl_SecondaryColor;
+          in vec3 gl_Normal;
+          in vec4 gl_Vertex;
+          in vec4 gl_MultiTexCoord0;
+          in vec4 gl_MultiTexCoord1;
+          in vec4 gl_MultiTexCoord2;
+          in vec4 gl_MultiTexCoord3;
+          in vec4 gl_MultiTexCoord4;
+          in vec4 gl_MultiTexCoord5;
+          in vec4 gl_MultiTexCoord6;
+          in vec4 gl_MultiTexCoord7;
+          in float gl_FogCoord;
+        `.outdent;
+      }
+
+      if (version_ < 150) {
+        if (version_ < 130) {
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            vec4 gl_ClipVertex;
+            varying vec4 gl_FrontColor;
+            varying vec4 gl_BackColor;
+            varying vec4 gl_FrontSecondaryColor;
+            varying vec4 gl_BackSecondaryColor;
+            varying vec4 gl_TexCoord[];
+            varying float gl_FogFragCoord;
+          `.outdent;
+        } else if (IncludeLegacy(version_, profile, spvVersion)) {
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            vec4 gl_ClipVertex;
+            out vec4 gl_FrontColor;
+            out vec4 gl_BackColor;
+            out vec4 gl_FrontSecondaryColor;
+            out vec4 gl_BackSecondaryColor;
+            out vec4 gl_TexCoord[];
+            out float gl_FogFragCoord;
+          `.outdent;
+        }
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          vec4 gl_Position;
+          float gl_PointSize;
+        `.outdent;
+
+        if (version_ == 130 || version_ == 140)
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            out float gl_ClipDistance[];
+          `.outdent;
+      } else {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          out gl_PerVertex {
+            vec4 gl_Position;
+            float gl_PointSize;
+            float gl_ClipDistance[];
+        `.outdent;
+        if (IncludeLegacy(version_, profile, spvVersion))
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            vec4 gl_ClipVertex;
+            vec4 gl_FrontColor;
+            vec4 gl_BackColor;
+            vec4 gl_FrontSecondaryColor;
+            vec4 gl_BackSecondaryColor;
+            vec4 gl_TexCoord[];
+            float gl_FogFragCoord;
+          `.outdent;
+        if (version_ >= 450)
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            float gl_CullDistance[];
+          `.outdent;
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          };
+        `.outdent;
+      }
+      if (version_ >= 130 && spvVersion.vulkan == 0)
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          int gl_VertexID;
+        `.outdent;
+      if (spvVersion.vulkan == 0)
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          int gl_InstanceID;
+        `.outdent;
+      if (spvVersion.vulkan > 0 && version_ >= 140)
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          in int gl_VertexIndex;
+          in int gl_InstanceIndex;
+        `.outdent;
+      if (spvVersion.vulkan > 0 && version_ >= 140 && spvVersion.vulkanRelaxed)
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          in int gl_VertexID;
+          in int gl_InstanceID;
+        `.outdent;
+      if (version_ >= 440) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          in int gl_BaseVertexARB;
+          in int gl_BaseInstanceARB;
+          in int gl_DrawIDARB;
+        `.outdent;
+      }
+      if (version_ >= 410) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          out int gl_ViewportIndex;
+          out int gl_Layer;
+        `.outdent;
+      }
+      if (version_ >= 460) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          in int gl_BaseVertex;
+          in int gl_BaseInstance;
+          in int gl_DrawID;
+        `.outdent;
+      }
+      if (version_ >= 430) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          out int gl_ViewportMask[];
+        `.outdent;
+      }
+      if (version_ >= 450) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          out int gl_SecondaryViewportMaskNV[];
+          out vec4 gl_SecondaryPositionNV;
+          out vec4 gl_PositionPerViewNV[];
+          out int gl_ViewportMaskPerViewNV[];
+        `.outdent;
+      }
+    } else {
+      if (version_ == 100) {
+        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          highp vec4 gl_Position;
+          mediump float gl_PointSize;
+          highp int gl_InstanceID;
+        `.outdent;
+      } else {
+        if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed)
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            in highp int gl_VertexID;
+            in highp int gl_InstanceID;
+          `.outdent;
+        if (spvVersion.vulkan > 0)
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            in highp int gl_VertexIndex;
+            in highp int gl_InstanceIndex;
+          `.outdent;
+        if (version_ < 310)
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            highp vec4 gl_Position;
+            highp float gl_PointSize;
+          `.outdent;
+        else
+          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+            out gl_PerVertex {
+              highp vec4  gl_Position;
+              highp float gl_PointSize;
+            };
+          `.outdent;
+      }
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        in highp int gl_DeviceIndex;
+        in highp int gl_ViewIndex;
+      `.outdent;
+    }
+
+    if (version_ >= 300) {
+      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        in highp uint gl_ViewID_OVR;
+      `.outdent;
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        out highp int gl_PrimitiveShadingRateEXT;
+      `.outdent;
+    }
+
+    if (profile == glslang_profile_t.CORE_PROFILE ||
+      profile == glslang_profile_t.COMPATIBILITY_PROFILE) {
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        in gl_PerVertex {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+      `.outdent;
+      if (profile == glslang_profile_t.COMPATIBILITY_PROFILE)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          vec4 gl_ClipVertex;
+          vec4 gl_FrontColor;
+          vec4 gl_BackColor;
+          vec4 gl_FrontSecondaryColor;
+          vec4 gl_BackSecondaryColor;
+          vec4 gl_TexCoord[];
+          float gl_FogFragCoord;
+        `.outdent;
+      if (version_ >= 450)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          float gl_CullDistance[];
+          vec4 gl_SecondaryPositionNV;
+          vec4 gl_PositionPerViewNV[];
+        `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        } gl_in[];
+
+        in int gl_PrimitiveIDIn;
+        out gl_PerVertex {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+      `.outdent;
+      if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ >= 400)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          vec4 gl_ClipVertex;
+          vec4 gl_FrontColor;
+          vec4 gl_BackColor;
+          vec4 gl_FrontSecondaryColor;
+          vec4 gl_BackSecondaryColor;
+          vec4 gl_TexCoord[];
+          float gl_FogFragCoord;
+        `.outdent;
+      if (version_ >= 450)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          float gl_CullDistance[];
+        `.outdent;
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        };
+
+        out int gl_PrimitiveID;
+        out int gl_Layer;
+      `.outdent;
+
+      if (version_ >= 150)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          out int gl_ViewportIndex;
+        `.outdent;
+
+      if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ < 400)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          out vec4 gl_ClipVertex;
+        `.outdent;
+
+      if (version_ >= 150)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          in int gl_InvocationID;
+        `.outdent;
+
+      if (version_ >= 430)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          out int gl_ViewportMask[];
+        `.outdent;
+
+      if (version_ >= 450)
+        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+          out int gl_SecondaryViewportMaskNV[];
+          out vec4 gl_SecondaryPositionNV;
+          out vec4 gl_PositionPerViewNV[];
+          out int gl_ViewportMaskPerViewNV[];
+        `.outdent;
+    } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        in gl_PerVertex {
+          highp vec4 gl_Position;
+          highp float gl_PointSize;
+        } gl_in[];
+        
+        in highp int gl_PrimitiveIDIn;
+        in highp int gl_InvocationID;
+        
+        out gl_PerVertex {
+          highp vec4 gl_Position;
+          highp float gl_PointSize;
+        };
+        
+        out highp int gl_PrimitiveID;
+        out highp int gl_Layer;
+      `.outdent;
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        in highp int gl_DeviceIndex;
+        in highp int gl_ViewIndex;
+      `.outdent;
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        out highp int gl_PrimitiveShadingRateEXT;
+      `.outdent;
     }
   }
 
