@@ -28,6 +28,8 @@ enum ArgType TypeFI = ArgType.TypeF | ArgType.TypeI;
 enum ArgType TypeFIB = ArgType.TypeF | ArgType.TypeI | ArgType.TypeB;
 enum ArgType TypeIU = ArgType.TypeI | ArgType.TypeU;
 
+enum bool ForwardCompatibility = false;
+
 enum BuiltInFunction[] BaseFunctions = [
   BuiltInFunction(TOperator.EOpRadians, "radians", 1, ArgType.TypeF, ArgClass.ClassRegular, []),
   BuiltInFunction(TOperator.EOpDegrees, "degrees", 1, ArgType.TypeF, ArgClass.ClassRegular, []),
@@ -134,7 +136,7 @@ enum Versioning[] Es310Desktop450Version = [
 class TBuiltInParseables {
   struct StageBuiltins {
     static foreach (stage; EnumMembers!glslang_stage_t) {
-      mixin(i"Appender!(char[]) $(__traits(identifier, stage));".text);
+      mixin(i"Appender!(char[]) $(stage.to!string);".text);
     }
   }
 
@@ -5564,7 +5566,7 @@ class TBuiltIns : TBuiltInParseables {
         else
           stageBuiltins.STAGE_VERTEX ~= `
             out gl_PerVertex {
-              highp vec4  gl_Position;
+              highp vec4 gl_Position;
               highp float gl_PointSize;
             };
           `.outdent;
@@ -5818,7 +5820,223 @@ class TBuiltIns : TBuiltInParseables {
       stageBuiltins.STAGE_TESSEVALUATION ~= `
         };
       `.outdent;
+
+      if (version_ >= 410)
+        stageBuiltins.STAGE_TESSEVALUATION ~= `
+          out int gl_ViewportIndex;
+          out int gl_Layer;
+        `.outdent;
+
+      if (version_ >= 430)
+        stageBuiltins.STAGE_TESSEVALUATION ~= `
+          out int gl_ViewportMask[];
+        `.outdent;
+
+      if (version_ >= 450)
+        stageBuiltins.STAGE_TESSEVALUATION ~= `
+          out vec4 gl_SecondaryPositionNV;
+          out int gl_SecondaryViewportMaskNV[];
+          out vec4 gl_PositionPerViewNV[];
+          out int gl_ViewportMaskPerViewNV[];
+        `.outdent;
+    } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
+      stageBuiltins.STAGE_TESSEVALUATION ~= `
+        in highp int gl_PatchVerticesIn;
+        in highp int gl_PrimitiveID;
+        in highp vec3 gl_TessCoord;
+
+        patch in highp float gl_TessLevelOuter[4];
+        patch in highp float gl_TessLevelInner[2];
+
+        out gl_PerVertex {
+          highp vec4 gl_Position;
+          highp float gl_PointSize;
+        };
+      `.outdent;
     }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins.STAGE_TESSEVALUATION ~= `
+        in highp int gl_DeviceIndex;
+        in highp int gl_ViewIndex;
+      `.outdent;
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE) {
+      stageBuiltins.STAGE_FRAGMENT ~= `
+        vec4 gl_FragCoord;
+        bool gl_FrontFacing;
+        float gl_FragDepth;
+      `.outdent;
+      if (version_ >= 120)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          vec2 gl_PointCoord;
+        `.outdent;
+      if (version_ >= 140)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          out int gl_FragStencilRefARB;
+        `.outdent;
+      if (IncludeLegacy(version_, profile, spvVersion) || (!ForwardCompatibility && version_ < 420))
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          vec4 gl_FragColor;
+        `.outdent;
+      
+      if (version_ < 130) {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          varying vec4 gl_Color;
+          varying vec4 gl_SecondaryColor;
+          varying vec4 gl_TexCoord[];
+          varying float gl_FogFragCoord;
+        `.outdent;
+      } else {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          in float gl_ClipDistance[];
+        `.outdent;
+
+        if (IncludeLegacy(version_, profile, spvVersion)) {
+          if (version_ < 150)
+            stageBuiltins.STAGE_FRAGMENT ~= `
+              in float gl_FogFragCoord;
+              in vec4 gl_TexCoord[];
+              in vec4 gl_Color;
+              in vec4 gl_SecondaryColor;
+            `.outdent;
+          else
+            stageBuiltins.STAGE_FRAGMENT ~= `
+              in gl_PerFragment {
+                in float gl_FogFragCoord;
+                in vec4 gl_TexCoord[];
+                in vec4 gl_Color;
+                in vec4 gl_SecondaryColor;
+              };
+            `.outdent;
+        }
+      }
+
+      if (version_ >= 150)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in int gl_PrimitiveID;
+        `.outdent;
+      
+      if (version_ >= 130) {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in int gl_SampleID;
+          in vec2 gl_SamplePosition;
+          out int gl_SampleMask[];
+        `.outdent;
+
+        if (spvVersion.spv == 0)
+          stageBuiltins.STAGE_FRAGMENT ~= `
+            uniform int gl_NumSamples;
+          `.outdent;
+      }
+
+      if (version_ >= 150)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in int gl_SampleMaskIn[];
+        `.outdent;
+
+      if (version_ >= 430)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in int gl_Layer;
+          flat in int gl_ViewportIndex;
+        `.outdent;
+
+      if (version_ >= 450)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          in float gl_CullDistance[];
+          bool gl_HelperInvocation;
+
+          flat in ivec2 gl_FragSizeEXT;
+          flat in int gl_FragInvocationCountEXT;
+
+          in vec2 gl_BaryCoordNoPerspAMD;
+          in vec2 gl_BaryCoordNoPerspCentroidAMD;
+          in vec2 gl_BaryCoordNoPerspSampleAMD;
+          in vec2 gl_BaryCoordSmoothAMD;
+          in vec2 gl_BaryCoordSmoothCentroidAMD;
+          in vec2 gl_BaryCoordSmoothSampleAMD;
+          in vec3 gl_BaryCoordPullModelAMD;
+        `.outdent;
+
+      if (version_ >= 430)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          in bool gl_FragFullyCoveredNV;
+        `.outdent;
+
+      if (version_ >= 450)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in ivec2 gl_FragmentSizeNV;
+          flat in int gl_InvocationsPerPixelNV;
+          in vec3 gl_BaryCoordNV;
+          in vec3 gl_BaryCoordNoPerspNV;
+          in vec3 gl_BaryCoordEXT;
+          in vec3 gl_BaryCoordNoPerspEXT;
+
+          flat in int gl_ShadingRateEXT;
+        `.outdent;
+    } else {
+      if (version_ == 100) {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          mediump vec4 gl_FragCoord;
+          bool gl_FrontFacing;
+          mediump vec4 gl_FragColor;
+          mediump vec2 gl_PointCoord;
+        `.outdent;
+      }
+      if (version_ >= 300) {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          highp vec4  gl_FragCoord;
+          bool gl_FrontFacing;
+          mediump vec2 gl_PointCoord;
+          highp float gl_FragDepth;
+        `.outdent;
+      }
+      if (version_ >= 310) {
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          bool gl_HelperInvocation;
+          flat in highp int gl_PrimitiveID;
+          flat in highp int gl_Layer;
+
+          flat in lowp int gl_SampleID;
+          in mediump vec2 gl_SamplePosition;
+          flat in highp int gl_SampleMaskIn[];
+          out highp int gl_SampleMask[];
+        `.outdent;
+
+        if (spvVersion.spv == 0)
+          stageBuiltins.STAGE_FRAGMENT ~= `
+            uniform lowp int gl_NumSamples;
+          `.outdent;
+      }
+      stageBuiltins.STAGE_FRAGMENT ~= `
+        highp float gl_FragDepthEXT;
+      `.outdent;
+
+      if (version_ >= 310)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in ivec2 gl_FragSizeEXT;
+          flat in int gl_FragInvocationCountEXT;
+        `.outdent;
+      if (version_ >= 320)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in ivec2 gl_FragmentSizeNV;
+          flat in int gl_InvocationsPerPixelNV;
+        
+          in vec3 gl_BaryCoordNV;
+          in vec3 gl_BaryCoordNoPerspNV;
+          in vec3 gl_BaryCoordEXT;
+          in vec3 gl_BaryCoordNoPerspEXT;
+        `.outdent;
+      if (version_ >= 310)
+        stageBuiltins.STAGE_FRAGMENT ~= `
+          flat in highp int gl_ShadingRateEXT;
+        `.outdent;
+    }
+    
+    if (version_ >= 130)
+      add2ndGenerationSamplingImaging(version_, profile, spvVersion);
   }
 
   override void initialize(
@@ -5826,6 +6044,127 @@ class TBuiltIns : TBuiltInParseables {
     in SpvVersion spvVersion, glslang_stage_t
   ) {
     throw new Exception("unimplemented");
+  }
+
+  protected void add2ndGenerationSamplingImaging(
+    int version_, glslang_profile_t profile, in SpvVersion spvVersion
+  ) {
+    enum TBasicType[] bTypes = [
+      TBasicType.EbtFloat, TBasicType.EbtInt, TBasicType.EbtUint, TBasicType.EbtFloat16
+    ];
+    bool skipBuffer = (profile == glslang_profile_t.ES_PROFILE && version_ < 310) || (profile != glslang_profile_t.ES_PROFILE && version_ < 140);
+    bool skipCubeArrayed = (profile == glslang_profile_t.ES_PROFILE && version_ < 310) || (profile != glslang_profile_t.ES_PROFILE && version_ < 130);
+    for (int image = 0; image <= 1; ++image) {
+      for (int shadow = 0; shadow <= 1; ++shadow) {
+        for (int ms = 0; ms <= 1; ++ms) {
+          if ((ms || image) && shadow)
+            continue;
+          if (ms && profile != glslang_profile_t.ES_PROFILE && version_ < 140)
+            continue;
+          if (ms && image && profile == glslang_profile_t.ES_PROFILE)
+            continue;
+          if (ms && profile == glslang_profile_t.ES_PROFILE && version_ < 310)
+            continue;
+
+          for (int arrayed = 0; arrayed <= 1; ++arrayed) {
+            for (TSamplerDim dim = TSamplerDim.Esd1D; dim < TSamplerDim.EsdNumDims; ++dim) {
+              if (dim == TSamplerDim.EsdAttachmentEXT)
+                  continue;
+              if (dim == TSamplerDim.EsdSubpass && spvVersion.vulkan == 0)
+                  continue;
+              if (dim == TSamplerDim.EsdSubpass && (image || shadow || arrayed))
+                  continue;
+              if ((dim == TSamplerDim.Esd1D || dim == TSamplerDim.EsdRect) && profile == glslang_profile_t.ES_PROFILE)
+                  continue;
+              if (dim == TSamplerDim.EsdSubpass && spvVersion.vulkan == 0)
+                  continue;
+              if (dim == TSamplerDim.EsdSubpass && (image || shadow || arrayed))
+                  continue;
+              if ((dim == TSamplerDim.Esd1D || dim == TSamplerDim.EsdRect) && profile == glslang_profile_t.ES_PROFILE)
+                  continue;
+              if (dim != TSamplerDim.Esd2D && dim != TSamplerDim.EsdSubpass && ms)
+                  continue;
+              if (dim == TSamplerDim.EsdBuffer && skipBuffer)
+                  continue;
+              if (dim == TSamplerDim.EsdBuffer && (shadow || arrayed || ms))
+                  continue;
+              if (ms && arrayed && profile == glslang_profile_t.ES_PROFILE && version_ < 310)
+                  continue;
+              if (dim == TSamplerDim.Esd3D && shadow)
+                  continue;
+              if (dim == TSamplerDim.EsdCube && arrayed && skipCubeArrayed)
+                  continue;
+              if ((dim == TSamplerDim.Esd3D || dim == TSamplerDim.EsdRect) && arrayed)
+                  continue;
+
+              for (size_t bType = 0; bType < bTypes.length; ++bType) {
+                if (bTypes[bType] == TBasicType.EbtFloat16 && (profile == glslang_profile_t.ES_PROFILE || version_ < 450))
+                  continue;
+                if (dim == TSamplerDim.EsdRect && version_ < 140 && bType > 0)
+                  continue;
+                if (shadow && (bTypes[bType] == TBasicType.EbtInt || bTypes[bType] == TBasicType.EbtUint))
+                  continue;
+
+                TSampler sampler;
+                if (dim == TSamplerDim.EsdSubpass) {
+                  sampler.setSubpass(bTypes[bType], ms ? true : false);
+                } else if (dim == TSamplerDim.EsdAttachmentEXT) {
+                  sampler.setAttachmentEXT(bTypes[bType]);
+                } else
+                if (image) {
+                  sampler.setImage(
+                    bTypes[bType],
+                    dim,
+                    arrayed ? true : false,
+                    shadow ? true : false,
+                    ms ? true : false);
+                } else {
+                  sampler.set(
+                    bTypes[bType],
+                    dim,
+                    arrayed ? true : false,
+                    shadow ? true : false,
+                    ms ? true : false);
+                }
+
+                string typeName = sampler.getString;
+
+                if (dim == TSamplerDim.EsdSubpass) {
+                  addSubpassSampling(sampler, typeName, version_, profile);
+                  continue;
+                }
+
+                addQueryFunctions(sampler, typeName, version_, profile);
+
+                if (image)
+                  addImageFunctions(sampler, typeName, version_, profile);
+                else {
+                  addSamplingFunctions(sampler, typeName, version_, profile);
+                  addGatherFunctions(sampler, typeName, version_, profile);
+                  if (spvVersion.vulkan > 0 && sampler.isCombined() && !sampler.shadow) {
+                    sampler.setTexture(
+                      sampler.type,
+                      sampler.dim,
+                      sampler.arrayed,
+                      sampler.shadow,
+                      sampler.ms);
+                    string textureTypeName = sampler.getString;
+                    addSamplingFunctions(sampler, textureTypeName, version_, profile);
+                    addQueryFunctions(sampler, textureTypeName, version_, profile);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      commonBuiltins ~= `
+        bool sparseTexelsResidentARB(int code);
+      `.outdent;
+    }
   }
 }
 
