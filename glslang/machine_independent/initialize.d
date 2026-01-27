@@ -6213,7 +6213,7 @@ class TBuiltIns : TBuiltInParseables {
       commonBuiltins.put(");\n");
     }
 
-    if ( profile != glslang_profile_t.ES_PROFILE ||
+    if (profile != glslang_profile_t.ES_PROFILE ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
       if (sampler.type == TBasicType.EbtInt || sampler.type == TBasicType.EbtUint || sampler.type == TBasicType.EbtInt64 || sampler.type == TBasicType.EbtUint64 ) {
         string dataType;
@@ -6386,6 +6386,86 @@ class TBuiltIns : TBuiltInParseables {
       commonBuiltins.put(", out ");
       commonBuiltins.put(prefixes[sampler.type]);
       commonBuiltins.put("vec4");
+      commonBuiltins.put(");\n");
+    }
+  }
+
+  protected void addQueryFunctions(TSampler sampler, string typeName, int version_, glslang_profile_t profile) {
+    int sizeDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0) - (sampler.dim == TSamplerDim.EsdCube ? 1 : 0);
+
+    if (sampler.isImage() && ((profile == glslang_profile_t.ES_PROFILE && version_ < 310) || (profile != glslang_profile_t.ES_PROFILE && version_ < 420)))
+      return;
+
+    if (profile == glslang_profile_t.ES_PROFILE)
+      commonBuiltins.put("highp ");
+    if (sizeDims == 1)
+      commonBuiltins.put("int");
+    else {
+      commonBuiltins.put("ivec");
+      commonBuiltins.put(postfixes[sizeDims]);
+    }
+    if (sampler.isImage())
+      commonBuiltins.put(" imageSize(readonly writeonly volatile coherent nontemporal ");
+    else
+      commonBuiltins.put(" textureSize(");
+    commonBuiltins.put(typeName);
+    if (!sampler.isImage() && !sampler.isRect() && !sampler.isBuffer() && !sampler.isMultiSample())
+      commonBuiltins.put(",int);\n");
+    else
+      commonBuiltins.put(");\n");
+  
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430 && sampler.isMultiSample()) {
+      commonBuiltins.put("int ");
+      if (sampler.isImage())
+        commonBuiltins.put("imageSamples(readonly writeonly volatile coherent nontemporal ");
+      else
+        commonBuiltins.put("textureSamples(");
+      commonBuiltins.put(typeName);
+      commonBuiltins.put(");\n");
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150 && sampler.isCombined() && sampler.dim != TSamplerDim.EsdRect &&
+      !sampler.isMultiSample() && !sampler.isBuffer()) {
+
+      const string[2] funcName = ["vec2 textureQueryLod(", "vec2 textureQueryLOD("];
+
+      for (int i = 0; i < 2; ++i){
+        for (int f16TexAddr = 0; f16TexAddr < 2; ++f16TexAddr) {
+          if (f16TexAddr && sampler.type != TBasicType.EbtFloat16)
+            continue;
+          stageBuiltins.STAGE_FRAGMENT.put(funcName[i]);
+          stageBuiltins.STAGE_FRAGMENT.put(typeName);
+          if (dimMap[sampler.dim] == 1)
+            if (f16TexAddr)
+              stageBuiltins.STAGE_FRAGMENT.put(", float16_t");
+            else
+              stageBuiltins.STAGE_FRAGMENT.put(", float");
+          else {
+            if (f16TexAddr)
+              stageBuiltins.STAGE_FRAGMENT.put(", f16vec");
+            else
+              stageBuiltins.STAGE_FRAGMENT.put(", vec");
+            stageBuiltins.STAGE_FRAGMENT.put(postfixes[dimMap[sampler.dim]]);
+          }
+          stageBuiltins.STAGE_FRAGMENT.put(");\n");
+        }
+
+        stageBuiltins.STAGE_COMPUTE.put(funcName[i]);
+        stageBuiltins.STAGE_COMPUTE.put(typeName);
+        if (dimMap[sampler.dim] == 1)
+          stageBuiltins.STAGE_COMPUTE.put(", float");
+        else {
+          stageBuiltins.STAGE_COMPUTE.put(", vec");
+          stageBuiltins.STAGE_COMPUTE.put(postfixes[dimMap[sampler.dim]]);
+        }
+        stageBuiltins.STAGE_COMPUTE.put(");\n");
+      }
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 430 && !sampler.isImage() && sampler.dim != TSamplerDim.EsdRect &&
+      !sampler.isMultiSample() && !sampler.isBuffer()) {
+      commonBuiltins.put("int textureQueryLevels(");
+      commonBuiltins.put(typeName);
       commonBuiltins.put(");\n");
     }
   }
