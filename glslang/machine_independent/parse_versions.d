@@ -10,7 +10,7 @@ class TParseVersions {
     TInfoSink infoSink;
 
     int version_;
-    glslang_stage_t language;
+    EShLanguage language;
     SpvVersion spvVersion;
     TIntermediate intermediate;
   }
@@ -23,7 +23,7 @@ class TParseVersions {
 
   this(
     TIntermediate interm, int version_, glslang_profile_t profile,
-    in SpvVersion spvVersion, glslang_stage_t language, TInfoSink infoSink,
+    in SpvVersion spvVersion, EShLanguage language, TInfoSink infoSink,
     bool forwardCompatible, glslang_messages_t messages
   ) {
     this.forwardCompatible = forwardCompatible; this.profile = profile;

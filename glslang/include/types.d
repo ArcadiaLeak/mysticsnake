@@ -215,3 +215,11 @@ string getBasicString(TBasicType t) {
     default: return "unknown type";
   }
 }
+
+class TType {}
+
+class TQualifier {
+  enum uint layoutSetEnd = 0x3F;
+
+  enum uint layoutBindingEnd = 0xFFFF;
+}

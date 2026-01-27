@@ -40,17 +40,19 @@ private:
 
 class TIntermediate {
   protected {
-    const glslang_stage_t language;
+    const EShLanguage language;
 
     string entryPointName;
     string entryPointMangledName;
 
     DList!TCall callGraph;
 
-    int version_;
-    glslang_source_t source;
     glslang_profile_t profile;
+    int version_;
     SpvVersion spvVersion;
+    bool useStorageBuffer;
+    
+    glslang_source_t source;
 
     bool originUpperLeft;
     string sourceFile;
@@ -60,7 +62,7 @@ class TIntermediate {
   }
 
   this(
-    glslang_stage_t l, int v = 0,
+    EShLanguage l, int v = 0,
     glslang_profile_t p = glslang_profile_t.NO_PROFILE
   ) {
     language = l;
@@ -89,6 +91,8 @@ class TIntermediate {
     processes.addProcess("entry-point");
     processes.addArgument(entryPointName);
   }
+
+  void setUseStorageBuffer() { useStorageBuffer = true; }
 
   void setSpv(in SpvVersion s) {
     spvVersion = s;

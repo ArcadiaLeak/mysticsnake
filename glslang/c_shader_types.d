@@ -54,7 +54,7 @@ enum glslang_client_t {
   CLIENT_OPENGL
 }
 
-enum glslang_stage_t {
+enum EShLanguage {
   STAGE_VERTEX,
   STAGE_TESSCONTROL,
   STAGE_TESSEVALUATION,

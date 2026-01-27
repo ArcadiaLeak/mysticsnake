@@ -13,7 +13,7 @@ struct TTarget {
 
 struct TInputLanguage {
   glslang_source_t languageFamily;
-  glslang_stage_t stage;
+  EShLanguage stage;
   glslang_client_t dialect;
   int dialectVersion;
   bool vulkanRulesRelaxed;
@@ -35,7 +35,7 @@ class TShader {
     string[] strings;
     string[] stringNames;
 
-    glslang_stage_t stage;
+    EShLanguage stage;
     int overrideVersion;
 
     TEnvironment environment;
@@ -44,7 +44,7 @@ class TShader {
     TIntermediate intermediate;
   }
 
-  this(glslang_stage_t s) {
+  this(EShLanguage s) {
     stage = s;
 
     infoSink = new TInfoSink;
@@ -66,7 +66,7 @@ class TShader {
 
   void setEnvInput(
     glslang_source_t lang,
-    glslang_stage_t envStage,
+    EShLanguage envStage,
     glslang_client_t client,
     int version_
   ) {
@@ -101,7 +101,7 @@ class TShader {
 }
 
 class TDeferredCompiled : TCompiler {
-  this(glslang_stage_t s, TInfoSink i) {
+  this(EShLanguage s, TInfoSink i) {
     super(s, i);
   }
 }
@@ -167,7 +167,7 @@ bool ProcessDeferred(ProcessingContext)(
 
   SpvVersion spvVersion;
   glslang_source_t source = glslang_source_t.SOURCE_GLSL;
-  glslang_stage_t stage = compiler.getLanguage;
+  EShLanguage stage = compiler.getLanguage;
   TranslateEnvironment(environment, messages, source, stage, spvVersion);
 
   scope userInput = new TInputScanner(strings.drop(numPre));
@@ -242,7 +242,7 @@ void TranslateEnvironment(
   in TEnvironment environment,
   ref glslang_messages_t messages,
   ref glslang_source_t source,
-  ref glslang_stage_t stage,
+  ref EShLanguage stage,
   ref SpvVersion spvVersion
 ) {
   if (messages & glslang_messages_t.MSG_SPV_RULES_BIT)
@@ -288,7 +288,7 @@ void TranslateEnvironment(
 
 bool DeduceVersionProfile(
   TInfoSink infoSink,
-  glslang_stage_t stage,
+  EShLanguage stage,
   bool versionNotFirst,
   int defaultVersion,
   glslang_source_t source,
@@ -477,10 +477,10 @@ bool SetupBuiltinSymbolTable(
   }
 
   TSymbolTable[EnumMembers!EPrecisionClass.length] commonTable;
-  TSymbolTable[EnumMembers!glslang_stage_t.length] stageTables;
+  TSymbolTable[EnumMembers!EShLanguage.length] stageTables;
   for (int precClass = 0; precClass < EnumMembers!EPrecisionClass.length; ++precClass)
     commonTable[precClass] = new TSymbolTable;
-  for (int stage = 0; stage < EnumMembers!glslang_stage_t.length; ++stage)
+  for (int stage = 0; stage < EnumMembers!EShLanguage.length; ++stage)
     stageTables[stage] = new TSymbolTable;
   
   if (
@@ -599,7 +599,7 @@ TSymbolTable
   [SpvVersionCount]
   [ProfileCount]
   [SourceCount]
-  [EnumMembers!glslang_stage_t.length] SharedSymbolTables;
+  [EnumMembers!EShLanguage.length] SharedSymbolTables;
 
 class TSymbolTable {
   
@@ -613,7 +613,7 @@ TBuiltInParseables CreateBuiltInParseables(
 
 TParseContextBase CreateParseContext(
   TSymbolTable symbolTable, TIntermediate intermediate, int version_,
-  glslang_profile_t profile, glslang_source_t source, glslang_stage_t language,
+  glslang_profile_t profile, glslang_source_t source, EShLanguage language,
   TInfoSink infoSink, in SpvVersion spvVersion, bool forwardCompatible,
   glslang_messages_t messages, bool parsingBuiltIns, string sourceEntryPointName = ""
 ) {
@@ -640,7 +640,7 @@ bool InitializeSymbolTables(
 
   success &= InitializeSymbolTable(
     builtInParseables.getCommonString,
-    version_, profile, spvVersion, glslang_stage_t.STAGE_VERTEX, source,
+    version_, profile, spvVersion, EShLanguage.STAGE_VERTEX, source,
     infoSink, commonTable[EPrecisionClass.EPcGeneral]
   );
 
@@ -649,7 +649,7 @@ bool InitializeSymbolTables(
 
 bool InitializeSymbolTable(
   string builtIns, int version_, glslang_profile_t profile,
-  in SpvVersion spvVersion, glslang_stage_t language, glslang_source_t source,
+  in SpvVersion spvVersion, EShLanguage language, glslang_source_t source,
   TInfoSink infoSink, TSymbolTable symbolTables
 ) {
   scope intermediate = new TIntermediate(language, version_, profile);

@@ -18,3 +18,5 @@ struct TSourceLoc {
     string_ = stringNum;
   }
 }
+
+struct TPragmaTable {}

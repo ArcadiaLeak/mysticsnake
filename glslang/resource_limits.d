@@ -1,6 +1,6 @@
 module glslang.resource_limits;
 
-immutable struct TLimits {
+struct TLimits {
   bool nonInductiveForLoops = 1;
   bool whileLoops = 1;
   bool doWhileLoops = 1;
@@ -12,7 +12,7 @@ immutable struct TLimits {
   bool generalConstantMatrixVectorIndexing = 1;
 }
 
-immutable class TBuiltInResource {
+struct TBuiltInResourceRec {
   int maxLights = 32;
   int maxClipPlanes = 6;
   int maxTextureUnits = 32;
@@ -117,6 +117,12 @@ immutable class TBuiltInResource {
   int maxDualSourceDrawBuffersEXT = 1;
 
   TLimits limits;
+}
+
+immutable class TBuiltInResource {
+  private TBuiltInResourceRec rec;
+
+  alias rec this;
 }
 
 static DefaultTBuiltInResource = new TBuiltInResource;

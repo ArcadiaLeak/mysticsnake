@@ -12,7 +12,7 @@ private struct vec(T) {
 
 immutable struct glslang_input_t {
   glslang_source_t language;
-  glslang_stage_t stage;
+  EShLanguage stage;
   glslang_client_t client;
   glslang_target_client_version_t client_version;
   glslang_target_language_t target_language;

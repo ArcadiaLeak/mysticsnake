@@ -135,7 +135,7 @@ enum Versioning[] Es310Desktop450Version = [
 
 class TBuiltInParseables {
   struct StageBuiltins {
-    static foreach (stage; EnumMembers!glslang_stage_t) {
+    static foreach (stage; EnumMembers!EShLanguage) {
       mixin(i"Appender!(char[]) $(stage.to!string);".text);
     }
   }
@@ -149,7 +149,7 @@ class TBuiltInParseables {
     int version_, glslang_profile_t, in SpvVersion spvVersion);
   abstract void initialize(
     TBuiltInResource resources, int version_, glslang_profile_t,
-    in SpvVersion spvVersion, glslang_stage_t);
+    in SpvVersion spvVersion, EShLanguage);
 
   string getCommonString() const { return commonBuiltins[].idup; }
   
@@ -6530,7 +6530,7 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) || (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      static foreach (stage; EnumMembers!glslang_stage_t) {
+      static foreach (stage; EnumMembers!EShLanguage) {
         mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag2VerticalPixelsEXT = 1;\n");`.text);
         mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag4VerticalPixelsEXT = 2;\n");`.text);
         mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag2HorizontalPixelsEXT = 4;\n");`.text);
@@ -6571,7 +6571,7 @@ class TBuiltIns : TBuiltInParseables {
 
   override void initialize(
     TBuiltInResource resources, int version_, glslang_profile_t,
-    in SpvVersion spvVersion, glslang_stage_t
+    in SpvVersion spvVersion, EShLanguage
   ) {
     throw new Exception("unimplemented");
   }
