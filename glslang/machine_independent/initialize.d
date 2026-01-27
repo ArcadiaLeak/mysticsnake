@@ -132,9 +132,15 @@ enum Versioning[] Es310Desktop450Version = [
 ];
 
 class TBuiltInParseables {
+  struct StageBuiltins {
+    static foreach (stage; EnumMembers!glslang_stage_t) {
+      mixin(i"Appender!(char[]) $(__traits(identifier, stage));".text);
+    }
+  }
+
   protected {
     Appender!(char[]) commonBuiltins;
-    Appender!(char[])[EnumMembers!glslang_stage_t.length] stageBuiltins;
+    StageBuiltins stageBuiltins;
   }
 
   abstract void initialize(
@@ -189,11 +195,11 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     forEachFunction(commonBuiltins, BaseFunctions);
-    forEachFunction(stageBuiltins[glslang_stage_t.STAGE_FRAGMENT], DerivativeFunctions);
+    forEachFunction(stageBuiltins.STAGE_FRAGMENT, DerivativeFunctions);
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 450))
-      forEachFunction(stageBuiltins[glslang_stage_t.STAGE_COMPUTE], DerivativeFunctions);
+      forEachFunction(stageBuiltins.STAGE_COMPUTE, DerivativeFunctions);
   }
 
   override void initialize(
@@ -2100,13 +2106,13 @@ class TBuiltIns : TBuiltInParseables {
         }
       }
 
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         void subgroupMemoryBarrierShared();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         void subgroupMemoryBarrierShared();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         void subgroupMemoryBarrierShared();
       `.outdent;
     }
@@ -4107,8 +4113,8 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl64bits;
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= derivativesAndControl64bits;
+      stageBuiltins.STAGE_FRAGMENT ~= `
         float64_t interpolateAtCentroid(float64_t);
         f64vec2 interpolateAtCentroid(f64vec2);
         f64vec3 interpolateAtCentroid(f64vec3);
@@ -4165,13 +4171,13 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (spvVersion.vulkan == 0 && IncludeLegacy(version_, profile, spvVersion))
-      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+      stageBuiltins.STAGE_VERTEX ~= `
         vec4 ftransform();
       `.outdent;
 
     Appender!(char[])* s;
     if (version_ == 100)
-      s = &stageBuiltins[glslang_stage_t.STAGE_VERTEX];
+      s = &stageBuiltins.STAGE_VERTEX;
     else
       s = &commonBuiltins;
     if ((profile == glslang_profile_t.ES_PROFILE && version_ == 100) ||
@@ -4227,12 +4233,12 @@ class TBuiltIns : TBuiltInParseables {
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
       if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           void EmitStreamVertex(int);
           void EndStreamPrimitive(int);
         `.outdent;
       }
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         void EmitVertex();
         void EndPrimitive();
       `.outdent;
@@ -4240,19 +4246,19 @@ class TBuiltIns : TBuiltInParseables {
 
     bool esBarrier = (profile == glslang_profile_t.ES_PROFILE && version_ >= 310);
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 150) || esBarrier)
-      stageBuiltins[glslang_stage_t.STAGE_TESSCONTROL] ~= `
+      stageBuiltins.STAGE_TESSCONTROL ~= `
         void barrier();
       `.outdent;
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) || esBarrier)
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         void barrier();
       `.outdent;
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         void barrier();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         void barrier();
       `.outdent;
     }
@@ -4264,7 +4270,7 @@ class TBuiltIns : TBuiltInParseables {
       commonBuiltins ~= `
         void memoryBarrierBuffer();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
       `.outdent;
@@ -4281,11 +4287,11 @@ class TBuiltIns : TBuiltInParseables {
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         void memoryBarrierShared();
         void groupMemoryBarrier();
       `.outdent;
@@ -4298,7 +4304,7 @@ class TBuiltIns : TBuiltInParseables {
     `.outdent;
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float16_t[] buf, uint element, uint stride, bool colMajor);
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal float[] buf, uint element, uint stride, bool colMajor);
         void coopMatLoadNV(out fcoopmatNV m, volatile coherent nontemporal uint8_t[] buf, uint element, uint stride, bool colMajor);
@@ -4688,7 +4694,7 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE || version_ == 100)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         vec4 texture2D(sampler2D, vec2, float);
         vec4 texture2DProj(sampler2D, vec3, float);
         vec4 texture2DProj(sampler2D, vec4, float);
@@ -4698,7 +4704,7 @@ class TBuiltIns : TBuiltInParseables {
       `.outdent;
     }
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE && version_ > 100)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         vec4 texture1D(sampler1D, float, float);
         vec4 texture1DProj(sampler1D, vec2, float);
         vec4 texture1DProj(sampler1D, vec4, float);
@@ -4709,7 +4715,7 @@ class TBuiltIns : TBuiltInParseables {
       `.outdent;
     }
     if (spvVersion.spv == 0 && profile == glslang_profile_t.ES_PROFILE) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         vec4 texture2DLodEXT(sampler2D, vec2, float);
         vec4 texture2DProjLodEXT(sampler2D, vec3, float);
         vec4 texture2DProjLodEXT(sampler2D, vec4, float);
@@ -4718,7 +4724,7 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (spvVersion.vulkan > 0) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         lowp uint stencilAttachmentReadEXT();
         lowp uint stencilAttachmentReadEXT(int);
         highp float depthAttachmentReadEXT();
@@ -4734,12 +4740,12 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 400) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativeControls;
+      stageBuiltins.STAGE_FRAGMENT ~= derivativeControls;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         float interpolateAtCentroid(float);
         vec2 interpolateAtCentroid(vec2);
         vec3 interpolateAtCentroid(vec3);
@@ -4757,7 +4763,7 @@ class TBuiltIns : TBuiltInParseables {
       `.outdent;
     }
 
-    stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+    stageBuiltins.STAGE_FRAGMENT ~= `
       void beginInvocationInterlockARB(void);
       void endInvocationInterlockARB(void);
 
@@ -4765,7 +4771,7 @@ class TBuiltIns : TBuiltInParseables {
     `.outdent;
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         float interpolateAtVertexAMD(float, uint);
         vec2 interpolateAtVertexAMD(vec2, uint);
         vec3 interpolateAtVertexAMD(vec3, uint);
@@ -4789,8 +4795,8 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= derivativesAndControl16bits;
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= derivativesAndControl16bits;
+      stageBuiltins.STAGE_FRAGMENT ~= `
         float16_t interpolateAtCentroid(float16_t);
         f16vec2 interpolateAtCentroid(f16vec2);
         f16vec3 interpolateAtCentroid(f16vec3);
@@ -4818,7 +4824,7 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450 && spvVersion.vulkan > 0) {
-      stageBuiltins[glslang_stage_t.STAGE_FRAGMENT] ~= `
+      stageBuiltins.STAGE_FRAGMENT ~= `
         uint fragmentMaskFetchAMD(subpassInputMS);
         uint fragmentMaskFetchAMD(isubpassInputMS);
         uint fragmentMaskFetchAMD(usubpassInputMS);
@@ -4865,7 +4871,7 @@ class TBuiltIns : TBuiltInParseables {
         bool rayQueryIsLSSHitNV(rayQueryEXT, bool);
       `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_RAYGEN] ~= `
+      stageBuiltins.STAGE_RAYGEN ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -4953,15 +4959,15 @@ class TBuiltIns : TBuiltInParseables {
         void reorderThreadEXT(hitObjectEXT);
         void reorderThreadEXT(hitObjectEXT, uint, uint);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_INTERSECT] ~= `
+      stageBuiltins.STAGE_INTERSECT ~= `
         bool reportIntersectionNV(float, uint);
         bool reportIntersectionEXT(float, uint);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_ANYHIT] ~= `
+      stageBuiltins.STAGE_ANYHIT ~= `
         void ignoreIntersectionNV();
         void terminateRayNV();
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_CLOSESTHIT] ~= `
+      stageBuiltins.STAGE_CLOSESTHIT ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -5035,7 +5041,7 @@ class TBuiltIns : TBuiltInParseables {
         void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT,uint, int);
         void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_MISS] ~= `
+      stageBuiltins.STAGE_MISS ~= `
         void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
         void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
         void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
@@ -5109,7 +5115,7 @@ class TBuiltIns : TBuiltInParseables {
         void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
         void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_CALLABLE] ~= `
+      stageBuiltins.STAGE_CALLABLE ~= `
         void executeCallableNV(uint, int);
         void executeCallableEXT(uint, int);
       `.outdent;
@@ -5117,35 +5123,35 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 450)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativeControls;
+      stageBuiltins.STAGE_COMPUTE ~= derivativeControls;
     }
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativesAndControl16bits;
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= derivativesAndControl64bits;
+      stageBuiltins.STAGE_COMPUTE ~= derivativesAndControl16bits;
+      stageBuiltins.STAGE_COMPUTE ~= derivativesAndControl64bits;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         void writePackedPrimitiveIndices4x8NV(uint, uint);
       `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         void EmitMeshTasksEXT(uint, uint, uint);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         void SetMeshOutputsEXT(uint, uint);
       `.outdent;
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 460) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
         vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
       `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
         vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
       `.outdent;
@@ -5266,7 +5272,7 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         in highp uvec3 gl_NumWorkGroups;
         const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
 
@@ -5280,14 +5286,14 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         in highp int gl_DeviceIndex;
       `.outdent;
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 460)) {
-      stageBuiltins[glslang_stage_t.STAGE_COMPUTE] ~= `
+      stageBuiltins.STAGE_COMPUTE ~= `
         in highp uvec2 gl_TileOffsetQCOM;
         in highp uvec3 gl_TileDimensionQCOM;
         in highp uvec2 gl_TileApronSizeQCOM;
@@ -5296,7 +5302,7 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         out gl_MeshPerVertexNV {
           vec4 gl_Position;
           float gl_PointSize;
@@ -5351,7 +5357,7 @@ class TBuiltIns : TBuiltInParseables {
         } gl_MeshPrimitivesEXT[];
       `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         out uint gl_TaskCountNV;
 
         const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
@@ -5369,22 +5375,22 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+      stageBuiltins.STAGE_MESH ~= `
         in highp int gl_DeviceIndex;
         in int gl_DrawIDARB;
         in int gl_ViewIndex;
       `.outdent;
 
-      stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+      stageBuiltins.STAGE_TASK ~= `
         in highp int gl_DeviceIndex;
         in int gl_DrawIDARB;
       `.outdent;
 
       if (version_ >= 460) {
-        stageBuiltins[glslang_stage_t.STAGE_MESH] ~= `
+        stageBuiltins.STAGE_MESH ~= `
           in int gl_DrawID;
         `.outdent;
-        stageBuiltins[glslang_stage_t.STAGE_TASK] ~= `
+        stageBuiltins.STAGE_TASK ~= `
           in int gl_DrawID;
         `.outdent;
       }
@@ -5392,7 +5398,7 @@ class TBuiltIns : TBuiltInParseables {
 
     if (profile != glslang_profile_t.ES_PROFILE) {
       if (version_ < 130) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           attribute vec4 gl_Color;
           attribute vec4 gl_SecondaryColor;
           attribute vec3 gl_Normal;
@@ -5408,7 +5414,7 @@ class TBuiltIns : TBuiltInParseables {
           attribute float gl_FogCoord;
         `.outdent;
       } else if (IncludeLegacy(version_, profile, spvVersion)) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           in vec4 gl_Color;
           in vec4 gl_SecondaryColor;
           in vec3 gl_Normal;
@@ -5427,7 +5433,7 @@ class TBuiltIns : TBuiltInParseables {
 
       if (version_ < 150) {
         if (version_ < 130) {
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             vec4 gl_ClipVertex;
             varying vec4 gl_FrontColor;
             varying vec4 gl_BackColor;
@@ -5437,7 +5443,7 @@ class TBuiltIns : TBuiltInParseables {
             varying float gl_FogFragCoord;
           `.outdent;
         } else if (IncludeLegacy(version_, profile, spvVersion)) {
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             vec4 gl_ClipVertex;
             out vec4 gl_FrontColor;
             out vec4 gl_BackColor;
@@ -5447,24 +5453,24 @@ class TBuiltIns : TBuiltInParseables {
             out float gl_FogFragCoord;
           `.outdent;
         }
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           vec4 gl_Position;
           float gl_PointSize;
         `.outdent;
 
         if (version_ == 130 || version_ == 140)
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             out float gl_ClipDistance[];
           `.outdent;
       } else {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           out gl_PerVertex {
             vec4 gl_Position;
             float gl_PointSize;
             float gl_ClipDistance[];
         `.outdent;
         if (IncludeLegacy(version_, profile, spvVersion))
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             vec4 gl_ClipVertex;
             vec4 gl_FrontColor;
             vec4 gl_BackColor;
@@ -5474,58 +5480,58 @@ class TBuiltIns : TBuiltInParseables {
             float gl_FogFragCoord;
           `.outdent;
         if (version_ >= 450)
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             float gl_CullDistance[];
           `.outdent;
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           };
         `.outdent;
       }
       if (version_ >= 130 && spvVersion.vulkan == 0)
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           int gl_VertexID;
         `.outdent;
       if (spvVersion.vulkan == 0)
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           int gl_InstanceID;
         `.outdent;
       if (spvVersion.vulkan > 0 && version_ >= 140)
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           in int gl_VertexIndex;
           in int gl_InstanceIndex;
         `.outdent;
       if (spvVersion.vulkan > 0 && version_ >= 140 && spvVersion.vulkanRelaxed)
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           in int gl_VertexID;
           in int gl_InstanceID;
         `.outdent;
       if (version_ >= 440) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           in int gl_BaseVertexARB;
           in int gl_BaseInstanceARB;
           in int gl_DrawIDARB;
         `.outdent;
       }
       if (version_ >= 410) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           out int gl_ViewportIndex;
           out int gl_Layer;
         `.outdent;
       }
       if (version_ >= 460) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           in int gl_BaseVertex;
           in int gl_BaseInstance;
           in int gl_DrawID;
         `.outdent;
       }
       if (version_ >= 430) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           out int gl_ViewportMask[];
         `.outdent;
       }
       if (version_ >= 450) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           out int gl_SecondaryViewportMaskNV[];
           out vec4 gl_SecondaryPositionNV;
           out vec4 gl_PositionPerViewNV[];
@@ -5534,29 +5540,29 @@ class TBuiltIns : TBuiltInParseables {
       }
     } else {
       if (version_ == 100) {
-        stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+        stageBuiltins.STAGE_VERTEX ~= `
           highp vec4 gl_Position;
           mediump float gl_PointSize;
           highp int gl_InstanceID;
         `.outdent;
       } else {
         if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed)
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             in highp int gl_VertexID;
             in highp int gl_InstanceID;
           `.outdent;
         if (spvVersion.vulkan > 0)
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             in highp int gl_VertexIndex;
             in highp int gl_InstanceIndex;
           `.outdent;
         if (version_ < 310)
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             highp vec4 gl_Position;
             highp float gl_PointSize;
           `.outdent;
         else
-          stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+          stageBuiltins.STAGE_VERTEX ~= `
             out gl_PerVertex {
               highp vec4  gl_Position;
               highp float gl_PointSize;
@@ -5567,35 +5573,35 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+      stageBuiltins.STAGE_VERTEX ~= `
         in highp int gl_DeviceIndex;
         in highp int gl_ViewIndex;
       `.outdent;
     }
 
     if (version_ >= 300) {
-      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+      stageBuiltins.STAGE_VERTEX ~= `
         in highp uint gl_ViewID_OVR;
       `.outdent;
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_VERTEX] ~= `
+      stageBuiltins.STAGE_VERTEX ~= `
         out highp int gl_PrimitiveShadingRateEXT;
       `.outdent;
     }
 
     if (profile == glslang_profile_t.CORE_PROFILE ||
       profile == glslang_profile_t.COMPATIBILITY_PROFILE) {
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         in gl_PerVertex {
           vec4 gl_Position;
           float gl_PointSize;
           float gl_ClipDistance[];
       `.outdent;
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           vec4 gl_ClipVertex;
           vec4 gl_FrontColor;
           vec4 gl_BackColor;
@@ -5605,12 +5611,12 @@ class TBuiltIns : TBuiltInParseables {
           float gl_FogFragCoord;
         `.outdent;
       if (version_ >= 450)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           float gl_CullDistance[];
           vec4 gl_SecondaryPositionNV;
           vec4 gl_PositionPerViewNV[];
         `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         } gl_in[];
 
         in int gl_PrimitiveIDIn;
@@ -5620,7 +5626,7 @@ class TBuiltIns : TBuiltInParseables {
           float gl_ClipDistance[];
       `.outdent;
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ >= 400)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           vec4 gl_ClipVertex;
           vec4 gl_FrontColor;
           vec4 gl_BackColor;
@@ -5630,10 +5636,10 @@ class TBuiltIns : TBuiltInParseables {
           float gl_FogFragCoord;
         `.outdent;
       if (version_ >= 450)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           float gl_CullDistance[];
         `.outdent;
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         };
 
         out int gl_PrimitiveID;
@@ -5641,34 +5647,34 @@ class TBuiltIns : TBuiltInParseables {
       `.outdent;
 
       if (version_ >= 150)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           out int gl_ViewportIndex;
         `.outdent;
 
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ < 400)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           out vec4 gl_ClipVertex;
         `.outdent;
 
       if (version_ >= 150)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           in int gl_InvocationID;
         `.outdent;
 
       if (version_ >= 430)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           out int gl_ViewportMask[];
         `.outdent;
 
       if (version_ >= 450)
-        stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+        stageBuiltins.STAGE_GEOMETRY ~= `
           out int gl_SecondaryViewportMaskNV[];
           out vec4 gl_SecondaryPositionNV;
           out vec4 gl_PositionPerViewNV[];
           out int gl_ViewportMaskPerViewNV[];
         `.outdent;
     } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         in gl_PerVertex {
           highp vec4 gl_Position;
           highp float gl_PointSize;
@@ -5689,7 +5695,7 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         in highp int gl_DeviceIndex;
         in highp int gl_ViewIndex;
       `.outdent;
@@ -5697,8 +5703,120 @@ class TBuiltIns : TBuiltInParseables {
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins[glslang_stage_t.STAGE_GEOMETRY] ~= `
+      stageBuiltins.STAGE_GEOMETRY ~= `
         out highp int gl_PrimitiveShadingRateEXT;
+      `.outdent;
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      stageBuiltins.STAGE_TESSCONTROL ~= `
+        in int gl_PatchVerticesIn;
+        in int gl_PrimitiveID;
+        in int gl_InvocationID;
+
+        out gl_PerVertex {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+      `.outdent;
+      if (profile == glslang_profile_t.COMPATIBILITY_PROFILE)
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          vec4 gl_ClipVertex;
+          vec4 gl_FrontColor;
+          vec4 gl_BackColor;
+          vec4 gl_FrontSecondaryColor;
+          vec4 gl_BackSecondaryColor;
+          vec4 gl_TexCoord[];
+          float gl_FogFragCoord;
+        `.outdent;
+      if (version_ >= 450)
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          float gl_CullDistance[];
+        `.outdent;
+      if (version_ >= 430)
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          int gl_ViewportMask[];
+        `.outdent;
+      if (version_ >= 450)
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          vec4 gl_SecondaryPositionNV;
+          int gl_SecondaryViewportMaskNV[];
+          vec4 gl_PositionPerViewNV[];
+          int gl_ViewportMaskPerViewNV[];
+        `.outdent;
+      stageBuiltins.STAGE_TESSCONTROL ~= `
+        } gl_out[];
+
+        patch out float gl_TessLevelOuter[4];
+        patch out float gl_TessLevelInner[2];
+      `.outdent;
+
+      if (version_ >= 410)
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          out int gl_ViewportIndex;
+          out int gl_Layer;
+        `.outdent;
+    } else {
+      stageBuiltins.STAGE_TESSCONTROL ~= `
+        in highp int gl_PatchVerticesIn;
+        in highp int gl_PrimitiveID;
+        in highp int gl_InvocationID;
+
+        out gl_PerVertex {
+          highp vec4 gl_Position;
+          highp float gl_PointSize;
+        } gl_out[];
+
+        patch out highp float gl_TessLevelOuter[4];
+        patch out highp float gl_TessLevelInner[2];
+        patch out highp vec4 gl_BoundingBoxOES[2];
+        patch out highp vec4 gl_BoundingBoxEXT[2];
+      `.outdent;
+      if (profile == glslang_profile_t.ES_PROFILE && version_ >= 320) {
+        stageBuiltins.STAGE_TESSCONTROL ~= `
+          patch out highp vec4 gl_BoundingBox[2];
+        `.outdent;
+      }
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins.STAGE_TESSCONTROL ~= `
+        in highp int gl_DeviceIndex;
+        in highp int gl_ViewIndex;
+      `.outdent;
+    }
+
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
+      stageBuiltins.STAGE_TESSEVALUATION ~= `
+        in int gl_PatchVerticesIn;
+        in int gl_PrimitiveID;
+        in vec3 gl_TessCoord;
+
+        patch in float gl_TessLevelOuter[4];
+        patch in float gl_TessLevelInner[2];
+
+        out gl_PerVertex {
+          vec4 gl_Position;
+          float gl_PointSize;
+          float gl_ClipDistance[];
+      `.outdent;
+      if (version_ >= 400 && profile == glslang_profile_t.COMPATIBILITY_PROFILE)
+        stageBuiltins.STAGE_TESSEVALUATION ~= `
+          vec4 gl_ClipVertex;
+          vec4 gl_FrontColor;
+          vec4 gl_BackColor;
+          vec4 gl_FrontSecondaryColor;
+          vec4 gl_BackSecondaryColor;
+          vec4 gl_TexCoord[];
+          float gl_FogFragCoord;
+        `.outdent;
+      if (version_ >= 450)
+        stageBuiltins.STAGE_TESSEVALUATION ~= `
+          float gl_CullDistance[];
+        `.outdent;
+      stageBuiltins.STAGE_TESSEVALUATION ~= `
+        };
       `.outdent;
     }
   }

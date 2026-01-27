@@ -16,7 +16,7 @@ string glslangSources = "glslang"
 string Makefile = i`
 
 artifacts/libmysticsnake_glslang.a: $(glslangSources)
-	dmd -of=$@ -debug $^ -lib
+	dmd -of=$@ -debug $^ -lib -dip1000
 
 `.text;
 
