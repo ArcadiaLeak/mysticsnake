@@ -5245,7 +5245,7 @@ class TBuiltIns : TBuiltInParseables {
           vec4 ambient;
         };
 
-        uniform gl_LightModelParameters  gl_LightModel;
+        uniform gl_LightModelParameters gl_LightModel;
 
         struct gl_LightModelProducts {
           vec4 sceneColor;
@@ -5355,7 +5355,7 @@ class TBuiltIns : TBuiltInParseables {
           int gl_Layer;
           int gl_ViewportIndex;
           bool gl_CullPrimitiveEXT;
-          int  gl_PrimitiveShadingRateEXT;
+          int gl_PrimitiveShadingRateEXT;
         } gl_MeshPrimitivesEXT[];
       `.outdent;
 
@@ -5987,7 +5987,7 @@ class TBuiltIns : TBuiltInParseables {
       }
       if (version_ >= 300) {
         stageBuiltins.STAGE_FRAGMENT ~= `
-          highp vec4  gl_FragCoord;
+          highp vec4 gl_FragCoord;
           bool gl_FrontFacing;
           mediump vec2 gl_PointCoord;
           highp float gl_FragDepth;
@@ -6037,6 +6037,407 @@ class TBuiltIns : TBuiltInParseables {
     
     if (version_ >= 130)
       add2ndGenerationSamplingImaging(version_, profile, spvVersion);
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      stageBuiltins.STAGE_FRAGMENT.put(
+        "flat in highp int gl_DeviceIndex;" ~
+        "flat in highp int gl_ViewIndex;" ~
+        "\n");
+    }
+
+    if (version_ >= 300 /* both ES and non-ES */) {
+      stageBuiltins.STAGE_FRAGMENT.put(
+        "flat in highp uint gl_ViewID_OVR;" ~
+        "\n");
+    }
+    
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 460)) {
+      stageBuiltins.STAGE_FRAGMENT.put(
+        "flat in highp uvec2 gl_TileOffsetQCOM;" ~
+        "flat in highp uvec3 gl_TileDimensionQCOM;" ~
+        "flat in highp uvec2 gl_TileApronSizeQCOM;" ~
+        "\n");
+    }
+
+    
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
+      string ballotDecls =
+        "uniform uint gl_SubGroupSizeARB;" ~
+        "in uint gl_SubGroupInvocationARB;" ~
+        "in uint64_t gl_SubGroupEqMaskARB;" ~
+        "in uint64_t gl_SubGroupGeMaskARB;" ~
+        "in uint64_t gl_SubGroupGtMaskARB;" ~
+        "in uint64_t gl_SubGroupLeMaskARB;" ~
+        "in uint64_t gl_SubGroupLtMaskARB;" ~
+        "\n";
+      string rtBallotDecls =
+        "uniform volatile uint gl_SubGroupSizeARB;" ~
+        "in volatile uint gl_SubGroupInvocationARB;" ~
+        "in volatile uint64_t gl_SubGroupEqMaskARB;" ~
+        "in volatile uint64_t gl_SubGroupGeMaskARB;" ~
+        "in volatile uint64_t gl_SubGroupGtMaskARB;" ~
+        "in volatile uint64_t gl_SubGroupLeMaskARB;" ~
+        "in volatile uint64_t gl_SubGroupLtMaskARB;" ~
+        "\n";
+      string fragmentBallotDecls =
+        "uniform uint gl_SubGroupSizeARB;" ~
+        "flat in uint gl_SubGroupInvocationARB;" ~
+        "flat in uint64_t gl_SubGroupEqMaskARB;" ~
+        "flat in uint64_t gl_SubGroupGeMaskARB;" ~
+        "flat in uint64_t gl_SubGroupGtMaskARB;" ~
+        "flat in uint64_t gl_SubGroupLeMaskARB;" ~
+        "flat in uint64_t gl_SubGroupLtMaskARB;" ~
+        "\n";
+      stageBuiltins.STAGE_VERTEX.put(ballotDecls);
+      stageBuiltins.STAGE_TESSCONTROL.put(ballotDecls);
+      stageBuiltins.STAGE_TESSEVALUATION.put(ballotDecls);
+      stageBuiltins.STAGE_GEOMETRY.put(ballotDecls);
+      stageBuiltins.STAGE_COMPUTE.put(ballotDecls);
+      stageBuiltins.STAGE_FRAGMENT.put(fragmentBallotDecls);
+      stageBuiltins.STAGE_MESH.put(ballotDecls);
+      stageBuiltins.STAGE_TASK.put(ballotDecls);
+      stageBuiltins.STAGE_RAYGEN.put(rtBallotDecls);
+      stageBuiltins.STAGE_INTERSECT.put(rtBallotDecls);
+      
+      stageBuiltins.STAGE_ANYHIT.put(ballotDecls);
+      stageBuiltins.STAGE_CLOSESTHIT.put(rtBallotDecls);
+      stageBuiltins.STAGE_MISS.put(rtBallotDecls);
+      stageBuiltins.STAGE_CALLABLE.put(rtBallotDecls);
+    }
+
+    
+    if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
+      (profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
+      string subgroupDecls =
+        "in mediump uint gl_SubgroupSize;" ~
+        "in mediump uint gl_SubgroupInvocationID;" ~
+        "in highp uvec4 gl_SubgroupEqMask;" ~
+        "in highp uvec4 gl_SubgroupGeMask;" ~
+        "in highp uvec4 gl_SubgroupGtMask;" ~
+        "in highp uvec4 gl_SubgroupLeMask;" ~
+        "in highp uvec4 gl_SubgroupLtMask;" ~
+        
+        "in highp uint gl_WarpsPerSMNV;" ~
+        "in highp uint gl_SMCountNV;" ~
+        "in highp uint gl_WarpIDNV;" ~
+        "in highp uint gl_SMIDNV;" ~
+        
+        "in highp uint gl_CoreIDARM;" ~
+        "in highp uint gl_CoreCountARM;" ~
+        "in highp uint gl_CoreMaxIDARM;" ~
+        "in highp uint gl_WarpIDARM;" ~
+        "in highp uint gl_WarpMaxIDARM;" ~
+        "\n";
+      string fragmentSubgroupDecls =
+        "flat in mediump uint gl_SubgroupSize;" ~
+        "flat in mediump uint gl_SubgroupInvocationID;" ~
+        "flat in highp uvec4 gl_SubgroupEqMask;" ~
+        "flat in highp uvec4 gl_SubgroupGeMask;" ~
+        "flat in highp uvec4 gl_SubgroupGtMask;" ~
+        "flat in highp uvec4 gl_SubgroupLeMask;" ~
+        "flat in highp uvec4 gl_SubgroupLtMask;" ~
+        
+        "flat in highp uint gl_WarpsPerSMNV;" ~
+        "flat in highp uint gl_SMCountNV;" ~
+        "flat in highp uint gl_WarpIDNV;" ~
+        "flat in highp uint gl_SMIDNV;" ~
+        
+        "flat in highp uint gl_CoreIDARM;" ~
+        "flat in highp uint gl_CoreCountARM;" ~
+        "flat in highp uint gl_CoreMaxIDARM;" ~
+        "flat in highp uint gl_WarpIDARM;" ~
+        "flat in highp uint gl_WarpMaxIDARM;" ~
+        "\n";
+      string computeSubgroupDecls =
+        "in highp uint gl_NumSubgroups;" ~
+        "in highp uint gl_SubgroupID;" ~
+        "\n";
+        
+      string rtSubgroupDecls =
+        "in mediump volatile uint gl_SubgroupSize;" ~
+        "in mediump volatile uint gl_SubgroupInvocationID;" ~
+        "in highp volatile uvec4 gl_SubgroupEqMask;" ~
+        "in highp volatile uvec4 gl_SubgroupGeMask;" ~
+        "in highp volatile uvec4 gl_SubgroupGtMask;" ~
+        "in highp volatile uvec4 gl_SubgroupLeMask;" ~
+        "in highp volatile uvec4 gl_SubgroupLtMask;" ~
+        
+        "in highp uint gl_WarpsPerSMNV;" ~
+        "in highp uint gl_SMCountNV;" ~
+        "in highp volatile uint gl_WarpIDNV;" ~
+        "in highp volatile uint gl_SMIDNV;" ~
+        
+        "in highp uint gl_CoreIDARM;" ~
+        "in highp uint gl_CoreCountARM;" ~
+        "in highp uint gl_CoreMaxIDARM;" ~
+        "in highp uint gl_WarpIDARM;" ~
+        "in highp uint gl_WarpMaxIDARM;" ~
+        "\n";
+
+      stageBuiltins.STAGE_VERTEX.put(subgroupDecls);
+      stageBuiltins.STAGE_TESSCONTROL.put(subgroupDecls);
+      stageBuiltins.STAGE_TESSEVALUATION.put(subgroupDecls);
+      stageBuiltins.STAGE_GEOMETRY.put(subgroupDecls);
+      stageBuiltins.STAGE_COMPUTE.put(subgroupDecls);
+      stageBuiltins.STAGE_COMPUTE.put(computeSubgroupDecls);
+      stageBuiltins.STAGE_FRAGMENT.put(fragmentSubgroupDecls);
+      stageBuiltins.STAGE_MESH.put(subgroupDecls);
+      stageBuiltins.STAGE_MESH.put(computeSubgroupDecls);
+      stageBuiltins.STAGE_TASK.put(subgroupDecls);
+      stageBuiltins.STAGE_TASK.put(computeSubgroupDecls);
+      stageBuiltins.STAGE_RAYGEN.put(rtSubgroupDecls);
+      stageBuiltins.STAGE_INTERSECT.put(rtSubgroupDecls);
+      stageBuiltins.STAGE_ANYHIT.put(subgroupDecls);
+      stageBuiltins.STAGE_CLOSESTHIT.put(rtSubgroupDecls);
+      stageBuiltins.STAGE_MISS.put(rtSubgroupDecls);
+      stageBuiltins.STAGE_CALLABLE.put(rtSubgroupDecls);
+    }
+
+    
+    if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
+      string constRayFlags =
+        "const uint gl_RayFlagsNoneNV = 0U;" ~
+        "const uint gl_RayFlagsNoneEXT = 0U;" ~
+        "const uint gl_RayFlagsOpaqueNV = 1U;" ~
+        "const uint gl_RayFlagsOpaqueEXT = 1U;" ~
+        "const uint gl_RayFlagsNoOpaqueNV = 2U;" ~
+        "const uint gl_RayFlagsNoOpaqueEXT = 2U;" ~
+        "const uint gl_RayFlagsTerminateOnFirstHitNV = 4U;" ~
+        "const uint gl_RayFlagsTerminateOnFirstHitEXT = 4U;" ~
+        "const uint gl_RayFlagsSkipClosestHitShaderNV = 8U;" ~
+        "const uint gl_RayFlagsSkipClosestHitShaderEXT = 8U;" ~
+        "const uint gl_RayFlagsCullBackFacingTrianglesNV = 16U;" ~
+        "const uint gl_RayFlagsCullBackFacingTrianglesEXT = 16U;" ~
+        "const uint gl_RayFlagsCullFrontFacingTrianglesNV = 32U;" ~
+        "const uint gl_RayFlagsCullFrontFacingTrianglesEXT = 32U;" ~
+        "const uint gl_RayFlagsCullOpaqueNV = 64U;" ~
+        "const uint gl_RayFlagsCullOpaqueEXT = 64U;" ~
+        "const uint gl_RayFlagsCullNoOpaqueNV = 128U;" ~
+        "const uint gl_RayFlagsCullNoOpaqueEXT = 128U;" ~
+        "const uint gl_RayFlagsSkipTrianglesEXT = 256U;" ~
+        "const uint gl_RayFlagsSkipBuiltinPrimitivesNV = 256U;" ~
+        "const uint gl_RayFlagsSkipAABBEXT = 512U;" ~
+        "const uint gl_RayFlagsForceOpacityMicromap2StateEXT = 1024U;" ~
+        "const uint gl_HitKindFrontFacingTriangleEXT = 254U;" ~
+        "const uint gl_HitKindBackFacingTriangleEXT = 255U;" ~
+        "in uint gl_HitKindFrontFacingMicroTriangleNV;" ~
+        "in uint gl_HitKindBackFacingMicroTriangleNV;" ~
+        "const int gl_ClusterIDNoneNV = -1;" ~
+        "\n";
+
+      string constRayQueryIntersection =
+        "const uint gl_RayQueryCandidateIntersectionEXT = 0U;" ~
+        "const uint gl_RayQueryCommittedIntersectionEXT = 1U;" ~
+        "const uint gl_RayQueryCommittedIntersectionNoneEXT = 0U;" ~
+        "const uint gl_RayQueryCommittedIntersectionTriangleEXT = 1U;" ~
+        "const uint gl_RayQueryCommittedIntersectionGeneratedEXT = 2U;" ~
+        "const uint gl_RayQueryCandidateIntersectionTriangleEXT = 0U;" ~
+        "const uint gl_RayQueryCandidateIntersectionAABBEXT = 1U;" ~
+        "\n";
+
+      string rayGenDecls =
+        "in uvec3 gl_LaunchIDNV;" ~
+        "in uvec3 gl_LaunchIDEXT;" ~
+        "in uvec3 gl_LaunchSizeNV;" ~
+        "in uvec3 gl_LaunchSizeEXT;" ~
+        "\n";
+      string intersectDecls =
+        "in uvec3 gl_LaunchIDNV;" ~
+        "in uvec3 gl_LaunchIDEXT;" ~
+        "in uvec3 gl_LaunchSizeNV;" ~
+        "in uvec3 gl_LaunchSizeEXT;" ~
+        "in int gl_PrimitiveID;" ~
+        "in int gl_InstanceID;" ~
+        "in int gl_InstanceCustomIndexNV;" ~
+        "in int gl_InstanceCustomIndexEXT;" ~
+        "in int gl_GeometryIndexEXT;" ~
+        "in vec3 gl_WorldRayOriginNV;" ~
+        "in vec3 gl_WorldRayOriginEXT;" ~
+        "in vec3 gl_WorldRayDirectionNV;" ~
+        "in vec3 gl_WorldRayDirectionEXT;" ~
+        "in vec3 gl_ObjectRayOriginNV;" ~
+        "in vec3 gl_ObjectRayOriginEXT;" ~
+        "in vec3 gl_ObjectRayDirectionNV;" ~
+        "in vec3 gl_ObjectRayDirectionEXT;" ~
+        "in float gl_RayTminNV;" ~
+        "in float gl_RayTminEXT;" ~
+        "in float gl_RayTmaxNV;" ~
+        "in volatile float gl_RayTmaxEXT;" ~
+        "in mat4x3 gl_ObjectToWorldNV;" ~
+        "in mat4x3 gl_ObjectToWorldEXT;" ~
+        "in mat3x4 gl_ObjectToWorld3x4EXT;" ~
+        "in mat4x3 gl_WorldToObjectNV;" ~
+        "in mat4x3 gl_WorldToObjectEXT;" ~
+        "in mat3x4 gl_WorldToObject3x4EXT;" ~
+        "in uint gl_IncomingRayFlagsNV;" ~
+        "in uint gl_IncomingRayFlagsEXT;" ~
+        "in float gl_CurrentRayTimeNV;" ~
+        "in uint gl_CullMaskEXT;" ~
+        "\n";
+      string hitDecls =
+        "in uvec3 gl_LaunchIDNV;" ~
+        "in uvec3 gl_LaunchIDEXT;" ~
+        "in uvec3 gl_LaunchSizeNV;" ~
+        "in uvec3 gl_LaunchSizeEXT;" ~
+        "in int gl_PrimitiveID;" ~
+        "in int gl_InstanceID;" ~
+        "in int gl_InstanceCustomIndexNV;" ~
+        "in int gl_InstanceCustomIndexEXT;" ~
+        "in int gl_GeometryIndexEXT;" ~
+        "in vec3 gl_WorldRayOriginNV;" ~
+        "in vec3 gl_WorldRayOriginEXT;" ~
+        "in vec3 gl_WorldRayDirectionNV;" ~
+        "in vec3 gl_WorldRayDirectionEXT;" ~
+        "in vec3 gl_ObjectRayOriginNV;" ~
+        "in vec3 gl_ObjectRayOriginEXT;" ~
+        "in vec3 gl_ObjectRayDirectionNV;" ~
+        "in vec3 gl_ObjectRayDirectionEXT;" ~
+        "in float gl_RayTminNV;" ~
+        "in float gl_RayTminEXT;" ~
+        "in float gl_RayTmaxNV;" ~
+        "in float gl_RayTmaxEXT;" ~
+        "in float gl_HitTNV;" ~
+        "in float gl_HitTEXT;" ~
+        "in uint gl_HitKindNV;" ~
+        "in uint gl_HitKindEXT;" ~
+        "in mat4x3 gl_ObjectToWorldNV;" ~
+        "in mat4x3 gl_ObjectToWorldEXT;" ~
+        "in mat3x4 gl_ObjectToWorld3x4EXT;" ~
+        "in mat4x3 gl_WorldToObjectNV;" ~
+        "in mat4x3 gl_WorldToObjectEXT;" ~
+        "in mat3x4 gl_WorldToObject3x4EXT;" ~
+        "in uint gl_IncomingRayFlagsNV;" ~
+        "in uint gl_IncomingRayFlagsEXT;" ~
+        "in float gl_CurrentRayTimeNV;" ~
+        "in uint gl_CullMaskEXT;" ~
+        "in vec3 gl_HitTriangleVertexPositionsEXT[3];" ~
+        "in vec3 gl_HitMicroTriangleVertexPositionsNV[3];" ~
+        "in vec2 gl_HitMicroTriangleVertexBarycentricsNV[3];" ~
+        "in int gl_ClusterIDNV;" ~
+        "in bool gl_HitIsSphereNV;" ~
+        "in bool gl_HitIsLSSNV;" ~
+        "in vec3 gl_HitSpherePositionNV;" ~
+        "in float gl_HitSphereRadiusNV;" ~
+        "in vec3 gl_HitLSSPositionsNV[2];" ~
+        "in float gl_HitLSSRadiiNV[2];" ~
+        "\n";
+
+      string missDecls =
+        "in uvec3 gl_LaunchIDNV;" ~
+        "in uvec3 gl_LaunchIDEXT;" ~
+        "in uvec3 gl_LaunchSizeNV;" ~
+        "in uvec3 gl_LaunchSizeEXT;" ~
+        "in vec3 gl_WorldRayOriginNV;" ~
+        "in vec3 gl_WorldRayOriginEXT;" ~
+        "in vec3 gl_WorldRayDirectionNV;" ~
+        "in vec3 gl_WorldRayDirectionEXT;" ~
+        "in vec3 gl_ObjectRayOriginNV;" ~
+        "in vec3 gl_ObjectRayDirectionNV;" ~
+        "in float gl_RayTminNV;" ~
+        "in float gl_RayTminEXT;" ~
+        "in float gl_RayTmaxNV;" ~
+        "in float gl_RayTmaxEXT;" ~
+        "in uint gl_IncomingRayFlagsNV;" ~
+        "in uint gl_IncomingRayFlagsEXT;" ~
+        "in float gl_CurrentRayTimeNV;" ~
+        "in uint gl_CullMaskEXT;" ~
+        "\n";
+
+      string callableDecls =
+        "in uvec3 gl_LaunchIDNV;" ~
+        "in uvec3 gl_LaunchIDEXT;" ~
+        "in uvec3 gl_LaunchSizeNV;" ~
+        "in uvec3 gl_LaunchSizeEXT;" ~
+        "\n";
+
+
+      commonBuiltins.put(constRayQueryIntersection);
+      commonBuiltins.put(constRayFlags);
+
+      stageBuiltins.STAGE_RAYGEN.put(rayGenDecls);
+      stageBuiltins.STAGE_INTERSECT.put(intersectDecls);
+      stageBuiltins.STAGE_ANYHIT.put(hitDecls);
+      stageBuiltins.STAGE_CLOSESTHIT.put(hitDecls);
+      stageBuiltins.STAGE_MISS.put(missDecls);
+      stageBuiltins.STAGE_CALLABLE.put(callableDecls);
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140)) {
+      string deviceIndex =
+        "in highp int gl_DeviceIndex;" ~
+        "\n";
+
+      stageBuiltins.STAGE_RAYGEN.put(deviceIndex);
+      stageBuiltins.STAGE_INTERSECT.put(deviceIndex);
+      stageBuiltins.STAGE_ANYHIT.put(deviceIndex);
+      stageBuiltins.STAGE_CLOSESTHIT.put(deviceIndex);
+      stageBuiltins.STAGE_MISS.put(deviceIndex);
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      commonBuiltins.put("const int gl_ScopeDevice = 1;\n");
+      commonBuiltins.put("const int gl_ScopeWorkgroup = 2;\n");
+      commonBuiltins.put("const int gl_ScopeSubgroup = 3;\n");
+      commonBuiltins.put("const int gl_ScopeInvocation = 4;\n");
+      commonBuiltins.put("const int gl_ScopeQueueFamily = 5;\n");
+      commonBuiltins.put("const int gl_ScopeShaderCallEXT = 6;\n");
+
+      commonBuiltins.put("const int gl_SemanticsRelaxed = 0x0;\n");
+      commonBuiltins.put("const int gl_SemanticsAcquire = 0x2;\n");
+      commonBuiltins.put("const int gl_SemanticsRelease = 0x4;\n");
+      commonBuiltins.put("const int gl_SemanticsAcquireRelease = 0x8;\n");
+      commonBuiltins.put("const int gl_SemanticsMakeAvailable = 0x2000;\n");
+      commonBuiltins.put("const int gl_SemanticsMakeVisible = 0x4000;\n");
+      commonBuiltins.put("const int gl_SemanticsVolatile = 0x8000;\n");
+
+      commonBuiltins.put("const int gl_StorageSemanticsNone = 0x0;\n");
+      commonBuiltins.put("const int gl_StorageSemanticsBuffer = 0x40;\n");
+      commonBuiltins.put("const int gl_StorageSemanticsShared = 0x100;\n");
+      commonBuiltins.put("const int gl_StorageSemanticsImage = 0x800;\n");
+      commonBuiltins.put("const int gl_StorageSemanticsOutput = 0x1000;\n");
+    }
+
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) || (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      static foreach (stage; EnumMembers!glslang_stage_t) {
+        mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag2VerticalPixelsEXT = 1;\n");`.text);
+        mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag4VerticalPixelsEXT = 2;\n");`.text);
+        mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag2HorizontalPixelsEXT = 4;\n");`.text);
+        mixin(i`stageBuiltins.$(stage.to!string).put("const highp int gl_ShadingRateFlag4HorizontalPixelsEXT = 8;\n");`.text);
+      }
+    }
+    
+    
+    if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
+      (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
+      for (int ms = 0; ms <= 1; ++ms) { 
+        for (int arrayed = 0; arrayed <= 1; ++arrayed) { 
+          for (TSamplerDim dim = TSamplerDim.Esd1D; dim < TSamplerDim.EsdSubpass; ++dim) { 
+            if ((dim == TSamplerDim.Esd1D || dim == TSamplerDim.EsdRect) && profile == glslang_profile_t.ES_PROFILE)
+              continue;
+                    
+            if ((dim == TSamplerDim.Esd3D || dim == TSamplerDim.EsdRect || dim == TSamplerDim.EsdBuffer) && arrayed)
+              continue;
+                    
+            if (dim != TSamplerDim.Esd2D && ms)
+              continue;
+                    
+                    
+            foreach (bType; [TBasicType.EbtInt64, TBasicType.EbtUint64]) {
+              TSampler sampler;
+          
+              sampler.setImage(bType, dim, arrayed ? true : false, false, ms ? true : false);
+
+              string typeName = sampler.getString();
+              addQueryFunctions(sampler, typeName, version_, profile);
+              addImageFunctions(sampler, typeName, version_, profile);
+            }
+          }
+        }
+      }
+    }
   }
 
   override void initialize(
@@ -6467,6 +6868,444 @@ class TBuiltIns : TBuiltInParseables {
       commonBuiltins.put("int textureQueryLevels(");
       commonBuiltins.put(typeName);
       commonBuiltins.put(");\n");
+    }
+  }
+
+  protected void addGatherFunctions(TSampler sampler, string typeName, int version_, glslang_profile_t profile) {
+    switch (sampler.dim) {
+      case TSamplerDim.Esd2D:
+      case TSamplerDim.EsdRect:
+      case TSamplerDim.EsdCube:
+        break;
+      default:
+        return;
+    }
+
+    if (sampler.isMultiSample())
+      return;
+
+    if (version_ < 140 && sampler.dim == TSamplerDim.EsdRect && sampler.type != TBasicType.EbtFloat)
+      return;
+
+    for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr) {
+      if (f16TexAddr && sampler.type != TBasicType.EbtFloat16)
+        continue;
+      for (int offset = 0; offset < 3; ++offset) {
+        for (int comp = 0; comp < 2; ++comp) {
+          if (comp > 0 && sampler.shadow)
+            continue;
+
+          if (offset > 0 && sampler.dim == TSamplerDim.EsdCube)
+            continue;
+
+          for (int sparse = 0; sparse <= 1; ++sparse) {
+            if (sparse && (profile == glslang_profile_t.ES_PROFILE || version_ < 450))
+              continue;
+
+            Appender!(char[]) s;
+
+            if (sparse)
+              s.put("int ");
+            else {
+              s.put(prefixes[sampler.type]);
+              s.put("vec4 ");
+            }
+
+            if (sparse)
+              s.put("sparseTextureGather");
+            else
+              s.put("textureGather");
+            switch (offset) {
+              case 1:
+                s.put("Offset");
+                break;
+              case 2:
+                s.put("Offsets");
+                break;
+              default:
+                break;
+            }
+            if (sparse)
+              s.put("ARB");
+            s.put("(");
+
+            s.put(typeName);
+
+            if (f16TexAddr)
+              s.put(",f16vec");
+            else
+              s.put(",vec");
+            int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
+            s.put(postfixes[totalDims]);
+
+            if (sampler.shadow)
+              s.put(",float");
+
+            if (offset > 0) {
+              s.put(",ivec2");
+              if (offset == 2)
+                s.put("[4]");
+            }
+
+            if (sparse) {
+              s.put(",out ");
+              s.put(prefixes[sampler.type]);
+              s.put("vec4 ");
+            }
+
+            if (comp)
+              s.put(",int");
+
+            s.put(");\n");
+            commonBuiltins.put(s[]);
+          }
+        }
+      }
+    }
+
+    if (sampler.dim == TSamplerDim.EsdRect || sampler.shadow)
+      return;
+
+    if (profile == glslang_profile_t.ES_PROFILE || version_ < 450)
+      return;
+
+    for (int bias = 0; bias < 2; ++bias) {
+      for (int lod = 0; lod < 2; ++lod) {
+        if ((lod && bias) || (lod == 0 && bias == 0))
+          continue;
+
+        for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr) {
+          if (f16TexAddr && sampler.type != TBasicType.EbtFloat16)
+            continue;
+
+          for (int offset = 0; offset < 3; ++offset) {
+            for (int comp = 0; comp < 2; ++comp) {
+              if (comp == 0 && bias)
+                continue;
+
+              if (offset > 0 && sampler.dim == TSamplerDim.EsdCube)
+                continue;
+
+              for (int sparse = 0; sparse <= 1; ++sparse) {
+                if (sparse && (profile == glslang_profile_t.ES_PROFILE || version_ < 450))
+                  continue;
+
+                Appender!(char[]) s;
+
+                if (sparse)
+                  s.put("int ");
+                else {
+                  s.put(prefixes[sampler.type]);
+                  s.put("vec4 ");
+                }
+
+                if (sparse)
+                  s.put("sparseTextureGather");
+                else
+                  s.put("textureGather");
+
+                if (lod)
+                  s.put("Lod");
+
+                switch (offset) {
+                  case 1:
+                    s.put("Offset");
+                    break;
+                  case 2:
+                    s.put("Offsets");
+                    break;
+                  default:
+                    break;
+                }
+
+                if (lod)
+                  s.put("AMD");
+                else if (sparse)
+                  s.put("ARB");
+
+                s.put("(");
+
+                s.put(typeName);
+
+                if (f16TexAddr)
+                  s.put(",f16vec");
+                else
+                  s.put(",vec");
+                int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
+                s.put(postfixes[totalDims]);
+
+                if (lod) {
+                  if (f16TexAddr)
+                    s.put(",float16_t");
+                  else
+                    s.put(",float");
+                }
+
+                if (offset > 0) {
+                  s.put(",ivec2");
+                  if (offset == 2)
+                    s.put("[4]");
+                }
+
+                if (sparse) {
+                  s.put(",out ");
+                  s.put(prefixes[sampler.type]);
+                  s.put("vec4 ");
+                }
+
+                if (comp)
+                  s.put(",int");
+
+                if (bias) {
+                  if (f16TexAddr)
+                    s.put(",float16_t");
+                  else
+                    s.put(",float");
+                }
+
+                s.put(");\n");
+                if (bias)
+                  stageBuiltins.STAGE_FRAGMENT.put(s[]);
+                else
+                  commonBuiltins.put(s[]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  protected void addSamplingFunctions(TSampler sampler, string typeName, int version_, glslang_profile_t profile) {
+    for (int proj = 0; proj <= 1; ++proj) {
+      if (proj && (sampler.dim == TSamplerDim.EsdCube || sampler.isBuffer() || sampler.arrayed || sampler.isMultiSample()
+        || !sampler.isCombined()))
+        continue;
+
+      for (int lod = 0; lod <= 1; ++lod) {
+        if (lod && (sampler.isBuffer() || sampler.isRect() || sampler.isMultiSample() || !sampler.isCombined()))
+          continue;
+        if (lod && sampler.dim == TSamplerDim.Esd2D && sampler.arrayed && sampler.shadow)
+          continue;
+        if (lod && sampler.dim == TSamplerDim.EsdCube && sampler.shadow)
+          continue;
+
+        for (int bias = 0; bias <= 1; ++bias) {
+          if (bias && (lod || sampler.isMultiSample() || !sampler.isCombined()))
+            continue;
+          if (bias && (sampler.dim == TSamplerDim.Esd2D || sampler.dim == TSamplerDim.EsdCube) && sampler.shadow && sampler.arrayed)
+            continue;
+          if (bias && (sampler.isRect() || sampler.isBuffer()))
+            continue;
+
+          for (int offset = 0; offset <= 1; ++offset) {
+            if (proj + offset + bias + lod > 3)
+              continue;
+            if (offset && (sampler.dim == TSamplerDim.EsdCube || sampler.isBuffer() || sampler.isMultiSample()))
+              continue;
+
+            for (int fetch = 0; fetch <= 1; ++fetch) {
+              if (proj + offset + fetch + bias + lod > 3)
+                continue;
+              if (fetch && (lod || bias))
+                continue;
+              if (fetch && (sampler.shadow || sampler.dim == TSamplerDim.EsdCube))
+                continue;
+              if (fetch == 0 && (sampler.isMultiSample() || sampler.isBuffer()
+                || !sampler.isCombined()))
+                continue;
+
+              for (int grad = 0; grad <= 1; ++grad) {
+                if (grad && (lod || bias || sampler.isMultiSample() || !sampler.isCombined()))
+                  continue;
+                if (grad && sampler.isBuffer())
+                  continue;
+                if (proj + offset + fetch + grad + bias + lod > 3)
+                  continue;
+
+                for (int extraProj = 0; extraProj <= 1; ++extraProj) {
+                  bool compare = false;
+                  int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
+                  if (sampler.shadow && totalDims < 2)
+                    totalDims = 2;
+                  totalDims += (sampler.shadow ? 1 : 0) + proj;
+                  if (totalDims > 4 && sampler.shadow) {
+                    compare = true;
+                    totalDims = 4;
+                  }
+                  assert(totalDims <= 4);
+
+                  if (extraProj && ! proj)
+                    continue;
+                  if (extraProj && (sampler.dim == TSamplerDim.Esd3D || sampler.shadow || !sampler.isCombined()))
+                    continue;
+
+                  for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr) {
+                    if (f16TexAddr && sampler.type != TBasicType.EbtFloat16)
+                      continue;
+                    if (f16TexAddr && sampler.shadow && ! compare) {
+                      compare = true;
+                      totalDims--;
+                    }
+                    for (int lodClamp = 0; lodClamp <= 1; ++lodClamp) {
+                      if (lodClamp && (profile == glslang_profile_t.ES_PROFILE || version_ < 450))
+                        continue;
+                      if (lodClamp && (proj || lod || fetch))
+                        continue;
+
+                      for (int sparse = 0; sparse <= 1; ++sparse) {
+                        if (sparse && (profile == glslang_profile_t.ES_PROFILE || version_ < 450))
+                          continue;
+                        if (sparse && (sampler.is1D() || sampler.isBuffer() || proj))
+                          continue;
+
+                        Appender!(char[]) s;
+
+                        if (sparse)
+                          s.put("int ");
+                        else {
+                          if (sampler.shadow)
+                            if (sampler.type == TBasicType.EbtFloat16)
+                              s.put("float16_t ");
+                            else
+                              s.put("float ");
+                          else {
+                            s.put(prefixes[sampler.type]);
+                            s.put("vec4 ");
+                          }
+                        }
+
+                        if (sparse) {
+                          if (fetch)
+                            s.put("sparseTexel");
+                          else
+                            s.put("sparseTexture");
+                        } else {
+                          if (fetch)
+                            s.put("texel");
+                          else
+                            s.put("texture");
+                        }
+                        if (proj)
+                          s.put("Proj");
+                        if (lod)
+                          s.put("Lod");
+                        if (grad)
+                          s.put("Grad");
+                        if (fetch)
+                          s.put("Fetch");
+                        if (offset)
+                          s.put("Offset");
+                        if (lodClamp)
+                          s.put("Clamp");
+                        if (lodClamp != 0 || sparse)
+                          s.put("ARB");
+                        s.put("(");
+
+                        s.put(typeName);
+                        if (extraProj) {
+                          if (f16TexAddr)
+                            s.put(",f16vec4");
+                          else
+                            s.put(",vec4");
+                        } else {
+                          s.put(",");
+                          TBasicType t = fetch ? TBasicType.EbtInt : (f16TexAddr ? TBasicType.EbtFloat16 : TBasicType.EbtFloat);
+                          if (totalDims == 1)
+                            s.put(getBasicString(t));
+                          else {
+                            s.put(prefixes[t]);
+                            s.put("vec");
+                            s.put(postfixes[totalDims]);
+                          }
+                        }
+
+                        if (compare)
+                          s.put(",float");
+
+                        if ((fetch && !sampler.isBuffer() &&
+                          !sampler.isRect() && !sampler.isMultiSample())
+                          || (sampler.isMultiSample() && fetch))
+                          s.put(",int");
+
+                        if (lod) {
+                          if (f16TexAddr)
+                            s.put(",float16_t");
+                          else
+                            s.put(",float");
+                        }
+
+                        if (grad) {
+                          if (dimMap[sampler.dim] == 1) {
+                            if (f16TexAddr)
+                              s.put(",float16_t,float16_t");
+                            else
+                              s.put(",float,float");
+                          } else {
+                            if (f16TexAddr)
+                              s.put(",f16vec");
+                            else
+                              s.put(",vec");
+                            s.put(postfixes[dimMap[sampler.dim]]);
+                            if (f16TexAddr)
+                              s.put(",f16vec");
+                            else
+                                s.put(",vec");
+                            s.put(postfixes[dimMap[sampler.dim]]);
+                          }
+                        }
+
+                        if (offset) {
+                          if (dimMap[sampler.dim] == 1)
+                            s.put(",int");
+                          else {
+                            s.put(",ivec");
+                            s.put(postfixes[dimMap[sampler.dim]]);
+                          }
+                        }
+
+                        if (lodClamp) {
+                          if (f16TexAddr)
+                            s.put(",float16_t");
+                          else
+                            s.put(",float");
+                        }
+
+                        if (sparse) {
+                          s.put(",out ");
+                          if (sampler.shadow)
+                            if (sampler.type == TBasicType.EbtFloat16)
+                              s.put("float16_t");
+                            else
+                              s.put("float");
+                          else {
+                            s.put(prefixes[sampler.type]);
+                            s.put("vec4");
+                          }
+                        }
+
+                        if (bias) {
+                          if (f16TexAddr)
+                            s.put(",float16_t");
+                          else
+                            s.put(",float");
+                        }
+                        s.put(");\n");
+
+                        if (!grad && (bias || lodClamp != 0)) {
+                          stageBuiltins.STAGE_FRAGMENT.put(s[]);
+                          stageBuiltins.STAGE_COMPUTE.put(s[]);
+                        } else
+                          commonBuiltins.put(s[]);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

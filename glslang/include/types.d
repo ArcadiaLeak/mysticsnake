@@ -179,3 +179,39 @@ struct TSampler {
     return s[].idup;
   }
 }
+
+string getBasicString(TBasicType t) {
+  switch (t) {
+    case TBasicType.EbtFloat: return "float";
+    case TBasicType.EbtInt: return "int";
+    case TBasicType.EbtUint: return "uint";
+    case TBasicType.EbtSampler: return "sampler/image";
+    case TBasicType.EbtVoid: return "void";
+    case TBasicType.EbtDouble: return "double";
+    case TBasicType.EbtFloat16: return "float16_t";
+    case TBasicType.EbtBFloat16: return "bfloat16_t";
+    case TBasicType.EbtFloatE5M2: return "floate5m2_t";
+    case TBasicType.EbtFloatE4M3: return "floate4m3_t";
+    case TBasicType.EbtInt8: return "int8_t";
+    case TBasicType.EbtUint8: return "uint8_t";
+    case TBasicType.EbtInt16: return "int16_t";
+    case TBasicType.EbtUint16: return "uint16_t";
+    case TBasicType.EbtInt64: return "int64_t";
+    case TBasicType.EbtUint64: return "uint64_t";
+    case TBasicType.EbtBool: return "bool";
+    case TBasicType.EbtAtomicUint: return "atomic_uint";
+    case TBasicType.EbtStruct: return "structure";
+    case TBasicType.EbtBlock: return "block";
+    case TBasicType.EbtAccStruct: return "accelerationStructureNV";
+    case TBasicType.EbtRayQuery: return "rayQueryEXT";
+    case TBasicType.EbtReference: return "reference";
+    case TBasicType.EbtString: return "string";
+    case TBasicType.EbtSpirvType: return "spirv_type";
+    case TBasicType.EbtCoopmat: return "coopmat";
+    case TBasicType.EbtTensorLayoutNV: return "tensorLayoutNV";
+    case TBasicType.EbtTensorViewNV: return "tensorViewNV";
+    case TBasicType.EbtCoopvecNV: return "coopvecNV";
+    case TBasicType.EbtTensorARM: return "tensorARM";
+    default: return "unknown type";
+  }
+}
