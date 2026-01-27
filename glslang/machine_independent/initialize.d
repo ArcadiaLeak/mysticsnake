@@ -4788,1345 +4788,1382 @@ class TBuiltIns : TBuiltInParseables {
     }
 
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE || version_ == 100)) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        vec4 texture2D(sampler2D, vec2, float);
-        vec4 texture2DProj(sampler2D, vec3, float);
-        vec4 texture2DProj(sampler2D, vec4, float);
-        vec4 texture3D(sampler3D, vec3, float);
-        vec4 texture3DProj(sampler3D, vec4, float);
-        vec4 textureCube(samplerCube, vec3, float);
-      `.outdent;
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "vec4 texture2D(sampler2D, vec2, float);" ~
+        "vec4 texture2DProj(sampler2D, vec3, float);" ~
+        "vec4 texture2DProj(sampler2D, vec4, float);" ~
+        "vec4 texture3D(sampler3D, vec3, float);" ~
+        "vec4 texture3DProj(sampler3D, vec4, float);" ~
+        "vec4 textureCube(samplerCube, vec3, float);" ~
+        
+        "\n"
+      );
     }
     if (spvVersion.spv == 0 && (profile != glslang_profile_t.ES_PROFILE && version_ > 100)) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        vec4 texture1D(sampler1D, float, float);
-        vec4 texture1DProj(sampler1D, vec2, float);
-        vec4 texture1DProj(sampler1D, vec4, float);
-        vec4 shadow1D(sampler1DShadow, vec3, float);
-        vec4 shadow2D(sampler2DShadow, vec3, float);
-        vec4 shadow1DProj(sampler1DShadow, vec4, float);
-        vec4 shadow2DProj(sampler2DShadow, vec4, float);
-      `.outdent;
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "vec4 texture1D(sampler1D, float, float);" ~
+        "vec4 texture1DProj(sampler1D, vec2, float);" ~
+        "vec4 texture1DProj(sampler1D, vec4, float);" ~
+        "vec4 shadow1D(sampler1DShadow, vec3, float);" ~
+        "vec4 shadow2D(sampler2DShadow, vec3, float);" ~
+        "vec4 shadow1DProj(sampler1DShadow, vec4, float);" ~
+        "vec4 shadow2DProj(sampler2DShadow, vec4, float);" ~
+
+        "\n"
+      );
     }
     if (spvVersion.spv == 0 && profile == glslang_profile_t.ES_PROFILE) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        vec4 texture2DLodEXT(sampler2D, vec2, float);
-        vec4 texture2DProjLodEXT(sampler2D, vec3, float);
-        vec4 texture2DProjLodEXT(sampler2D, vec4, float);
-        vec4 textureCubeLodEXT(samplerCube, vec3, float);
-      `.outdent;
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "vec4 texture2DLodEXT(sampler2D, vec2, float);" ~
+        "vec4 texture2DProjLodEXT(sampler2D, vec3, float);" ~
+        "vec4 texture2DProjLodEXT(sampler2D, vec4, float);" ~
+        "vec4 textureCubeLodEXT(samplerCube, vec3, float);" ~
+
+        "\n"
+      );
     }
 
     if (spvVersion.vulkan > 0) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        lowp uint stencilAttachmentReadEXT();
-        lowp uint stencilAttachmentReadEXT(int);
-        highp float depthAttachmentReadEXT();
-        highp float depthAttachmentReadEXT(int);
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "lowp uint stencilAttachmentReadEXT();" ~
+        "lowp uint stencilAttachmentReadEXT(int);" ~
+        "highp float depthAttachmentReadEXT();" ~
+        "highp float depthAttachmentReadEXT(int);" ~
+        "\n" ~
 
-        vec4 colorAttachmentReadEXT(attachmentEXT);
-        vec4 colorAttachmentReadEXT(attachmentEXT, int);
-        ivec4 colorAttachmentReadEXT(iattachmentEXT);
-        ivec4 colorAttachmentReadEXT(iattachmentEXT, int);
-        uvec4 colorAttachmentReadEXT(uattachmentEXT);
-        uvec4 colorAttachmentReadEXT(uattachmentEXT, int);
-      `.outdent;
+        "vec4 colorAttachmentReadEXT(attachmentEXT);" ~
+        "vec4 colorAttachmentReadEXT(attachmentEXT, int);" ~
+        "ivec4 colorAttachmentReadEXT(iattachmentEXT);" ~
+        "ivec4 colorAttachmentReadEXT(iattachmentEXT, int);" ~
+        "uvec4 colorAttachmentReadEXT(uattachmentEXT);" ~
+        "uvec4 colorAttachmentReadEXT(uattachmentEXT, int);" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 400) {
       stageBuiltins.STAGE_FRAGMENT ~= derivativeControls;
+      stageBuiltins.STAGE_FRAGMENT ~= "\n";
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 150)) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        float interpolateAtCentroid(float);
-        vec2 interpolateAtCentroid(vec2);
-        vec3 interpolateAtCentroid(vec3);
-        vec4 interpolateAtCentroid(vec4);
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "float interpolateAtCentroid(float);" ~
+        "vec2 interpolateAtCentroid(vec2);" ~
+        "vec3 interpolateAtCentroid(vec3);" ~
+        "vec4 interpolateAtCentroid(vec4);" ~
 
-        float interpolateAtSample(float, int);
-        vec2 interpolateAtSample(vec2, int);
-        vec3 interpolateAtSample(vec3, int);
-        vec4 interpolateAtSample(vec4, int);
+        "float interpolateAtSample(float, int);" ~
+        "vec2 interpolateAtSample(vec2, int);" ~
+        "vec3 interpolateAtSample(vec3, int);" ~
+        "vec4 interpolateAtSample(vec4, int);" ~
 
-        float interpolateAtOffset(float, vec2);
-        vec2 interpolateAtOffset(vec2, vec2);
-        vec3 interpolateAtOffset(vec3, vec2);
-        vec4 interpolateAtOffset(vec4, vec2);
-      `.outdent;
+        "float interpolateAtOffset(float, vec2);" ~
+        "vec2 interpolateAtOffset(vec2, vec2);" ~
+        "vec3 interpolateAtOffset(vec3, vec2);" ~
+        "vec4 interpolateAtOffset(vec4, vec2);" ~
+
+        "\n"
+      );
     }
 
-    stageBuiltins.STAGE_FRAGMENT ~= `
-      void beginInvocationInterlockARB(void);
-      void endInvocationInterlockARB(void);
+    stageBuiltins.STAGE_FRAGMENT ~= (
+      "void beginInvocationInterlockARB(void);" ~
+      "void endInvocationInterlockARB(void);" ~
 
-      bool helperInvocationEXT();
-    `.outdent;
+      "bool helperInvocationEXT();" ~
+      "\n"
+    );
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        float interpolateAtVertexAMD(float, uint);
-        vec2 interpolateAtVertexAMD(vec2, uint);
-        vec3 interpolateAtVertexAMD(vec3, uint);
-        vec4 interpolateAtVertexAMD(vec4, uint);
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "float interpolateAtVertexAMD(float, uint);" ~
+        "vec2 interpolateAtVertexAMD(vec2, uint);" ~
+        "vec3 interpolateAtVertexAMD(vec3, uint);" ~
+        "vec4 interpolateAtVertexAMD(vec4, uint);" ~
 
-        int interpolateAtVertexAMD(int, uint);
-        ivec2 interpolateAtVertexAMD(ivec2, uint);
-        ivec3 interpolateAtVertexAMD(ivec3, uint);
-        ivec4 interpolateAtVertexAMD(ivec4, uint);
+        "int interpolateAtVertexAMD(int, uint);" ~
+        "ivec2 interpolateAtVertexAMD(ivec2, uint);" ~
+        "ivec3 interpolateAtVertexAMD(ivec3, uint);" ~
+        "ivec4 interpolateAtVertexAMD(ivec4, uint);" ~
 
-        uint interpolateAtVertexAMD(uint, uint);
-        uvec2 interpolateAtVertexAMD(uvec2, uint);
-        uvec3 interpolateAtVertexAMD(uvec3, uint);
-        uvec4 interpolateAtVertexAMD(uvec4, uint);
+        "uint interpolateAtVertexAMD(uint, uint);" ~
+        "uvec2 interpolateAtVertexAMD(uvec2, uint);" ~
+        "uvec3 interpolateAtVertexAMD(uvec3, uint);" ~
+        "uvec4 interpolateAtVertexAMD(uvec4, uint);" ~
 
-        float16_t interpolateAtVertexAMD(float16_t, uint);
-        f16vec2 interpolateAtVertexAMD(f16vec2, uint);
-        f16vec3 interpolateAtVertexAMD(f16vec3, uint);
-        f16vec4 interpolateAtVertexAMD(f16vec4, uint);
-      `.outdent;
+        "float16_t interpolateAtVertexAMD(float16_t, uint);" ~
+        "f16vec2 interpolateAtVertexAMD(f16vec2, uint);" ~
+        "f16vec3 interpolateAtVertexAMD(f16vec3, uint);" ~
+        "f16vec4 interpolateAtVertexAMD(f16vec4, uint);" ~
+
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
       stageBuiltins.STAGE_FRAGMENT ~= derivativesAndControl16bits;
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        float16_t interpolateAtCentroid(float16_t);
-        f16vec2 interpolateAtCentroid(f16vec2);
-        f16vec3 interpolateAtCentroid(f16vec3);
-        f16vec4 interpolateAtCentroid(f16vec4);
+      stageBuiltins.STAGE_FRAGMENT ~= "\n";
 
-        float16_t interpolateAtSample(float16_t, int);
-        f16vec2 interpolateAtSample(f16vec2, int);
-        f16vec3 interpolateAtSample(f16vec3, int);
-        f16vec4 interpolateAtSample(f16vec4, int);
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "float16_t interpolateAtCentroid(float16_t);" ~
+        "f16vec2 interpolateAtCentroid(f16vec2);" ~
+        "f16vec3 interpolateAtCentroid(f16vec3);" ~
+        "f16vec4 interpolateAtCentroid(f16vec4);" ~
 
-        float16_t interpolateAtOffset(float16_t, f16vec2);
-        f16vec2 interpolateAtOffset(f16vec2, f16vec2);
-        f16vec3 interpolateAtOffset(f16vec3, f16vec2);
-        f16vec4 interpolateAtOffset(f16vec4, f16vec2);
-      `.outdent;
+        "float16_t interpolateAtSample(float16_t, int);" ~
+        "f16vec2 interpolateAtSample(f16vec2, int);" ~
+        "f16vec3 interpolateAtSample(f16vec3, int);" ~
+        "f16vec4 interpolateAtSample(f16vec4, int);" ~
+
+        "float16_t interpolateAtOffset(float16_t, f16vec2);" ~
+        "f16vec2 interpolateAtOffset(f16vec2, f16vec2);" ~
+        "f16vec3 interpolateAtOffset(f16vec3, f16vec2);" ~
+        "f16vec4 interpolateAtOffset(f16vec4, f16vec2);" ~
+
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      commonBuiltins ~= `
-        uvec2 clock2x32ARB();
-        uint64_t clockARB();
-        uvec2 clockRealtime2x32EXT();
-        uint64_t clockRealtimeEXT();
-      `.outdent;
+      commonBuiltins ~= (
+        "uvec2 clock2x32ARB();" ~
+        "uint64_t clockARB();" ~
+        "uvec2 clockRealtime2x32EXT();" ~
+        "uint64_t clockRealtimeEXT();" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450 && spvVersion.vulkan > 0) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        uint fragmentMaskFetchAMD(subpassInputMS);
-        uint fragmentMaskFetchAMD(isubpassInputMS);
-        uint fragmentMaskFetchAMD(usubpassInputMS);
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "uint fragmentMaskFetchAMD(subpassInputMS);" ~
+        "uint fragmentMaskFetchAMD(isubpassInputMS);" ~
+        "uint fragmentMaskFetchAMD(usubpassInputMS);" ~
 
-        vec4 fragmentFetchAMD(subpassInputMS, uint);
-        ivec4 fragmentFetchAMD(isubpassInputMS, uint);
-        uvec4 fragmentFetchAMD(usubpassInputMS, uint);
-      `.outdent;
+        "vec4 fragmentFetchAMD(subpassInputMS, uint);" ~
+        "ivec4 fragmentFetchAMD(isubpassInputMS, uint);" ~
+        "uvec4 fragmentFetchAMD(usubpassInputMS, uint);" ~
+
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 460) {
-      commonBuiltins ~= `
-        void rayQueryInitializeEXT(rayQueryEXT, accelerationStructureEXT, uint, uint, vec3, float, vec3, float);
-        void rayQueryTerminateEXT(rayQueryEXT);
-        void rayQueryGenerateIntersectionEXT(rayQueryEXT, float);
-        void rayQueryConfirmIntersectionEXT(rayQueryEXT);
-        bool rayQueryProceedEXT(rayQueryEXT);
-        uint rayQueryGetIntersectionTypeEXT(rayQueryEXT, bool);
-        float rayQueryGetRayTMinEXT(rayQueryEXT);
-        uint rayQueryGetRayFlagsEXT(rayQueryEXT);
-        vec3 rayQueryGetWorldRayOriginEXT(rayQueryEXT);
-        vec3 rayQueryGetWorldRayDirectionEXT(rayQueryEXT);
-        float rayQueryGetIntersectionTEXT(rayQueryEXT, bool);
-        int rayQueryGetIntersectionInstanceCustomIndexEXT(rayQueryEXT, bool);
-        int rayQueryGetIntersectionInstanceIdEXT(rayQueryEXT, bool);
-        uint rayQueryGetIntersectionInstanceShaderBindingTableRecordOffsetEXT(rayQueryEXT, bool);
-        int rayQueryGetIntersectionGeometryIndexEXT(rayQueryEXT, bool);
-        int rayQueryGetIntersectionPrimitiveIndexEXT(rayQueryEXT, bool);
-        vec2 rayQueryGetIntersectionBarycentricsEXT(rayQueryEXT, bool);
-        bool rayQueryGetIntersectionFrontFaceEXT(rayQueryEXT, bool);
-        bool rayQueryGetIntersectionCandidateAABBOpaqueEXT(rayQueryEXT);
-        vec3 rayQueryGetIntersectionObjectRayDirectionEXT(rayQueryEXT, bool);
-        vec3 rayQueryGetIntersectionObjectRayOriginEXT(rayQueryEXT, bool);
-        mat4x3 rayQueryGetIntersectionObjectToWorldEXT(rayQueryEXT, bool);
-        mat4x3 rayQueryGetIntersectionWorldToObjectEXT(rayQueryEXT, bool);
-        void rayQueryGetIntersectionTriangleVertexPositionsEXT(rayQueryEXT, bool, out vec3[3]);
-        int rayQueryGetIntersectionClusterIdNV(rayQueryEXT, bool);
-        vec3 rayQueryGetIntersectionSpherePositionNV(rayQueryEXT, bool);
-        float rayQueryGetIntersectionSphereRadiusNV(rayQueryEXT, bool);
-        float rayQueryGetIntersectionLSSHitValueNV(rayQueryEXT, bool);
-        void rayQueryGetIntersectionLSSPositionsNV(rayQueryEXT, bool, out vec3[2]);
-        void rayQueryGetIntersectionLSSRadiiNV(rayQueryEXT, bool, out float[2]);
-        bool rayQueryIsSphereHitNV(rayQueryEXT, bool);
-        bool rayQueryIsLSSHitNV(rayQueryEXT, bool);
-      `.outdent;
+      commonBuiltins ~= (
+        "void rayQueryInitializeEXT(rayQueryEXT, accelerationStructureEXT, uint, uint, vec3, float, vec3, float);" ~
+        "void rayQueryTerminateEXT(rayQueryEXT);" ~
+        "void rayQueryGenerateIntersectionEXT(rayQueryEXT, float);" ~
+        "void rayQueryConfirmIntersectionEXT(rayQueryEXT);" ~
+        "bool rayQueryProceedEXT(rayQueryEXT);" ~
+        "uint rayQueryGetIntersectionTypeEXT(rayQueryEXT, bool);" ~
+        "float rayQueryGetRayTMinEXT(rayQueryEXT);" ~
+        "uint rayQueryGetRayFlagsEXT(rayQueryEXT);" ~
+        "vec3 rayQueryGetWorldRayOriginEXT(rayQueryEXT);" ~
+        "vec3 rayQueryGetWorldRayDirectionEXT(rayQueryEXT);" ~
+        "float rayQueryGetIntersectionTEXT(rayQueryEXT, bool);" ~
+        "int rayQueryGetIntersectionInstanceCustomIndexEXT(rayQueryEXT, bool);" ~
+        "int rayQueryGetIntersectionInstanceIdEXT(rayQueryEXT, bool);" ~
+        "uint rayQueryGetIntersectionInstanceShaderBindingTableRecordOffsetEXT(rayQueryEXT, bool);" ~
+        "int rayQueryGetIntersectionGeometryIndexEXT(rayQueryEXT, bool);" ~
+        "int rayQueryGetIntersectionPrimitiveIndexEXT(rayQueryEXT, bool);" ~
+        "vec2 rayQueryGetIntersectionBarycentricsEXT(rayQueryEXT, bool);" ~
+        "bool rayQueryGetIntersectionFrontFaceEXT(rayQueryEXT, bool);" ~
+        "bool rayQueryGetIntersectionCandidateAABBOpaqueEXT(rayQueryEXT);" ~
+        "vec3 rayQueryGetIntersectionObjectRayDirectionEXT(rayQueryEXT, bool);" ~
+        "vec3 rayQueryGetIntersectionObjectRayOriginEXT(rayQueryEXT, bool);" ~
+        "mat4x3 rayQueryGetIntersectionObjectToWorldEXT(rayQueryEXT, bool);" ~
+        "mat4x3 rayQueryGetIntersectionWorldToObjectEXT(rayQueryEXT, bool);" ~
+        "void rayQueryGetIntersectionTriangleVertexPositionsEXT(rayQueryEXT, bool, out vec3[3]);" ~
+        "int rayQueryGetIntersectionClusterIdNV(rayQueryEXT, bool);" ~
+        "vec3 rayQueryGetIntersectionSpherePositionNV(rayQueryEXT, bool);" ~
+        "float rayQueryGetIntersectionSphereRadiusNV(rayQueryEXT, bool);" ~
+        "float rayQueryGetIntersectionLSSHitValueNV(rayQueryEXT, bool);" ~
+        "void rayQueryGetIntersectionLSSPositionsNV(rayQueryEXT, bool, out vec3[2]);" ~
+        "void rayQueryGetIntersectionLSSRadiiNV(rayQueryEXT, bool, out float[2]);" ~
+        "bool rayQueryIsSphereHitNV(rayQueryEXT, bool);" ~
+        "bool rayQueryIsLSSHitNV(rayQueryEXT, bool);" ~
+        "\n"
+      );
 
-      stageBuiltins.STAGE_RAYGEN ~= `
-        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void executeCallableNV(uint, int);
-        void executeCallableEXT(uint, int);
-        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitWithIndexNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissNV(hitObjectNV,uint,vec3,float,vec3,float);
-        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyNV(hitObjectNV);
-        void hitObjectExecuteShaderNV(hitObjectNV,int);
-        bool hitObjectIsEmptyNV(hitObjectNV);
-        bool hitObjectIsMissNV(hitObjectNV);
-        bool hitObjectIsHitNV(hitObjectNV);
-        float hitObjectGetRayTMinNV(hitObjectNV);
-        float hitObjectGetRayTMaxNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
-        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
-        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
-        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
-        int hitObjectGetInstanceIdNV(hitObjectNV);
-        int hitObjectGetGeometryIndexNV(hitObjectNV);
-        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
-        uint hitObjectGetHitKindNV(hitObjectNV);
-        void hitObjectGetAttributesNV(hitObjectNV,int);
-        float hitObjectGetCurrentTimeNV(hitObjectNV);
-        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
-        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
-        int hitObjectGetClusterIdNV(hitObjectNV);
-        void reorderThreadNV(uint, uint);
-        void reorderThreadNV(hitObjectNV);
-        void reorderThreadNV(hitObjectNV, uint, uint);
-        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
-        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
-        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
-        float hitObjectGetSphereRadiusNV(hitObjectNV);
-        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
-        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
-        bool hitObjectIsSphereHitNV(hitObjectNV);
-        bool hitObjectIsLSSHitNV(hitObjectNV);
-        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
-        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyEXT(hitObjectEXT);
-        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
-        bool hitObjectIsEmptyEXT(hitObjectEXT);
-        bool hitObjectIsMissEXT(hitObjectEXT);
-        bool hitObjectIsHitEXT(hitObjectEXT);
-        float hitObjectGetRayTMinEXT(hitObjectEXT);
-        float hitObjectGetRayTMaxEXT(hitObjectEXT);
-        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
-        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
-        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
-        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
-        int hitObjectGetInstanceIdEXT(hitObjectEXT);
-        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
-        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
-        uint hitObjectGetHitKindEXT(hitObjectEXT);
-        void hitObjectGetAttributesEXT(hitObjectEXT,int);
-        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
-        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
-        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
-        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
-        void hitObjectReorderExecuteEXT(hitObjectEXT,int);
-        void hitObjectReorderExecuteEXT(hitObjectEXT,uint,uint,int);
-        void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,uint,uint,int);
-        void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,uint,uint,int);
-        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
-        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
-        void reorderThreadEXT(uint, uint);
-        void reorderThreadEXT(hitObjectEXT);
-        void reorderThreadEXT(hitObjectEXT, uint, uint);
-      `.outdent;
-      stageBuiltins.STAGE_INTERSECT ~= `
-        bool reportIntersectionNV(float, uint);
-        bool reportIntersectionEXT(float, uint);
-      `.outdent;
-      stageBuiltins.STAGE_ANYHIT ~= `
-        void ignoreIntersectionNV();
-        void terminateRayNV();
-      `.outdent;
-      stageBuiltins.STAGE_CLOSESTHIT ~= `
-        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void executeCallableNV(uint, int);
-        void executeCallableEXT(uint, int);
-        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);
-        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyNV(hitObjectNV);
-        void hitObjectExecuteShaderNV(hitObjectNV, int);
-        bool hitObjectIsEmptyNV(hitObjectNV);
-        bool hitObjectIsMissNV(hitObjectNV);
-        bool hitObjectIsHitNV(hitObjectNV);
-        float hitObjectGetRayTMinNV(hitObjectNV);
-        float hitObjectGetRayTMaxNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
-        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
-        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
-        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
-        int hitObjectGetInstanceIdNV(hitObjectNV);
-        int hitObjectGetGeometryIndexNV(hitObjectNV);
-        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
-        uint hitObjectGetHitKindNV(hitObjectNV);
-        void hitObjectGetAttributesNV(hitObjectNV,int);
-        float hitObjectGetCurrentTimeNV(hitObjectNV);
-        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
-        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
-        int hitObjectGetClusterIdNV(hitObjectNV);
-        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
-        float hitObjectGetSphereRadiusNV(hitObjectNV);
-        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
-        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
-        bool hitObjectIsSphereHitNV(hitObjectNV);
-        bool hitObjectIsLSSHitNV(hitObjectNV);
-        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
-        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyEXT(hitObjectEXT);
-        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
-        bool hitObjectIsEmptyEXT(hitObjectEXT);
-        bool hitObjectIsMissEXT(hitObjectEXT);
-        bool hitObjectIsHitEXT(hitObjectEXT);
-        float hitObjectGetRayTMinEXT(hitObjectEXT);
-        float hitObjectGetRayTMaxEXT(hitObjectEXT);
-        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
-        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
-        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
-        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
-        int hitObjectGetInstanceIdEXT(hitObjectEXT);
-        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
-        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
-        uint hitObjectGetHitKindEXT(hitObjectEXT);
-        void hitObjectGetAttributesEXT(hitObjectEXT,int);
-        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
-        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
-        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
-        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
-        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT,uint, int);
-        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
-      `.outdent;
-      stageBuiltins.STAGE_MISS ~= `
-        void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void executeCallableNV(uint, int);
-        void executeCallableEXT(uint, int);
-        void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);
-        void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyNV(hitObjectNV);
-        void hitObjectExecuteShaderNV(hitObjectNV, int);
-        bool hitObjectIsEmptyNV(hitObjectNV);
-        bool hitObjectIsMissNV(hitObjectNV);
-        bool hitObjectIsHitNV(hitObjectNV);
-        float hitObjectGetRayTMinNV(hitObjectNV);
-        float hitObjectGetRayTMaxNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);
-        vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);
-        mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);
-        mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);
-        int hitObjectGetInstanceCustomIndexNV(hitObjectNV);
-        int hitObjectGetInstanceIdNV(hitObjectNV);
-        int hitObjectGetGeometryIndexNV(hitObjectNV);
-        int hitObjectGetPrimitiveIndexNV(hitObjectNV);
-        uint hitObjectGetHitKindNV(hitObjectNV);
-        void hitObjectGetAttributesNV(hitObjectNV,int);
-        float hitObjectGetCurrentTimeNV(hitObjectNV);
-        uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);
-        uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);
-        int hitObjectGetClusterIdNV(hitObjectNV);
-        vec3 hitObjectGetSpherePositionNV(hitObjectNV);
-        float hitObjectGetSphereRadiusNV(hitObjectNV);
-        void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);
-        void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);
-        bool hitObjectIsSphereHitNV(hitObjectNV);
-        bool hitObjectIsLSSHitNV(hitObjectNV);
-        void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);
-        void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);
-        void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);
-        void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);
-        void hitObjectRecordEmptyEXT(hitObjectEXT);
-        void hitObjectExecuteShaderEXT(hitObjectEXT,int);
-        bool hitObjectIsEmptyEXT(hitObjectEXT);
-        bool hitObjectIsMissEXT(hitObjectEXT);
-        bool hitObjectIsHitEXT(hitObjectEXT);
-        float hitObjectGetRayTMinEXT(hitObjectEXT);
-        float hitObjectGetRayTMaxEXT(hitObjectEXT);
-        uint hitObjectGetRayFlagsEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);
-        vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);
-        mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);
-        mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);
-        int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);
-        int hitObjectGetInstanceIdEXT(hitObjectEXT);
-        int hitObjectGetGeometryIndexEXT(hitObjectEXT);
-        int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);
-        uint hitObjectGetHitKindEXT(hitObjectEXT);
-        void hitObjectGetAttributesEXT(hitObjectEXT,int);
-        float hitObjectGetCurrentTimeEXT(hitObjectEXT);
-        uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);
-        uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);
-        void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);
-        void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);
-        void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);
-      `.outdent;
-      stageBuiltins.STAGE_CALLABLE ~= `
-        void executeCallableNV(uint, int);
-        void executeCallableEXT(uint, int);
-      `.outdent;
+      stageBuiltins.STAGE_RAYGEN ~= (
+        "void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void executeCallableNV(uint, int);" ~
+        "void executeCallableEXT(uint, int);" ~
+        "void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitWithIndexNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissNV(hitObjectNV,uint,vec3,float,vec3,float);" ~
+        "void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyNV(hitObjectNV);" ~
+        "void hitObjectExecuteShaderNV(hitObjectNV,int);" ~
+        "bool hitObjectIsEmptyNV(hitObjectNV);" ~
+        "bool hitObjectIsMissNV(hitObjectNV);" ~
+        "bool hitObjectIsHitNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMinNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMaxNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceCustomIndexNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceIdNV(hitObjectNV);" ~
+        "int hitObjectGetGeometryIndexNV(hitObjectNV);" ~
+        "int hitObjectGetPrimitiveIndexNV(hitObjectNV);" ~
+        "uint hitObjectGetHitKindNV(hitObjectNV);" ~
+        "void hitObjectGetAttributesNV(hitObjectNV,int);" ~
+        "float hitObjectGetCurrentTimeNV(hitObjectNV);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);" ~
+        "int hitObjectGetClusterIdNV(hitObjectNV);" ~
+        "void reorderThreadNV(uint, uint);" ~
+        "void reorderThreadNV(hitObjectNV);" ~
+        "void reorderThreadNV(hitObjectNV, uint, uint);" ~
+        "vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "vec3 hitObjectGetSpherePositionNV(hitObjectNV);" ~
+        "float hitObjectGetSphereRadiusNV(hitObjectNV);" ~
+        "void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);" ~
+        "void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);" ~
+        "bool hitObjectIsSphereHitNV(hitObjectNV);" ~
+        "bool hitObjectIsLSSHitNV(hitObjectNV);" ~
+        "void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);" ~
+        "void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyEXT(hitObjectEXT);" ~
+        "void hitObjectExecuteShaderEXT(hitObjectEXT,int);" ~
+        "bool hitObjectIsEmptyEXT(hitObjectEXT);" ~
+        "bool hitObjectIsMissEXT(hitObjectEXT);" ~
+        "bool hitObjectIsHitEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMinEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMaxEXT(hitObjectEXT);" ~
+        "uint hitObjectGetRayFlagsEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceIdEXT(hitObjectEXT);" ~
+        "int hitObjectGetGeometryIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);" ~
+        "uint hitObjectGetHitKindEXT(hitObjectEXT);" ~
+        "void hitObjectGetAttributesEXT(hitObjectEXT,int);" ~
+        "float hitObjectGetCurrentTimeEXT(hitObjectEXT);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);" ~
+        "void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);" ~
+        "void hitObjectReorderExecuteEXT(hitObjectEXT,int);" ~
+        "void hitObjectReorderExecuteEXT(hitObjectEXT,uint,uint,int);" ~
+        "void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,uint,uint,int);" ~
+        "void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectTraceMotionReorderExecuteEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,uint,uint,int);" ~
+        "void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);" ~
+        "void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);" ~
+        "void reorderThreadEXT(uint, uint);" ~
+        "void reorderThreadEXT(hitObjectEXT);" ~
+        "void reorderThreadEXT(hitObjectEXT, uint, uint);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_INTERSECT ~= (
+        "bool reportIntersectionNV(float, uint);" ~
+        "bool reportIntersectionEXT(float, uint);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_ANYHIT ~= (
+        "void ignoreIntersectionNV();" ~
+        "void terminateRayNV();" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_CLOSESTHIT ~= (
+        "void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void executeCallableNV(uint, int);" ~
+        "void executeCallableEXT(uint, int);" ~
+        "void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);" ~
+        "void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyNV(hitObjectNV);" ~
+        "void hitObjectExecuteShaderNV(hitObjectNV, int);" ~
+        "bool hitObjectIsEmptyNV(hitObjectNV);" ~
+        "bool hitObjectIsMissNV(hitObjectNV);" ~
+        "bool hitObjectIsHitNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMinNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMaxNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceCustomIndexNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceIdNV(hitObjectNV);" ~
+        "int hitObjectGetGeometryIndexNV(hitObjectNV);" ~
+        "int hitObjectGetPrimitiveIndexNV(hitObjectNV);" ~
+        "uint hitObjectGetHitKindNV(hitObjectNV);" ~
+        "void hitObjectGetAttributesNV(hitObjectNV,int);" ~
+        "float hitObjectGetCurrentTimeNV(hitObjectNV);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);" ~
+        "int hitObjectGetClusterIdNV(hitObjectNV);" ~
+        "vec3 hitObjectGetSpherePositionNV(hitObjectNV);" ~
+        "float hitObjectGetSphereRadiusNV(hitObjectNV);" ~
+        "void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);" ~
+        "void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);" ~
+        "bool hitObjectIsSphereHitNV(hitObjectNV);" ~
+        "bool hitObjectIsLSSHitNV(hitObjectNV);" ~
+        "void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);" ~
+        "void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyEXT(hitObjectEXT);" ~
+        "void hitObjectExecuteShaderEXT(hitObjectEXT,int);" ~
+        "bool hitObjectIsEmptyEXT(hitObjectEXT);" ~
+        "bool hitObjectIsMissEXT(hitObjectEXT);" ~
+        "bool hitObjectIsHitEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMinEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMaxEXT(hitObjectEXT);" ~
+        "uint hitObjectGetRayFlagsEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceIdEXT(hitObjectEXT);" ~
+        "int hitObjectGetGeometryIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);" ~
+        "uint hitObjectGetHitKindEXT(hitObjectEXT);" ~
+        "void hitObjectGetAttributesEXT(hitObjectEXT,int);" ~
+        "float hitObjectGetCurrentTimeEXT(hitObjectEXT);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);" ~
+        "void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);" ~
+        "void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT,uint, int);" ~
+        "void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_MISS ~= (
+        "void traceNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void traceRayMotionNV(accelerationStructureNV,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void traceRayEXT(accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void executeCallableNV(uint, int);" ~
+        "void executeCallableEXT(uint, int);" ~
+        "void hitObjectTraceRayNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionNV(hitObjectNV,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitMotionNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordHitWithIndexNV(hitObjectNV,accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectRecordHitWithIndexMotionNV(hitObjectNV, accelerationStructureEXT,int,int,int,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissNV(hitObjectNV, uint, vec3, float, vec3, float);" ~
+        "void hitObjectRecordMissMotionNV(hitObjectNV,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyNV(hitObjectNV);" ~
+        "void hitObjectExecuteShaderNV(hitObjectNV, int);" ~
+        "bool hitObjectIsEmptyNV(hitObjectNV);" ~
+        "bool hitObjectIsMissNV(hitObjectNV);" ~
+        "bool hitObjectIsHitNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMinNV(hitObjectNV);" ~
+        "float hitObjectGetRayTMaxNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetWorldRayDirectionNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayOriginNV(hitObjectNV);" ~
+        "vec3 hitObjectGetObjectRayDirectionNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetWorldToObjectNV(hitObjectNV);" ~
+        "mat4x3 hitObjectGetObjectToWorldNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceCustomIndexNV(hitObjectNV);" ~
+        "int hitObjectGetInstanceIdNV(hitObjectNV);" ~
+        "int hitObjectGetGeometryIndexNV(hitObjectNV);" ~
+        "int hitObjectGetPrimitiveIndexNV(hitObjectNV);" ~
+        "uint hitObjectGetHitKindNV(hitObjectNV);" ~
+        "void hitObjectGetAttributesNV(hitObjectNV,int);" ~
+        "float hitObjectGetCurrentTimeNV(hitObjectNV);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexNV(hitObjectNV);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleNV(hitObjectNV);" ~
+        "int hitObjectGetClusterIdNV(hitObjectNV);" ~
+        "vec3 hitObjectGetSpherePositionNV(hitObjectNV);" ~
+        "float hitObjectGetSphereRadiusNV(hitObjectNV);" ~
+        "void hitObjectGetLSSPositionsNV(hitObjectNV, out vec3[2]);" ~
+        "void hitObjectGetLSSRadiiNV(hitObjectNV, out float[2]);" ~
+        "bool hitObjectIsSphereHitNV(hitObjectNV);" ~
+        "bool hitObjectIsLSSHitNV(hitObjectNV);" ~
+        "void hitObjectTraceRayEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,int);" ~
+        "void hitObjectTraceRayMotionEXT(hitObjectEXT,accelerationStructureEXT,uint,uint,uint,uint,uint,vec3,float,vec3,float,float,int);" ~
+        "void hitObjectRecordMissEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float);" ~
+        "void hitObjectRecordMissMotionEXT(hitObjectEXT,uint,uint,vec3,float,vec3,float,float);" ~
+        "void hitObjectRecordEmptyEXT(hitObjectEXT);" ~
+        "void hitObjectExecuteShaderEXT(hitObjectEXT,int);" ~
+        "bool hitObjectIsEmptyEXT(hitObjectEXT);" ~
+        "bool hitObjectIsMissEXT(hitObjectEXT);" ~
+        "bool hitObjectIsHitEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMinEXT(hitObjectEXT);" ~
+        "float hitObjectGetRayTMaxEXT(hitObjectEXT);" ~
+        "uint hitObjectGetRayFlagsEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetWorldRayDirectionEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayOriginEXT(hitObjectEXT);" ~
+        "vec3 hitObjectGetObjectRayDirectionEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetWorldToObjectEXT(hitObjectEXT);" ~
+        "mat4x3 hitObjectGetObjectToWorldEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceCustomIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetInstanceIdEXT(hitObjectEXT);" ~
+        "int hitObjectGetGeometryIndexEXT(hitObjectEXT);" ~
+        "int hitObjectGetPrimitiveIndexEXT(hitObjectEXT);" ~
+        "uint hitObjectGetHitKindEXT(hitObjectEXT);" ~
+        "void hitObjectGetAttributesEXT(hitObjectEXT,int);" ~
+        "float hitObjectGetCurrentTimeEXT(hitObjectEXT);" ~
+        "uint hitObjectGetShaderBindingTableRecordIndexEXT(hitObjectEXT);" ~
+        "uvec2 hitObjectGetShaderRecordBufferHandleEXT(hitObjectEXT);" ~
+        "void hitObjectSetShaderBindingTableRecordIndexEXT(hitObjectEXT, uint);" ~
+        "void hitObjectRecordFromQueryEXT(hitObjectEXT, rayQueryEXT, uint, int);" ~
+        "void hitObjectGetIntersectionTriangleVertexPositionsEXT(hitObjectEXT, out vec3[3]);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_CALLABLE ~= (
+        "void executeCallableNV(uint, int);" ~
+        "void executeCallableEXT(uint, int);" ~
+        "\n"
+      );
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 320) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 450)) {
       stageBuiltins.STAGE_COMPUTE ~= derivativeControls;
+      stageBuiltins.STAGE_COMPUTE ~= "\n";
     }
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
       stageBuiltins.STAGE_COMPUTE ~= derivativesAndControl16bits;
       stageBuiltins.STAGE_COMPUTE ~= derivativesAndControl64bits;
+      stageBuiltins.STAGE_COMPUTE ~= "\n";
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins.STAGE_MESH ~= `
-        void writePackedPrimitiveIndices4x8NV(uint, uint);
-      `.outdent;
+      stageBuiltins.STAGE_MESH ~= (
+        "void writePackedPrimitiveIndices4x8NV(uint, uint);" ~
+        "\n"
+      );
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins.STAGE_TASK ~= `
-        void EmitMeshTasksEXT(uint, uint, uint);
-      `.outdent;
-      stageBuiltins.STAGE_MESH ~= `
-        void SetMeshOutputsEXT(uint, uint);
-      `.outdent;
+      stageBuiltins.STAGE_TASK ~= (
+        "void EmitMeshTasksEXT(uint, uint, uint);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_MESH ~= (
+        "void SetMeshOutputsEXT(uint, uint);" ~
+        "\n"
+      );
     }
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 460) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins.STAGE_MESH ~= `
-        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
-        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
-      `.outdent;
-      stageBuiltins.STAGE_COMPUTE ~= `
-        vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);
-        vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);
-      `.outdent;
+      stageBuiltins.STAGE_MESH ~= (
+        "vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "\n"
+      );
+      stageBuiltins.STAGE_COMPUTE ~= (
+        "vec3 fetchMicroTriangleVertexPositionNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "vec2 fetchMicroTriangleVertexBarycentricNV(accelerationStructureEXT, int, int, int, ivec2);" ~
+        "\n"
+      );
     }
 
     if (spvVersion.spv == 0) {
-      commonBuiltins ~= `
-        struct gl_DepthRangeParameters {
-      `.outdent;
+      commonBuiltins ~= "struct gl_DepthRangeParameters {";
       if (profile == glslang_profile_t.ES_PROFILE) {
-        commonBuiltins ~= `
-          highp float near;
-          highp float far;
-          highp float diff;
-        `.outdent;
+        commonBuiltins ~= (
+          "highp float near;" ~
+          "highp float far;" ~
+          "highp float diff;"
+        );
       } else {
-        commonBuiltins ~= `
-          float near;
-          float far;
-          float diff;
-        `.outdent;
+        commonBuiltins ~= (
+          "float near;" ~
+          "float far;" ~
+          "float diff;"
+        );
       }
-      commonBuiltins ~= `
-        };
-        uniform gl_DepthRangeParameters gl_DepthRange;
-      `.outdent;
+      commonBuiltins ~= "};";
+      commonBuiltins ~= "uniform gl_DepthRangeParameters gl_DepthRange;";
+      commonBuiltins ~= "\n";
     }
 
     if (spvVersion.spv == 0 && IncludeLegacy(version_, profile, spvVersion)) {
-      commonBuiltins ~= `
-        uniform mat4 gl_ModelViewMatrix;
-        uniform mat4 gl_ProjectionMatrix;
-        uniform mat4 gl_ModelViewProjectionMatrix;
+      commonBuiltins ~= (
+        "uniform mat4 gl_ModelViewMatrix;" ~
+        "uniform mat4 gl_ProjectionMatrix;" ~
+        "uniform mat4 gl_ModelViewProjectionMatrix;" ~
 
-        uniform mat3 gl_NormalMatrix;
+        "uniform mat3 gl_NormalMatrix;" ~
 
-        uniform mat4 gl_ModelViewMatrixInverse;
-        uniform mat4 gl_ProjectionMatrixInverse;
-        uniform mat4 gl_ModelViewProjectionMatrixInverse;
+        "uniform mat4 gl_ModelViewMatrixInverse;" ~
+        "uniform mat4 gl_ProjectionMatrixInverse;" ~
+        "uniform mat4 gl_ModelViewProjectionMatrixInverse;" ~
 
-        uniform mat4 gl_ModelViewMatrixTranspose;
-        uniform mat4 gl_ProjectionMatrixTranspose;
-        uniform mat4 gl_ModelViewProjectionMatrixTranspose;
+        "uniform mat4 gl_ModelViewMatrixTranspose;" ~
+        "uniform mat4 gl_ProjectionMatrixTranspose;" ~
+        "uniform mat4 gl_ModelViewProjectionMatrixTranspose;" ~
 
-        uniform mat4 gl_ModelViewMatrixInverseTranspose;
-        uniform mat4 gl_ProjectionMatrixInverseTranspose;
-        uniform mat4 gl_ModelViewProjectionMatrixInverseTranspose;
+        "uniform mat4 gl_ModelViewMatrixInverseTranspose;" ~
+        "uniform mat4 gl_ProjectionMatrixInverseTranspose;" ~
+        "uniform mat4 gl_ModelViewProjectionMatrixInverseTranspose;" ~
 
-        uniform float gl_NormalScale;
+        "uniform float gl_NormalScale;" ~
 
-        struct gl_PointParameters {
-          float size;
-          float sizeMin;
-          float sizeMax;
-          float fadeThresholdSize;
-          float distanceConstantAttenuation;
-          float distanceLinearAttenuation;
-          float distanceQuadraticAttenuation;
-        };
+        "struct gl_PointParameters {" ~
+          "float size;" ~
+          "float sizeMin;" ~
+          "float sizeMax;" ~
+          "float fadeThresholdSize;" ~
+          "float distanceConstantAttenuation;" ~
+          "float distanceLinearAttenuation;" ~
+          "float distanceQuadraticAttenuation;" ~
+        "};" ~
 
-        uniform gl_PointParameters gl_Point;
+        "uniform gl_PointParameters gl_Point;" ~
 
-        struct gl_MaterialParameters {
-          vec4 emission;
-          vec4 ambient;
-          vec4 diffuse;
-          vec4 specular;
-          float shininess;
-        };
-        uniform gl_MaterialParameters gl_FrontMaterial;
-        uniform gl_MaterialParameters gl_BackMaterial;
+        "struct gl_MaterialParameters {" ~
+          "vec4 emission;" ~
+          "vec4 ambient;" ~
+          "vec4 diffuse;" ~
+          "vec4 specular;" ~
+          "float shininess;" ~
+        "};" ~
+        "uniform gl_MaterialParameters gl_FrontMaterial;" ~
+        "uniform gl_MaterialParameters gl_BackMaterial;" ~
 
-        struct gl_LightSourceParameters {
-          vec4 ambient;
-          vec4 diffuse;
-          vec4 specular;
-          vec4 position;
-          vec4 halfVector;
-          vec3 spotDirection;
-          float spotExponent;
-          float spotCutoff;
-          float spotCosCutoff;
-          float constantAttenuation;
-          float linearAttenuation;
-          float quadraticAttenuation;
-        };
+        "struct gl_LightSourceParameters {" ~
+          "vec4 ambient;" ~
+          "vec4 diffuse;" ~
+          "vec4 specular;" ~
+          "vec4 position;" ~
+          "vec4 halfVector;" ~
+          "vec3 spotDirection;" ~
+          "float spotExponent;" ~
+          "float spotCutoff;" ~
 
-        struct gl_LightModelParameters {
-          vec4 ambient;
-        };
+          "float spotCosCutoff;" ~
 
-        uniform gl_LightModelParameters gl_LightModel;
+          "float constantAttenuation;" ~
+          "float linearAttenuation;" ~
+          "float quadraticAttenuation;" ~
+        "};" ~
 
-        struct gl_LightModelProducts {
-          vec4 sceneColor;
-        };
+        "struct gl_LightModelParameters {" ~
+          "vec4 ambient;" ~
+        "};" ~
 
-        uniform gl_LightModelProducts gl_FrontLightModelProduct;
-        uniform gl_LightModelProducts gl_BackLightModelProduct;
+        "uniform gl_LightModelParameters gl_LightModel;" ~
 
-        struct gl_LightProducts {
-          vec4 ambient;
-          vec4 diffuse;
-          vec4 specular;
-        };
+        "struct gl_LightModelProducts {" ~
+          "vec4 sceneColor;" ~
+        "};" ~
 
-        struct gl_FogParameters {
-          vec4 color;
-          float density;
-          float start;
-          float end;
-          float scale;
-        };
+        "uniform gl_LightModelProducts gl_FrontLightModelProduct;" ~
+        "uniform gl_LightModelProducts gl_BackLightModelProduct;" ~
 
-        uniform gl_FogParameters gl_Fog;
-      `.outdent;
+        "struct gl_LightProducts {" ~
+          "vec4 ambient;" ~
+          "vec4 diffuse;" ~
+          "vec4 specular;" ~
+        "};" ~
+
+        "struct gl_FogParameters {" ~
+          "vec4 color;" ~
+          "float density;" ~
+          "float start;" ~
+          "float end;" ~
+          "float scale;" ~
+        "};" ~
+
+        "uniform gl_FogParameters gl_Fog;" ~
+
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 420) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_COMPUTE ~= `
-        in highp uvec3 gl_NumWorkGroups;
-        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+      stageBuiltins.STAGE_COMPUTE ~= (
+        "in highp uvec3 gl_NumWorkGroups;" ~
+        "const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);" ~
 
-        in highp uvec3 gl_WorkGroupID;
-        in highp uvec3 gl_LocalInvocationID;
+        "in highp uvec3 gl_WorkGroupID;" ~
+        "in highp uvec3 gl_LocalInvocationID;" ~
 
-        in highp uvec3 gl_GlobalInvocationID;
-        in highp uint gl_LocalInvocationIndex;
-      `.outdent;
+        "in highp uvec3 gl_GlobalInvocationID;" ~
+        "in highp uint gl_LocalInvocationIndex;" ~
+
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_COMPUTE ~= `
-        in highp int gl_DeviceIndex;
-      `.outdent;
+      stageBuiltins.STAGE_COMPUTE ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "\n"
+      );
     }
 
     if ((profile == glslang_profile_t.ES_PROFILE && version_ >= 310) ||
       (profile != glslang_profile_t.ES_PROFILE && version_ >= 460)) {
-      stageBuiltins.STAGE_COMPUTE ~= `
-        in highp uvec2 gl_TileOffsetQCOM;
-        in highp uvec3 gl_TileDimensionQCOM;
-        in highp uvec2 gl_TileApronSizeQCOM;
-      `.outdent;
+      stageBuiltins.STAGE_COMPUTE ~= (
+        "in highp uvec2 gl_TileOffsetQCOM;" ~
+        "in highp uvec3 gl_TileDimensionQCOM;" ~
+        "in highp uvec2 gl_TileApronSizeQCOM;" ~
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 320)) {
-      stageBuiltins.STAGE_MESH ~= `
-        out gl_MeshPerVertexNV {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-          float gl_CullDistance[];
-          perviewNV vec4 gl_PositionPerViewNV[];
-          perviewNV float gl_ClipDistancePerViewNV[][];
-          perviewNV float gl_CullDistancePerViewNV[][];
-        } gl_MeshVerticesNV[];
+      stageBuiltins.STAGE_MESH ~= (
+        "out gl_MeshPerVertexNV {" ~
+          "vec4 gl_Position;" ~
+          "float gl_PointSize;" ~
+          "float gl_ClipDistance[];" ~
+          "float gl_CullDistance[];" ~
+          "perviewNV vec4 gl_PositionPerViewNV[];" ~
+          "perviewNV float gl_ClipDistancePerViewNV[][];" ~
+          "perviewNV float gl_CullDistancePerViewNV[][];" ~
+        "} gl_MeshVerticesNV[];" ~
 
-        perprimitiveNV out gl_MeshPerPrimitiveNV {
-          int gl_PrimitiveID;
-          int gl_Layer;
-          int gl_ViewportIndex;
-          int gl_ViewportMask[];
-          perviewNV int gl_LayerPerViewNV[];
-          perviewNV int gl_ViewportMaskPerViewNV[][];
-        } gl_MeshPrimitivesNV[];
+        "perprimitiveNV out gl_MeshPerPrimitiveNV {" ~
+          "int gl_PrimitiveID;" ~
+          "int gl_Layer;" ~
+          "int gl_ViewportIndex;" ~
+          "int gl_ViewportMask[];" ~
+          "perviewNV int gl_LayerPerViewNV[];" ~
+          "perviewNV int gl_ViewportMaskPerViewNV[][];" ~
+        "} gl_MeshPrimitivesNV[];" ~
 
-        out uint gl_PrimitiveCountNV;
-        out uint gl_PrimitiveIndicesNV[];
+        "out uint gl_PrimitiveCountNV;" ~
+        "out uint gl_PrimitiveIndicesNV[];" ~
 
-        in uint gl_MeshViewCountNV;
-        in uint gl_MeshViewIndicesNV[4];
+        "in uint gl_MeshViewCountNV;" ~
+        "in uint gl_MeshViewIndicesNV[4];" ~
 
-        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+        "const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);" ~
 
-        in highp uvec3 gl_WorkGroupID;
-        in highp uvec3 gl_LocalInvocationID;
+        "in highp uvec3 gl_WorkGroupID;" ~
+        "in highp uvec3 gl_LocalInvocationID;" ~
 
-        in highp uvec3 gl_GlobalInvocationID;
-        in highp uint gl_LocalInvocationIndex;
+        "in highp uvec3 gl_GlobalInvocationID;" ~
+        "in highp uint gl_LocalInvocationIndex;" ~
+        "\n" ~
 
-        out uint gl_PrimitivePointIndicesEXT[];
-        out uvec2 gl_PrimitiveLineIndicesEXT[];
-        out uvec3 gl_PrimitiveTriangleIndicesEXT[];
-        in highp uvec3 gl_NumWorkGroups;
+        "out uint gl_PrimitivePointIndicesEXT[];" ~
+        "out uvec2 gl_PrimitiveLineIndicesEXT[];" ~
+        "out uvec3 gl_PrimitiveTriangleIndicesEXT[];" ~
+        "in highp uvec3 gl_NumWorkGroups;" ~
+        "\n" ~
 
-        out gl_MeshPerVertexEXT {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-          float gl_CullDistance[];
-        } gl_MeshVerticesEXT[];
+        "out gl_MeshPerVertexEXT {" ~
+          "vec4 gl_Position;" ~
+          "float gl_PointSize;" ~
+          "float gl_ClipDistance[];" ~
+          "float gl_CullDistance[];" ~
+        "} gl_MeshVerticesEXT[];" ~
 
-        perprimitiveEXT out gl_MeshPerPrimitiveEXT {
-          int gl_PrimitiveID;
-          int gl_Layer;
-          int gl_ViewportIndex;
-          bool gl_CullPrimitiveEXT;
-          int gl_PrimitiveShadingRateEXT;
-        } gl_MeshPrimitivesEXT[];
-      `.outdent;
+        "perprimitiveEXT out gl_MeshPerPrimitiveEXT {" ~
+          "int gl_PrimitiveID;" ~
+          "int gl_Layer;" ~
+          "int gl_ViewportIndex;" ~
+          "bool gl_CullPrimitiveEXT;" ~
+          "int gl_PrimitiveShadingRateEXT;" ~
+        "} gl_MeshPrimitivesEXT[];"
+      );
 
-      stageBuiltins.STAGE_TASK ~= `
-        out uint gl_TaskCountNV;
+      stageBuiltins.STAGE_TASK ~= (
+        "out uint gl_TaskCountNV;" ~
 
-        const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);
+        "const highp uvec3 gl_WorkGroupSize = uvec3(1,1,1);" ~
 
-        in highp uvec3 gl_WorkGroupID;
-        in highp uvec3 gl_LocalInvocationID;
+        "in highp uvec3 gl_WorkGroupID;" ~
+        "in highp uvec3 gl_LocalInvocationID;" ~
 
-        in highp uvec3 gl_GlobalInvocationID;
-        in highp uint gl_LocalInvocationIndex;
+        "in highp uvec3 gl_GlobalInvocationID;" ~
+        "in highp uint gl_LocalInvocationIndex;" ~
 
-        in uint gl_MeshViewCountNV;
-        in uint gl_MeshViewIndicesNV[4];
-        in highp uvec3 gl_NumWorkGroups;
-      `.outdent;
+        "in uint gl_MeshViewCountNV;" ~
+        "in uint gl_MeshViewIndicesNV[4];" ~
+        "in highp uvec3 gl_NumWorkGroups;" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 450) {
-      stageBuiltins.STAGE_MESH ~= `
-        in highp int gl_DeviceIndex;
-        in int gl_DrawIDARB;
-        in int gl_ViewIndex;
-      `.outdent;
+      stageBuiltins.STAGE_MESH ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in int gl_DrawIDARB;" ~
+        "in int gl_ViewIndex;" ~
+        "\n"
+      );
 
-      stageBuiltins.STAGE_TASK ~= `
-        in highp int gl_DeviceIndex;
-        in int gl_DrawIDARB;
-      `.outdent;
+      stageBuiltins.STAGE_TASK ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in int gl_DrawIDARB;" ~
+        "\n"
+      );
 
       if (version_ >= 460) {
-        stageBuiltins.STAGE_MESH ~= `
-          in int gl_DrawID;
-        `.outdent;
-        stageBuiltins.STAGE_TASK ~= `
-          in int gl_DrawID;
-        `.outdent;
+        stageBuiltins.STAGE_MESH ~= (
+          "in int gl_DrawID;" ~
+          "\n"
+        );
+        stageBuiltins.STAGE_TASK ~= (
+          "in int gl_DrawID;" ~
+          "\n"
+        );
       }
     }
 
     if (profile != glslang_profile_t.ES_PROFILE) {
       if (version_ < 130) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          attribute vec4 gl_Color;
-          attribute vec4 gl_SecondaryColor;
-          attribute vec3 gl_Normal;
-          attribute vec4 gl_Vertex;
-          attribute vec4 gl_MultiTexCoord0;
-          attribute vec4 gl_MultiTexCoord1;
-          attribute vec4 gl_MultiTexCoord2;
-          attribute vec4 gl_MultiTexCoord3;
-          attribute vec4 gl_MultiTexCoord4;
-          attribute vec4 gl_MultiTexCoord5;
-          attribute vec4 gl_MultiTexCoord6;
-          attribute vec4 gl_MultiTexCoord7;
-          attribute float gl_FogCoord;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "attribute vec4 gl_Color;" ~
+          "attribute vec4 gl_SecondaryColor;" ~
+          "attribute vec3 gl_Normal;" ~
+          "attribute vec4 gl_Vertex;" ~
+          "attribute vec4 gl_MultiTexCoord0;" ~
+          "attribute vec4 gl_MultiTexCoord1;" ~
+          "attribute vec4 gl_MultiTexCoord2;" ~
+          "attribute vec4 gl_MultiTexCoord3;" ~
+          "attribute vec4 gl_MultiTexCoord4;" ~
+          "attribute vec4 gl_MultiTexCoord5;" ~
+          "attribute vec4 gl_MultiTexCoord6;" ~
+          "attribute vec4 gl_MultiTexCoord7;" ~
+          "attribute float gl_FogCoord;" ~
+          "\n"
+        );
       } else if (IncludeLegacy(version_, profile, spvVersion)) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          in vec4 gl_Color;
-          in vec4 gl_SecondaryColor;
-          in vec3 gl_Normal;
-          in vec4 gl_Vertex;
-          in vec4 gl_MultiTexCoord0;
-          in vec4 gl_MultiTexCoord1;
-          in vec4 gl_MultiTexCoord2;
-          in vec4 gl_MultiTexCoord3;
-          in vec4 gl_MultiTexCoord4;
-          in vec4 gl_MultiTexCoord5;
-          in vec4 gl_MultiTexCoord6;
-          in vec4 gl_MultiTexCoord7;
-          in float gl_FogCoord;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "in vec4 gl_Color;" ~
+          "in vec4 gl_SecondaryColor;" ~
+          "in vec3 gl_Normal;" ~
+          "in vec4 gl_Vertex;" ~
+          "in vec4 gl_MultiTexCoord0;" ~
+          "in vec4 gl_MultiTexCoord1;" ~
+          "in vec4 gl_MultiTexCoord2;" ~
+          "in vec4 gl_MultiTexCoord3;" ~
+          "in vec4 gl_MultiTexCoord4;" ~
+          "in vec4 gl_MultiTexCoord5;" ~
+          "in vec4 gl_MultiTexCoord6;" ~
+          "in vec4 gl_MultiTexCoord7;" ~
+          "in float gl_FogCoord;" ~
+          "\n"
+        );
       }
 
       if (version_ < 150) {
         if (version_ < 130) {
-          stageBuiltins.STAGE_VERTEX ~= `
-            vec4 gl_ClipVertex;
-            varying vec4 gl_FrontColor;
-            varying vec4 gl_BackColor;
-            varying vec4 gl_FrontSecondaryColor;
-            varying vec4 gl_BackSecondaryColor;
-            varying vec4 gl_TexCoord[];
-            varying float gl_FogFragCoord;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "vec4 gl_ClipVertex;" ~
+            "varying vec4 gl_FrontColor;" ~
+            "varying vec4 gl_BackColor;" ~
+            "varying vec4 gl_FrontSecondaryColor;" ~
+            "varying vec4 gl_BackSecondaryColor;" ~
+            "varying vec4 gl_TexCoord[];" ~
+            "varying float gl_FogFragCoord;" ~
+            "\n"
+          );
         } else if (IncludeLegacy(version_, profile, spvVersion)) {
-          stageBuiltins.STAGE_VERTEX ~= `
-            vec4 gl_ClipVertex;
-            out vec4 gl_FrontColor;
-            out vec4 gl_BackColor;
-            out vec4 gl_FrontSecondaryColor;
-            out vec4 gl_BackSecondaryColor;
-            out vec4 gl_TexCoord[];
-            out float gl_FogFragCoord;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "vec4 gl_ClipVertex;" ~
+            "out vec4 gl_FrontColor;" ~
+            "out vec4 gl_BackColor;" ~
+            "out vec4 gl_FrontSecondaryColor;" ~
+            "out vec4 gl_BackSecondaryColor;" ~
+            "out vec4 gl_TexCoord[];" ~
+            "out float gl_FogFragCoord;" ~
+            "\n"
+          );
         }
-        stageBuiltins.STAGE_VERTEX ~= `
-          vec4 gl_Position;
-          float gl_PointSize;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "vec4 gl_Position;" ~
+          "float gl_PointSize;"
+        );
 
         if (version_ == 130 || version_ == 140)
-          stageBuiltins.STAGE_VERTEX ~= `
-            out float gl_ClipDistance[];
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~=
+            "out float gl_ClipDistance[];";
       } else {
-        stageBuiltins.STAGE_VERTEX ~= `
-          out gl_PerVertex {
-            vec4 gl_Position;
-            float gl_PointSize;
-            float gl_ClipDistance[];
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= "out gl_PerVertex {" ~
+          "vec4 gl_Position;" ~
+          "float gl_PointSize;" ~
+          "float gl_ClipDistance[];";
+
         if (IncludeLegacy(version_, profile, spvVersion))
-          stageBuiltins.STAGE_VERTEX ~= `
-            vec4 gl_ClipVertex;
-            vec4 gl_FrontColor;
-            vec4 gl_BackColor;
-            vec4 gl_FrontSecondaryColor;
-            vec4 gl_BackSecondaryColor;
-            vec4 gl_TexCoord[];
-            float gl_FogFragCoord;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "vec4 gl_ClipVertex;" ~
+            "vec4 gl_FrontColor;" ~
+            "vec4 gl_BackColor;" ~
+            "vec4 gl_FrontSecondaryColor;" ~
+            "vec4 gl_BackSecondaryColor;" ~
+            "vec4 gl_TexCoord[];" ~
+            "float gl_FogFragCoord;"
+          );
         if (version_ >= 450)
-          stageBuiltins.STAGE_VERTEX ~= `
-            float gl_CullDistance[];
-          `.outdent;
-        stageBuiltins.STAGE_VERTEX ~= `
-          };
-        `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= "float gl_CullDistance[];";
+        stageBuiltins.STAGE_VERTEX ~= "};";
+        stageBuiltins.STAGE_VERTEX ~= "\n";
       }
       if (version_ >= 130 && spvVersion.vulkan == 0)
-        stageBuiltins.STAGE_VERTEX ~= `
-          int gl_VertexID;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~=
+          "int gl_VertexID;";
       if (spvVersion.vulkan == 0)
-        stageBuiltins.STAGE_VERTEX ~= `
-          int gl_InstanceID;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~=
+          "int gl_InstanceID;";
       if (spvVersion.vulkan > 0 && version_ >= 140)
-        stageBuiltins.STAGE_VERTEX ~= `
-          in int gl_VertexIndex;
-          in int gl_InstanceIndex;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "in int gl_VertexIndex;" ~
+          "in int gl_InstanceIndex;"
+        );
       if (spvVersion.vulkan > 0 && version_ >= 140 && spvVersion.vulkanRelaxed)
-        stageBuiltins.STAGE_VERTEX ~= `
-          in int gl_VertexID;
-          in int gl_InstanceID;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "in int gl_VertexID;" ~
+          "in int gl_InstanceID;"
+        );
       if (version_ >= 440) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          in int gl_BaseVertexARB;
-          in int gl_BaseInstanceARB;
-          in int gl_DrawIDARB;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "in int gl_BaseVertexARB;" ~
+          "in int gl_BaseInstanceARB;" ~
+          "in int gl_DrawIDARB;"
+        );
       }
       if (version_ >= 410) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          out int gl_ViewportIndex;
-          out int gl_Layer;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "out int gl_ViewportIndex;" ~
+          "out int gl_Layer;"
+        );
       }
       if (version_ >= 460) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          in int gl_BaseVertex;
-          in int gl_BaseInstance;
-          in int gl_DrawID;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "in int gl_BaseVertex;" ~
+          "in int gl_BaseInstance;" ~
+          "in int gl_DrawID;"
+        );
       }
       if (version_ >= 430) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          out int gl_ViewportMask[];
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~=
+          "out int gl_ViewportMask[];";
       }
       if (version_ >= 450) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          out int gl_SecondaryViewportMaskNV[];
-          out vec4 gl_SecondaryPositionNV;
-          out vec4 gl_PositionPerViewNV[];
-          out int gl_ViewportMaskPerViewNV[];
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "out int gl_SecondaryViewportMaskNV[];" ~
+          "out vec4 gl_SecondaryPositionNV;" ~
+          "out vec4 gl_PositionPerViewNV[];" ~
+          "out int gl_ViewportMaskPerViewNV[];"
+        );
       }
     } else {
       if (version_ == 100) {
-        stageBuiltins.STAGE_VERTEX ~= `
-          highp vec4 gl_Position;
-          mediump float gl_PointSize;
-          highp int gl_InstanceID;
-        `.outdent;
+        stageBuiltins.STAGE_VERTEX ~= (
+          "highp vec4 gl_Position;" ~
+          "mediump float gl_PointSize;" ~
+          "highp int gl_InstanceID;"
+        );
       } else {
         if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed)
-          stageBuiltins.STAGE_VERTEX ~= `
-            in highp int gl_VertexID;
-            in highp int gl_InstanceID;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "in highp int gl_VertexID;" ~
+            "in highp int gl_InstanceID;"
+          );
         if (spvVersion.vulkan > 0)
-          stageBuiltins.STAGE_VERTEX ~= `
-            in highp int gl_VertexIndex;
-            in highp int gl_InstanceIndex;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "in highp int gl_VertexIndex;" ~
+            "in highp int gl_InstanceIndex;"
+          );
         if (version_ < 310)
-          stageBuiltins.STAGE_VERTEX ~= `
-            highp vec4 gl_Position;
-            highp float gl_PointSize;
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "highp vec4 gl_Position;" ~
+            "highp float gl_PointSize;"
+          );
         else
-          stageBuiltins.STAGE_VERTEX ~= `
-            out gl_PerVertex {
-              highp vec4 gl_Position;
-              highp float gl_PointSize;
-            };
-          `.outdent;
+          stageBuiltins.STAGE_VERTEX ~= (
+            "out gl_PerVertex {" ~
+              "highp vec4 gl_Position;" ~
+              "highp float gl_PointSize;" ~
+            "};"
+          );
       }
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_VERTEX ~= `
-        in highp int gl_DeviceIndex;
-        in highp int gl_ViewIndex;
-      `.outdent;
+      stageBuiltins.STAGE_VERTEX ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in highp int gl_ViewIndex;"
+      );
     }
 
     if (version_ >= 300) {
-      stageBuiltins.STAGE_VERTEX ~= `
-        in highp uint gl_ViewID_OVR;
-      `.outdent;
+      stageBuiltins.STAGE_VERTEX ~= (
+        "in highp uint gl_ViewID_OVR;" ~
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_VERTEX ~= `
-        out highp int gl_PrimitiveShadingRateEXT;
-      `.outdent;
+      stageBuiltins.STAGE_VERTEX ~= (
+        "out highp int gl_PrimitiveShadingRateEXT;" ~
+        "\n"
+      );
     }
 
     if (profile == glslang_profile_t.CORE_PROFILE ||
       profile == glslang_profile_t.COMPATIBILITY_PROFILE) {
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        in gl_PerVertex {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-      `.outdent;
+      stageBuiltins.STAGE_GEOMETRY ~= "in gl_PerVertex {";
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "vec4 gl_Position" ~
+        "float gl_PointSize" ~
+        "float gl_ClipDistance[]"
+      );
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          vec4 gl_ClipVertex;
-          vec4 gl_FrontColor;
-          vec4 gl_BackColor;
-          vec4 gl_FrontSecondaryColor;
-          vec4 gl_BackSecondaryColor;
-          vec4 gl_TexCoord[];
-          float gl_FogFragCoord;
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~= (
+          "vec4 gl_ClipVertex;" ~
+          "vec4 gl_FrontColor;" ~
+          "vec4 gl_BackColor;" ~
+          "vec4 gl_FrontSecondaryColor;" ~
+          "vec4 gl_BackSecondaryColor;" ~
+          "vec4 gl_TexCoord[];" ~
+          "float gl_FogFragCoord;"
+        );
       if (version_ >= 450)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          float gl_CullDistance[];
-          vec4 gl_SecondaryPositionNV;
-          vec4 gl_PositionPerViewNV[];
-        `.outdent;
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        } gl_in[];
-
-        in int gl_PrimitiveIDIn;
-        out gl_PerVertex {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-      `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~= (
+          "float gl_CullDistance[];" ~
+          "vec4 gl_SecondaryPositionNV;" ~
+          "vec4 gl_PositionPerViewNV[];"
+        );
+      stageBuiltins.STAGE_GEOMETRY ~= "} gl_in[];";
+      stageBuiltins.STAGE_GEOMETRY ~= "in int gl_PrimitiveIDIn;";
+      stageBuiltins.STAGE_GEOMETRY ~= "out gl_PerVertex {";
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "vec4 gl_Position;" ~
+        "float gl_PointSize;" ~
+        "float gl_ClipDistance[];" ~
+        "\n"
+      );
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ >= 400)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          vec4 gl_ClipVertex;
-          vec4 gl_FrontColor;
-          vec4 gl_BackColor;
-          vec4 gl_FrontSecondaryColor;
-          vec4 gl_BackSecondaryColor;
-          vec4 gl_TexCoord[];
-          float gl_FogFragCoord;
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~= (
+          "vec4 gl_ClipVertex;" ~
+          "vec4 gl_FrontColor;" ~
+          "vec4 gl_BackColor;" ~
+          "vec4 gl_FrontSecondaryColor;" ~
+          "vec4 gl_BackSecondaryColor;" ~
+          "vec4 gl_TexCoord[];" ~
+          "float gl_FogFragCoord;"
+        );
       if (version_ >= 450)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          float gl_CullDistance[];
-        `.outdent;
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        };
-
-        out int gl_PrimitiveID;
-        out int gl_Layer;
-      `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~= 
+          "float gl_CullDistance[];";
+      stageBuiltins.STAGE_GEOMETRY ~= "};";
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "out int gl_PrimitiveID;" ~
+        "out int gl_Layer;"
+      );
 
       if (version_ >= 150)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          out int gl_ViewportIndex;
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~=
+          "out int gl_ViewportIndex;";
 
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE && version_ < 400)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          out vec4 gl_ClipVertex;
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~=
+          "out vec4 gl_ClipVertex;";
 
       if (version_ >= 150)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          in int gl_InvocationID;
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~=
+          "in int gl_InvocationID;";
 
       if (version_ >= 430)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          out int gl_ViewportMask[];
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~=
+          "out int gl_ViewportMask[];";
 
       if (version_ >= 450)
-        stageBuiltins.STAGE_GEOMETRY ~= `
-          out int gl_SecondaryViewportMaskNV[];
-          out vec4 gl_SecondaryPositionNV;
-          out vec4 gl_PositionPerViewNV[];
-          out int gl_ViewportMaskPerViewNV[];
-        `.outdent;
+        stageBuiltins.STAGE_GEOMETRY ~= (
+          "out int gl_SecondaryViewportMaskNV[];" ~
+          "out vec4 gl_SecondaryPositionNV;" ~
+          "out vec4 gl_PositionPerViewNV[];" ~
+          "out int gl_ViewportMaskPerViewNV[];"
+        );
     } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        in gl_PerVertex {
-          highp vec4 gl_Position;
-          highp float gl_PointSize;
-        } gl_in[];
-        
-        in highp int gl_PrimitiveIDIn;
-        in highp int gl_InvocationID;
-        
-        out gl_PerVertex {
-          highp vec4 gl_Position;
-          highp float gl_PointSize;
-        };
-        
-        out highp int gl_PrimitiveID;
-        out highp int gl_Layer;
-      `.outdent;
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "in gl_PerVertex {" ~
+          "highp vec4 gl_Position;" ~
+          "highp float gl_PointSize;" ~
+        "} gl_in[];" ~
+        "\n" ~
+        "in highp int gl_PrimitiveIDIn;" ~
+        "in highp int gl_InvocationID;" ~
+        "\n" ~
+        "out gl_PerVertex {" ~
+          "highp vec4 gl_Position;" ~
+          "highp float gl_PointSize;" ~
+        "};" ~
+        "\n" ~
+        "out highp int gl_PrimitiveID;" ~
+        "out highp int gl_Layer;" ~
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        in highp int gl_DeviceIndex;
-        in highp int gl_ViewIndex;
-      `.outdent;
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in highp int gl_ViewIndex;" ~
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 450) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_GEOMETRY ~= `
-        out highp int gl_PrimitiveShadingRateEXT;
-      `.outdent;
+      stageBuiltins.STAGE_GEOMETRY ~= (
+        "out highp int gl_PrimitiveShadingRateEXT;" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      stageBuiltins.STAGE_TESSCONTROL ~= `
-        in int gl_PatchVerticesIn;
-        in int gl_PrimitiveID;
-        in int gl_InvocationID;
-
-        out gl_PerVertex {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-      `.outdent;
+      stageBuiltins.STAGE_TESSCONTROL ~= (
+        "in int gl_PatchVerticesIn;" ~
+        "in int gl_PrimitiveID;" ~
+        "in int gl_InvocationID;"
+      );
+      stageBuiltins.STAGE_TESSCONTROL ~= "out gl_PerVertex {";
+      stageBuiltins.STAGE_TESSCONTROL ~= (
+        "vec4 gl_Position;" ~
+        "float gl_PointSize;" ~
+        "float gl_ClipDistance[];"
+      );
       if (profile == glslang_profile_t.COMPATIBILITY_PROFILE)
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          vec4 gl_ClipVertex;
-          vec4 gl_FrontColor;
-          vec4 gl_BackColor;
-          vec4 gl_FrontSecondaryColor;
-          vec4 gl_BackSecondaryColor;
-          vec4 gl_TexCoord[];
-          float gl_FogFragCoord;
-        `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~= (
+          "vec4 gl_ClipVertex;" ~
+          "vec4 gl_FrontColor;" ~
+          "vec4 gl_BackColor;" ~
+          "vec4 gl_FrontSecondaryColor;" ~
+          "vec4 gl_BackSecondaryColor;" ~
+          "vec4 gl_TexCoord[];" ~
+          "float gl_FogFragCoord;"
+        );
       if (version_ >= 450)
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          float gl_CullDistance[];
-        `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~=
+          "float gl_CullDistance[];";
       if (version_ >= 430)
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          int gl_ViewportMask[];
-        `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~=
+          "int gl_ViewportMask[];";
       if (version_ >= 450)
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          vec4 gl_SecondaryPositionNV;
-          int gl_SecondaryViewportMaskNV[];
-          vec4 gl_PositionPerViewNV[];
-          int gl_ViewportMaskPerViewNV[];
-        `.outdent;
-      stageBuiltins.STAGE_TESSCONTROL ~= `
-        } gl_out[];
-
-        patch out float gl_TessLevelOuter[4];
-        patch out float gl_TessLevelInner[2];
-      `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~= (
+          "vec4 gl_SecondaryPositionNV;" ~
+          "int gl_SecondaryViewportMaskNV[];" ~
+          "vec4 gl_PositionPerViewNV[];" ~
+          "int gl_ViewportMaskPerViewNV[];"
+        );
+      stageBuiltins.STAGE_TESSCONTROL ~= "} gl_out[];";
+      stageBuiltins.STAGE_TESSCONTROL ~= (
+        "patch out float gl_TessLevelOuter[4];" ~
+        "patch out float gl_TessLevelInner[2];" ~
+        "\n"
+      );
 
       if (version_ >= 410)
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          out int gl_ViewportIndex;
-          out int gl_Layer;
-        `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~= (
+          "out int gl_ViewportIndex;" ~
+          "out int gl_Layer;" ~
+          "\n"
+        );
     } else {
-      stageBuiltins.STAGE_TESSCONTROL ~= `
-        in highp int gl_PatchVerticesIn;
-        in highp int gl_PrimitiveID;
-        in highp int gl_InvocationID;
+      stageBuiltins.STAGE_TESSCONTROL ~= (
+        "in highp int gl_PatchVerticesIn;" ~
+        "in highp int gl_PrimitiveID;" ~
+        "in highp int gl_InvocationID;" ~
+        
+        "out gl_PerVertex {" ~
+          "highp vec4 gl_Position;" ~
+          "highp float gl_PointSize;" ~
+        "} gl_out[];" ~
 
-        out gl_PerVertex {
-          highp vec4 gl_Position;
-          highp float gl_PointSize;
-        } gl_out[];
-
-        patch out highp float gl_TessLevelOuter[4];
-        patch out highp float gl_TessLevelInner[2];
-        patch out highp vec4 gl_BoundingBoxOES[2];
-        patch out highp vec4 gl_BoundingBoxEXT[2];
-      `.outdent;
+        "patch out highp float gl_TessLevelOuter[4];" ~
+        "patch out highp float gl_TessLevelInner[2];" ~
+        "patch out highp vec4 gl_BoundingBoxOES[2];" ~
+        "patch out highp vec4 gl_BoundingBoxEXT[2];" ~
+        "\n"
+      );
       if (profile == glslang_profile_t.ES_PROFILE && version_ >= 320) {
-        stageBuiltins.STAGE_TESSCONTROL ~= `
-          patch out highp vec4 gl_BoundingBox[2];
-        `.outdent;
+        stageBuiltins.STAGE_TESSCONTROL ~= (
+          "patch out highp vec4 gl_BoundingBox[2];" ~
+          "\n"
+        );
       }
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_TESSCONTROL ~= `
-        in highp int gl_DeviceIndex;
-        in highp int gl_ViewIndex;
-      `.outdent;
+      stageBuiltins.STAGE_TESSCONTROL ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in highp int gl_ViewIndex;" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE && version_ >= 150) {
-      stageBuiltins.STAGE_TESSEVALUATION ~= `
-        in int gl_PatchVerticesIn;
-        in int gl_PrimitiveID;
-        in vec3 gl_TessCoord;
+      stageBuiltins.STAGE_TESSEVALUATION ~= (
+        "in int gl_PatchVerticesIn;" ~
+        "in int gl_PrimitiveID;" ~
+        "in vec3 gl_TessCoord;" ~
 
-        patch in float gl_TessLevelOuter[4];
-        patch in float gl_TessLevelInner[2];
-
-        out gl_PerVertex {
-          vec4 gl_Position;
-          float gl_PointSize;
-          float gl_ClipDistance[];
-      `.outdent;
+        "patch in float gl_TessLevelOuter[4];" ~
+        "patch in float gl_TessLevelInner[2];"
+      );
+      stageBuiltins.STAGE_TESSEVALUATION ~= "out gl_PerVertex {";
+      stageBuiltins.STAGE_TESSEVALUATION ~= (
+        "vec4 gl_Position;" ~
+        "float gl_PointSize;" ~
+        "float gl_ClipDistance[];"
+      );
       if (version_ >= 400 && profile == glslang_profile_t.COMPATIBILITY_PROFILE)
-        stageBuiltins.STAGE_TESSEVALUATION ~= `
-          vec4 gl_ClipVertex;
-          vec4 gl_FrontColor;
-          vec4 gl_BackColor;
-          vec4 gl_FrontSecondaryColor;
-          vec4 gl_BackSecondaryColor;
-          vec4 gl_TexCoord[];
-          float gl_FogFragCoord;
-        `.outdent;
+        stageBuiltins.STAGE_TESSEVALUATION ~= (
+          "vec4 gl_ClipVertex;" ~
+          "vec4 gl_FrontColor;" ~
+          "vec4 gl_BackColor;" ~
+          "vec4 gl_FrontSecondaryColor;" ~
+          "vec4 gl_BackSecondaryColor;" ~
+          "vec4 gl_TexCoord[];" ~
+          "float gl_FogFragCoord;"
+        );
       if (version_ >= 450)
-        stageBuiltins.STAGE_TESSEVALUATION ~= `
-          float gl_CullDistance[];
-        `.outdent;
-      stageBuiltins.STAGE_TESSEVALUATION ~= `
-        };
-      `.outdent;
+        stageBuiltins.STAGE_TESSEVALUATION ~=
+          "float gl_CullDistance[];";
+      stageBuiltins.STAGE_TESSEVALUATION ~= "};";
+      stageBuiltins.STAGE_TESSEVALUATION ~= "\n";
 
       if (version_ >= 410)
-        stageBuiltins.STAGE_TESSEVALUATION ~= `
-          out int gl_ViewportIndex;
-          out int gl_Layer;
-        `.outdent;
+        stageBuiltins.STAGE_TESSEVALUATION ~= (
+          "out int gl_ViewportIndex;" ~
+          "out int gl_Layer;" ~
+          "\n"
+        );
 
       if (version_ >= 430)
-        stageBuiltins.STAGE_TESSEVALUATION ~= `
-          out int gl_ViewportMask[];
-        `.outdent;
+        stageBuiltins.STAGE_TESSEVALUATION ~=
+          "out int gl_ViewportMask[];";
 
       if (version_ >= 450)
-        stageBuiltins.STAGE_TESSEVALUATION ~= `
-          out vec4 gl_SecondaryPositionNV;
-          out int gl_SecondaryViewportMaskNV[];
-          out vec4 gl_PositionPerViewNV[];
-          out int gl_ViewportMaskPerViewNV[];
-        `.outdent;
+        stageBuiltins.STAGE_TESSEVALUATION ~= (
+          "out vec4 gl_SecondaryPositionNV;" ~
+          "out int gl_SecondaryViewportMaskNV[];" ~
+          "out vec4 gl_PositionPerViewNV[];" ~
+          "out int gl_ViewportMaskPerViewNV[];"
+        );
     } else if (profile == glslang_profile_t.ES_PROFILE && version_ >= 310) {
-      stageBuiltins.STAGE_TESSEVALUATION ~= `
-        in highp int gl_PatchVerticesIn;
-        in highp int gl_PrimitiveID;
-        in highp vec3 gl_TessCoord;
+      stageBuiltins.STAGE_TESSEVALUATION ~= (
+        "in highp int gl_PatchVerticesIn;" ~
+        "in highp int gl_PrimitiveID;" ~
+        "in highp vec3 gl_TessCoord;" ~
 
-        patch in highp float gl_TessLevelOuter[4];
-        patch in highp float gl_TessLevelInner[2];
+        "patch in highp float gl_TessLevelOuter[4];" ~
+        "patch in highp float gl_TessLevelInner[2];" ~
 
-        out gl_PerVertex {
-          highp vec4 gl_Position;
-          highp float gl_PointSize;
-        };
-      `.outdent;
+        "out gl_PerVertex {" ~
+          "highp vec4 gl_Position;" ~
+          "highp float gl_PointSize;" ~
+        "};" ~
+        "\n"
+      );
     }
 
     if ((profile != glslang_profile_t.ES_PROFILE && version_ >= 140) ||
       (profile == glslang_profile_t.ES_PROFILE && version_ >= 310)) {
-      stageBuiltins.STAGE_TESSEVALUATION ~= `
-        in highp int gl_DeviceIndex;
-        in highp int gl_ViewIndex;
-      `.outdent;
+      stageBuiltins.STAGE_TESSEVALUATION ~= (
+        "in highp int gl_DeviceIndex;" ~
+        "in highp int gl_ViewIndex;" ~
+        "\n"
+      );
     }
 
     if (profile != glslang_profile_t.ES_PROFILE) {
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        vec4 gl_FragCoord;
-        bool gl_FrontFacing;
-        float gl_FragDepth;
-      `.outdent;
+      stageBuiltins.STAGE_FRAGMENT ~= (
+        "vec4 gl_FragCoord;" ~
+        "bool gl_FrontFacing;" ~
+        "float gl_FragDepth;"
+      );
       if (version_ >= 120)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          vec2 gl_PointCoord;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "vec2 gl_PointCoord;";
       if (version_ >= 140)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          out int gl_FragStencilRefARB;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "out int gl_FragStencilRefARB;";
       if (IncludeLegacy(version_, profile, spvVersion) || (!ForwardCompatibility && version_ < 420))
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          vec4 gl_FragColor;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "vec4 gl_FragColor;";
       
       if (version_ < 130) {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          varying vec4 gl_Color;
-          varying vec4 gl_SecondaryColor;
-          varying vec4 gl_TexCoord[];
-          varying float gl_FogFragCoord;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "varying vec4 gl_Color;" ~
+          "varying vec4 gl_SecondaryColor;" ~
+          "varying vec4 gl_TexCoord[];" ~
+          "varying float gl_FogFragCoord;"
+        );
       } else {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          in float gl_ClipDistance[];
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "in float gl_ClipDistance[];";
 
         if (IncludeLegacy(version_, profile, spvVersion)) {
           if (version_ < 150)
-            stageBuiltins.STAGE_FRAGMENT ~= `
-              in float gl_FogFragCoord;
-              in vec4 gl_TexCoord[];
-              in vec4 gl_Color;
-              in vec4 gl_SecondaryColor;
-            `.outdent;
+            stageBuiltins.STAGE_FRAGMENT ~= (
+              "in float gl_FogFragCoord;" ~
+              "in vec4 gl_TexCoord[];" ~
+              "in vec4 gl_Color;" ~
+              "in vec4 gl_SecondaryColor;"
+            );
           else
-            stageBuiltins.STAGE_FRAGMENT ~= `
-              in gl_PerFragment {
-                in float gl_FogFragCoord;
-                in vec4 gl_TexCoord[];
-                in vec4 gl_Color;
-                in vec4 gl_SecondaryColor;
-              };
-            `.outdent;
+            stageBuiltins.STAGE_FRAGMENT ~= (
+              "in gl_PerFragment {" ~
+                "in float gl_FogFragCoord;" ~
+                "in vec4 gl_TexCoord[];" ~
+                "in vec4 gl_Color;" ~
+                "in vec4 gl_SecondaryColor;" ~
+              "};"
+            );
         }
       }
 
       if (version_ >= 150)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in int gl_PrimitiveID;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "flat in int gl_PrimitiveID;";
       
       if (version_ >= 130) {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in int gl_SampleID;
-          in vec2 gl_SamplePosition;
-          out int gl_SampleMask[];
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "flat in int gl_SampleID;" ~
+          "in vec2 gl_SamplePosition;" ~
+          "out int gl_SampleMask[];"
+        );
 
         if (spvVersion.spv == 0)
-          stageBuiltins.STAGE_FRAGMENT ~= `
-            uniform int gl_NumSamples;
-          `.outdent;
+          stageBuiltins.STAGE_FRAGMENT ~=
+            "uniform int gl_NumSamples;";
       }
 
       if (version_ >= 150)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in int gl_SampleMaskIn[];
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "flat in int gl_SampleMaskIn[];";
 
       if (version_ >= 430)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in int gl_Layer;
-          flat in int gl_ViewportIndex;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "flat in int gl_Layer;" ~
+          "flat in int gl_ViewportIndex;"
+        );
 
       if (version_ >= 450)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          in float gl_CullDistance[];
-          bool gl_HelperInvocation;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "in float gl_CullDistance[];" ~
+          "bool gl_HelperInvocation;" ~
 
-          flat in ivec2 gl_FragSizeEXT;
-          flat in int gl_FragInvocationCountEXT;
+          "flat in ivec2 gl_FragSizeEXT;" ~
+          "flat in int gl_FragInvocationCountEXT;" ~
 
-          in vec2 gl_BaryCoordNoPerspAMD;
-          in vec2 gl_BaryCoordNoPerspCentroidAMD;
-          in vec2 gl_BaryCoordNoPerspSampleAMD;
-          in vec2 gl_BaryCoordSmoothAMD;
-          in vec2 gl_BaryCoordSmoothCentroidAMD;
-          in vec2 gl_BaryCoordSmoothSampleAMD;
-          in vec3 gl_BaryCoordPullModelAMD;
-        `.outdent;
+          "in vec2 gl_BaryCoordNoPerspAMD;" ~
+          "in vec2 gl_BaryCoordNoPerspCentroidAMD;" ~
+          "in vec2 gl_BaryCoordNoPerspSampleAMD;" ~
+          "in vec2 gl_BaryCoordSmoothAMD;" ~
+          "in vec2 gl_BaryCoordSmoothCentroidAMD;" ~
+          "in vec2 gl_BaryCoordSmoothSampleAMD;" ~
+          "in vec3 gl_BaryCoordPullModelAMD;"
+        );
 
       if (version_ >= 430)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          in bool gl_FragFullyCoveredNV;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "in bool gl_FragFullyCoveredNV;";
 
       if (version_ >= 450)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in ivec2 gl_FragmentSizeNV;
-          flat in int gl_InvocationsPerPixelNV;
-          in vec3 gl_BaryCoordNV;
-          in vec3 gl_BaryCoordNoPerspNV;
-          in vec3 gl_BaryCoordEXT;
-          in vec3 gl_BaryCoordNoPerspEXT;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "flat in ivec2 gl_FragmentSizeNV;" ~
+          "flat in int gl_InvocationsPerPixelNV;" ~
+          "in vec3 gl_BaryCoordNV;" ~
+          "in vec3 gl_BaryCoordNoPerspNV;" ~
+          "in vec3 gl_BaryCoordEXT;" ~
+          "in vec3 gl_BaryCoordNoPerspEXT;" ~
 
-          flat in int gl_ShadingRateEXT;
-        `.outdent;
+          "flat in int gl_ShadingRateEXT;"
+        );
     } else {
       if (version_ == 100) {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          mediump vec4 gl_FragCoord;
-          bool gl_FrontFacing;
-          mediump vec4 gl_FragColor;
-          mediump vec2 gl_PointCoord;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "mediump vec4 gl_FragCoord;" ~
+          "bool gl_FrontFacing;" ~
+          "mediump vec4 gl_FragColor;" ~
+          "mediump vec2 gl_PointCoord;"
+        );
       }
       if (version_ >= 300) {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          highp vec4 gl_FragCoord;
-          bool gl_FrontFacing;
-          mediump vec2 gl_PointCoord;
-          highp float gl_FragDepth;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "highp vec4 gl_FragCoord;" ~
+          "bool gl_FrontFacing;" ~
+          "mediump vec2 gl_PointCoord;" ~
+          "highp float gl_FragDepth;"
+        );
       }
       if (version_ >= 310) {
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          bool gl_HelperInvocation;
-          flat in highp int gl_PrimitiveID;
-          flat in highp int gl_Layer;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "bool gl_HelperInvocation;" ~
+          "flat in highp int gl_PrimitiveID;" ~
+          "flat in highp int gl_Layer;" ~
 
-          flat in lowp int gl_SampleID;
-          in mediump vec2 gl_SamplePosition;
-          flat in highp int gl_SampleMaskIn[];
-          out highp int gl_SampleMask[];
-        `.outdent;
+          "flat in lowp int gl_SampleID;" ~
+          "in mediump vec2 gl_SamplePosition;" ~
+          "flat in highp int gl_SampleMaskIn[];" ~
+          "out highp int gl_SampleMask[];"
+        );
 
         if (spvVersion.spv == 0)
-          stageBuiltins.STAGE_FRAGMENT ~= `
-            uniform lowp int gl_NumSamples;
-          `.outdent;
+          stageBuiltins.STAGE_FRAGMENT ~=
+            "uniform lowp int gl_NumSamples;";
       }
-      stageBuiltins.STAGE_FRAGMENT ~= `
-        highp float gl_FragDepthEXT;
-      `.outdent;
+      stageBuiltins.STAGE_FRAGMENT ~=
+        "highp float gl_FragDepthEXT;";
 
       if (version_ >= 310)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in ivec2 gl_FragSizeEXT;
-          flat in int gl_FragInvocationCountEXT;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "flat in ivec2 gl_FragSizeEXT;" ~
+          "flat in int gl_FragInvocationCountEXT;"
+        );
       if (version_ >= 320)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in ivec2 gl_FragmentSizeNV;
-          flat in int gl_InvocationsPerPixelNV;
+        stageBuiltins.STAGE_FRAGMENT ~= (
+          "flat in ivec2 gl_FragmentSizeNV;" ~
+          "flat in int gl_InvocationsPerPixelNV;" ~
         
-          in vec3 gl_BaryCoordNV;
-          in vec3 gl_BaryCoordNoPerspNV;
-          in vec3 gl_BaryCoordEXT;
-          in vec3 gl_BaryCoordNoPerspEXT;
-        `.outdent;
+          "in vec3 gl_BaryCoordNV;" ~
+          "in vec3 gl_BaryCoordNoPerspNV;" ~
+          "in vec3 gl_BaryCoordEXT;" ~
+          "in vec3 gl_BaryCoordNoPerspEXT;"
+        );
       if (version_ >= 310)
-        stageBuiltins.STAGE_FRAGMENT ~= `
-          flat in highp int gl_ShadingRateEXT;
-        `.outdent;
+        stageBuiltins.STAGE_FRAGMENT ~=
+          "flat in highp int gl_ShadingRateEXT;";
     }
     
+    stageBuiltins.STAGE_FRAGMENT ~= "\n";
+
     if (version_ >= 130)
       add2ndGenerationSamplingImaging(version_, profile, spvVersion);
 
@@ -6603,8 +6640,7 @@ class TBuiltIns : TBuiltInParseables {
                   sampler.setSubpass(bTypes[bType], ms ? true : false);
                 } else if (dim == TSamplerDim.EsdAttachmentEXT) {
                   sampler.setAttachmentEXT(bTypes[bType]);
-                } else
-                if (image) {
+                } else if (image) {
                   sampler.setImage(
                     bTypes[bType],
                     dim,
@@ -7342,7 +7378,7 @@ class TBuiltIns : TBuiltInParseables {
                             if (f16TexAddr)
                               s.put(",f16vec");
                             else
-                                s.put(",vec");
+                              s.put(",vec");
                             s.put(postfixes[dimMap[sampler.dim]]);
                           }
                         }
