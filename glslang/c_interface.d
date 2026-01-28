@@ -23,7 +23,6 @@ struct glslang_input_t {
   int force_default_version_and_profile;
   int forward_compatible;
   glslang_messages_t messages;
-  TBuiltInResource resource;
   glsl_include_callbacks_t callbacks;
   void* callbacks_ctx;
 }
@@ -91,7 +90,6 @@ bool glslang_shader_preprocess(
   out string preprocessedGLSL
 ) {
   return shader.preprocess(
-    input.resource,
     input.default_version,
     input.default_profile,
     input.force_default_version_and_profile != 0,

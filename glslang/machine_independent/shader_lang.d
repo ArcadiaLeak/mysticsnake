@@ -89,14 +89,13 @@ class TShader {
   }
 
   bool preprocess(
-    TBuiltInResource builtInResources,
     int defaultVersion, glslang_profile_t defaultProfile,
     bool forceDefaultVersionAndProfile,
     bool forwardCompatible, glslang_messages_t message,
     out string output_string
   ) {
     return PreprocessDeferred(
-      compiler, strings, stringNames, builtInResources,
+      compiler, strings, stringNames,
       defaultVersion, defaultProfile, forceDefaultVersionAndProfile,
       overrideVersion, forwardCompatible, message, intermediate,
       output_string, environment
@@ -114,7 +113,6 @@ bool PreprocessDeferred(
   TCompiler compiler,
   in string[] shaderStrings,
   in string[] stringNames,
-  TBuiltInResource resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,
@@ -126,7 +124,7 @@ bool PreprocessDeferred(
   in TEnvironment environment
 ) {
   return ProcessDeferred(
-    compiler, shaderStrings, stringNames, resources,
+    compiler, shaderStrings, stringNames,
     defaultVersion, defaultProfile, forceDefaultVersionAndProfile,
     overrideVersion, forwardCompatible, messages, intermediate,
     0, false, "", environment
@@ -137,7 +135,6 @@ bool ProcessDeferred(ProcessingContext)(
   TCompiler compiler,
   const string[] shaderStrings,
   const string[] stringNames,
-  TBuiltInResource resources,
   int defaultVersion,
   glslang_profile_t defaultProfile,
   bool forceDefaultVersionAndProfile,

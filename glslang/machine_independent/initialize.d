@@ -148,8 +148,7 @@ class TBuiltInParseables {
   abstract void initialize(
     int version_, glslang_profile_t, in SpvVersion spvVersion);
   abstract void initialize(
-    TBuiltInResource resources, int version_, glslang_profile_t,
-    in SpvVersion spvVersion, EShLanguage);
+    int version_, glslang_profile_t, in SpvVersion spvVersion, EShLanguage);
 
   string getCommonString() const { return commonBuiltins[].idup; }
   
@@ -6570,8 +6569,7 @@ class TBuiltIns : TBuiltInParseables {
   }
 
   override void initialize(
-    TBuiltInResource resources, int version_, glslang_profile_t,
-    in SpvVersion spvVersion, EShLanguage
+    int version_, glslang_profile_t, in SpvVersion spvVersion, EShLanguage
   ) {
     throw new Exception("unimplemented");
   }

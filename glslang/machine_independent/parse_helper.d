@@ -29,7 +29,6 @@ class TParseContextBase : TParseVersions {
     const bool parsingBuiltins;
     TScanContext scanContext;
     TPpContext ppContext;
-    TBuiltInResource resources;
     string sourceEntryPointName;
 
     TVariable globalUniformBlock;
@@ -38,8 +37,6 @@ class TParseContextBase : TParseVersions {
 
     uint atomicCounterBlockSet;
   }
-
-  ref TLimits limits() => resources.limits;
 
   this(
     TSymbolTable symbolTable, TIntermediate interm, bool parsingBuiltins, int version_,
