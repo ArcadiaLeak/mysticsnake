@@ -605,10 +605,6 @@ TSymbolTable
   [SourceCount]
   [EnumMembers!EShLanguage.length] SharedSymbolTables;
 
-class TSymbolTable {
-  
-}
-
 TBuiltInParseables CreateBuiltInParseables(
   TInfoSink infoSink, glslang_source_t source
 ) {
@@ -669,6 +665,8 @@ bool InitializeSymbolTable(
   auto scanContext = new TScanContext(parseContext);
   parseContext.setScanContext = scanContext;
   parseContext.setPpContext = ppContext;
+
+  symbolTable.push();
 
   return false;
 }
