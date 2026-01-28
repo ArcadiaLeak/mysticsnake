@@ -668,5 +668,13 @@ bool InitializeSymbolTable(
 
   symbolTable.push();
 
+  string[] builtInShaders;
+  builtInShaders ~= builtIns;
+
+  if (builtInShaders[0].length == 0)
+    return true;
+
+  auto input = new TInputScanner(builtInShaders);
+
   return false;
 }

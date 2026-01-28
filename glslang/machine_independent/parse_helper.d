@@ -29,7 +29,7 @@ class TParseContextBase : TParseVersions {
     const bool parsingBuiltins;
     TScanContext scanContext;
     TPpContext ppContext;
-    TBuiltInResourceRec resources;
+    TBuiltInResource resources;
     string sourceEntryPointName;
 
     TVariable globalUniformBlock;
