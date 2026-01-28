@@ -3,7 +3,7 @@ module glslang.machine_independent.parse_helper;
 import glslang;
 
 struct TPragma {
-  this(bool o, bool d) { optimize = o; debug_ = d; }
+  this(bool o, bool d) @safe { optimize = o; debug_ = d; }
   bool optimize;
   bool debug_;
   TPragmaTable pragmaTable;
@@ -39,12 +39,14 @@ class TParseContextBase : TParseVersions {
     uint atomicCounterBlockSet;
   }
 
+  ref TLimits limits() => resources.limits;
+
   this(
     TSymbolTable symbolTable, TIntermediate interm, bool parsingBuiltins, int version_,
     glslang_profile_t profile, in SpvVersion, EShLanguage language,
     TInfoSink infoSink, bool forwardCompatible, glslang_messages_t messages,
     string entryPoint = null
-  ) {
+  ) @safe {
     super(
       interm, version_, profile, spvVersion, language, infoSink,
       forwardCompatible, messages
@@ -64,9 +66,8 @@ class TParseContextBase : TParseVersions {
       sourceEntryPointName = entryPoint;
   }
 
-  ref TLimits limits() {
-    return resources.limits;
-  }
+  void setScanContext(TScanContext c) @safe { scanContext = c; }
+  void setPpContext(TPpContext c) @safe { ppContext = c; }
 }
 
 class TParseContext : TParseContextBase {
@@ -76,7 +77,7 @@ class TParseContext : TParseContextBase {
     EShLanguage language, TInfoSink, bool forwardCompatible,
     glslang_messages_t messages = glslang_messages_t.MSG_DEFAULT_BIT,
     string entryPoint = null
-  ) {
+  ) @safe {
     super(
       symbolTable, interm, parsingBuiltIns, version_, profile, spvVersion,
       language, infoSink, forwardCompatible, messages, entryPoint

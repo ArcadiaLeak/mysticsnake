@@ -23,11 +23,11 @@ struct TCall {
 }
 
 struct TProcesses {
-  void addProcess(string process) {
+  void addProcess(string process) @safe {
     processes ~= process;
   }
 
-  void addArgument(string arg) {
+  void addArgument(string arg) @safe {
     processes.back ~= " ";
     processes.back ~= arg;
   }
@@ -51,7 +51,7 @@ class TIntermediate {
     int version_;
     SpvVersion spvVersion;
     bool useStorageBuffer;
-    
+
     glslang_source_t source;
 
     bool originUpperLeft;
@@ -64,11 +64,11 @@ class TIntermediate {
   this(
     EShLanguage l, int v = 0,
     glslang_profile_t p = glslang_profile_t.NO_PROFILE
-  ) {
+  ) @safe {
     language = l;
   }
 
-  void setSource(glslang_source_t s) { source = s; }
+  void setSource(glslang_source_t s) @safe { source = s; }
   glslang_source_t getSource() const { return source; }
 
   void setVersion(int v) { version_ = v; }
@@ -86,13 +86,13 @@ class TIntermediate {
   void setOriginUpperLeft() { originUpperLeft = true; }
   bool getOriginUpperLeft() const { return originUpperLeft; }
 
-  void setEntryPointName(string ep) {
+  void setEntryPointName(string ep) @safe {
     entryPointName = ep;
     processes.addProcess("entry-point");
     processes.addArgument(entryPointName);
   }
 
-  void setUseStorageBuffer() { useStorageBuffer = true; }
+  void setUseStorageBuffer() @safe { useStorageBuffer = true; }
 
   void setSpv(in SpvVersion s) {
     spvVersion = s;

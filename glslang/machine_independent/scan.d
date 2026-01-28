@@ -243,7 +243,7 @@ class TInputScanner {
   }
 
   int takeFront() {
-    scope (exit) popFront;
+    scope(exit) popFront;
     return front;
   }
 

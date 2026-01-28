@@ -31,6 +31,10 @@ struct TEnvironment {
 }
 
 class TShader {
+  static class Includer {}
+
+  static class ForbidIncluder : Includer {}
+
   protected {
     string[] strings;
     string[] stringNames;
@@ -170,7 +174,7 @@ bool ProcessDeferred(ProcessingContext)(
   EShLanguage stage = compiler.getLanguage;
   TranslateEnvironment(environment, messages, source, stage, spvVersion);
 
-  scope userInput = new TInputScanner(strings.drop(numPre));
+  auto userInput = new TInputScanner(strings.drop(numPre));
   int version_ = 0;
   glslang_profile_t profile = glslang_profile_t.NO_PROFILE;
   bool versionNotFirstToken = false;
@@ -459,7 +463,7 @@ bool SetupBuiltinSymbolTable(
   in SpvVersion spvVersion,
   glslang_source_t source
 ) {
-  scope infoSink = new TInfoSink;
+  auto infoSink = new TInfoSink;
   bool success;
 
   int versionIndex = MapVersionToIndex(version_);
@@ -616,13 +620,14 @@ TParseContextBase CreateParseContext(
   glslang_profile_t profile, glslang_source_t source, EShLanguage language,
   TInfoSink infoSink, in SpvVersion spvVersion, bool forwardCompatible,
   glslang_messages_t messages, bool parsingBuiltIns, string sourceEntryPointName = ""
-) {
+) @safe {
   if (sourceEntryPointName.length == 0)
     intermediate.setEntryPointName = "main";
-  return new TParseContext(
+  auto parseContext = new TParseContext(
     symbolTable, intermediate, parsingBuiltIns, version_, profile, spvVersion,
     language, infoSink, forwardCompatible, messages, sourceEntryPointName
   );
+  return parseContext;
 }
 
 bool InitializeSymbolTables(
@@ -631,8 +636,7 @@ bool InitializeSymbolTables(
   in SpvVersion spvVersion, glslang_source_t source
 ) {
   bool success = true;
-  scope builtInParseables = CreateBuiltInParseables(
-    infoSink, source);
+  auto builtInParseables = CreateBuiltInParseables(infoSink, source);
 
   if (builtInParseables is null) return false;
 
@@ -650,10 +654,21 @@ bool InitializeSymbolTables(
 bool InitializeSymbolTable(
   string builtIns, int version_, glslang_profile_t profile,
   in SpvVersion spvVersion, EShLanguage language, glslang_source_t source,
-  TInfoSink infoSink, TSymbolTable symbolTables
-) {
-  scope intermediate = new TIntermediate(language, version_, profile);
+  TInfoSink infoSink, TSymbolTable symbolTable
+) @safe {
+  auto intermediate = new TIntermediate(language, version_, profile);
   intermediate.setSource = source;
+
+  auto parseContext = CreateParseContext(
+    symbolTable, intermediate, version_, profile, source, language,
+    infoSink, spvVersion, true, glslang_messages_t.MSG_DEFAULT_BIT, true
+  );
+
+  auto includer = new TShader.ForbidIncluder();
+  auto ppContext = new TPpContext(parseContext, "", includer);
+  auto scanContext = new TScanContext(parseContext);
+  parseContext.setScanContext = scanContext;
+  parseContext.setPpContext = ppContext;
 
   return false;
 }
