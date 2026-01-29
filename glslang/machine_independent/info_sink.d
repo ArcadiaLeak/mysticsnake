@@ -1,5 +1,9 @@
 module glslang.machine_independent.info_sink;
 
+import glslang;
+
+import std.format;
+
 enum TPrefixType {
   EPrefixNone,
   EPrefixWarning,
@@ -12,6 +16,7 @@ enum TPrefixType {
 struct TInfoSinkBase {
   protected {
     string sink;
+    string shaderFileName;
   }
 
   void append(string s) {
@@ -44,6 +49,18 @@ struct TInfoSinkBase {
         append("NOTE: ");
         break;
     }
+  }
+
+  void location(in TSourceLoc loc, bool absolute = false, bool displayColumn = false) {
+    string locText = loc.name;
+    if (displayColumn) {
+      locText ~= format(":%d:%d", loc.line, loc.column);
+    } else {
+      locText ~= format(":%d", loc.line);
+    }
+
+    append(locText);
+    append(": ");
   }
 }
 
