@@ -3,6 +3,21 @@ module glslang.machine_independent.preprocessor.pp_context;
 import glslang;
 
 class TPpContext {
+  static class tInput {
+    protected {
+      bool done;
+      TPpContext pp;
+    }
+
+    this(TPpContext p) { done = false; pp = p; }
+  }
+
+  static class tStringInput : tInput {
+    protected TInputScanner input;
+
+    this(TPpContext pp, TInputScanner i) { super(pp); input = i; }
+  }
+
   protected {
     string preamble;
     string[] strings;
