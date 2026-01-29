@@ -78,4 +78,8 @@ class TParseContextBase : TParseVersions {
       ++numErrors;
     }
   }
+
+  void warn(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo) {
+    return outputMessage(loc, szReason, szToken, szExtraInfo, TPrefixType.EPrefixWarning);
+  }
 }
