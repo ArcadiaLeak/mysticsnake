@@ -29,6 +29,13 @@ struct TInfoSinkBase {
     append("\n");
   }
 
+  void message(TPrefixType msg, string s, in TSourceLoc loc, bool displayColumn = false) {
+    prefix(msg);
+    location(loc, displayColumn);
+    append(s);
+    append("\n");
+  }
+
   void prefix(TPrefixType message) {
     final switch (message) {
       case TPrefixType.EPrefixNone:

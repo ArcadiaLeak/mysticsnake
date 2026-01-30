@@ -247,6 +247,11 @@ class TInputScanner {
     return front;
   }
 
+  void setEndOfInput() {
+    endOfFileReached = true;
+    currentSource = cast(int) sources.length;
+  }
+
   void refuseFront() {
     if (endOfFileReached) return;
 

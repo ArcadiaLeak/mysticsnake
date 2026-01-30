@@ -82,4 +82,15 @@ class TParseContextBase : TParseVersions {
   void warn(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo) {
     return outputMessage(loc, szReason, szToken, szExtraInfo, TPrefixType.EPrefixWarning);
   }
+
+  override void error(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo) {
+    if (messages & glslang_messages_t.MSG_ONLY_PREPROCESSOR_BIT)
+      return;
+    if (messages & glslang_messages_t.MSG_ENHANCED && numErrors > 0)
+      return;
+    return outputMessage(loc, szReason, szToken, szExtraInfo, TPrefixType.EPrefixError);
+
+    if ((messages & glslang_messages_t.MSG_CASCADING_ERRORS_BIT) == 0)
+      currentScanner.setEndOfInput;
+  }
 }
