@@ -47,6 +47,37 @@ class TPpContext {
 
       return ch;
     }
+
+    int scan(TPpToken ppToken) {
+      int AlreadyComplained = 0;
+      int len = 0;
+      int ch = 0;
+      int ii = 0;
+      ulong ival = 0;
+
+      bool floatingPointChar(int ch) {
+        return ch == '.' || ch == 'e' || ch == 'E' ||
+          ch == 'f' || ch == 'F' ||
+          ch == 'h' || ch == 'H';
+      }
+
+      static immutable string[] Int64_Extensions = [
+        E_GL_ARB_gpu_shader_int64,
+        E_GL_EXT_shader_explicit_arithmetic_types,
+        E_GL_NV_gpu_shader5,
+        E_GL_EXT_shader_explicit_arithmetic_types_int64
+      ];
+
+      static immutable string[] Int16_Extensions = [
+        E_GL_AMD_gpu_shader_int16,
+        E_GL_EXT_shader_explicit_arithmetic_types,
+        E_GL_EXT_shader_explicit_arithmetic_types_int16
+      ];
+
+      ppToken.clear();
+
+      return 0;
+    }
   }
 
   protected {
@@ -85,5 +116,25 @@ class TPpContext {
     for (elsetracker = 0; elsetracker < maxIfNesting; elsetracker++)
       elseSeen[elsetracker] = false;
     elsetracker = 0;
+  }
+}
+
+class TPpToken {
+  string name;
+  union {
+    int val;
+    double dval;
+    long i64val;
+  }
+  bool space;
+  bool fullyExpanded;
+  TSourceLoc loc;
+
+  void clear() {
+    space = false;
+    i64val = 0;
+    loc.init();
+    name = "";
+    fullyExpanded = false;
   }
 }

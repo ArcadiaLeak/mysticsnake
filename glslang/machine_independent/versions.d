@@ -74,6 +74,62 @@ enum string E_GL_EXT_shader_image_load_formatted = "GL_EXT_shader_image_load_for
 enum string E_GL_EXT_shader_16bit_storage = "GL_EXT_shader_16bit_storage";
 enum string E_GL_EXT_shader_8bit_storage = "GL_EXT_shader_8bit_storage";
 
+enum string E_GL_EXT_shader_explicit_arithmetic_types = "GL_EXT_shader_explicit_arithmetic_types";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_int8 = "GL_EXT_shader_explicit_arithmetic_types_int8";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_int16 = "GL_EXT_shader_explicit_arithmetic_types_int16";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_int32 = "GL_EXT_shader_explicit_arithmetic_types_int32";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_int64 = "GL_EXT_shader_explicit_arithmetic_types_int64";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_float16 = "GL_EXT_shader_explicit_arithmetic_types_float16";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_float32 = "GL_EXT_shader_explicit_arithmetic_types_float32";
+enum string E_GL_EXT_shader_explicit_arithmetic_types_float64 = "GL_EXT_shader_explicit_arithmetic_types_float64";
+
+enum string E_GL_GOOGLE_cpp_style_line_directive = "GL_GOOGLE_cpp_style_line_directive";
+enum string E_GL_GOOGLE_include_directive = "GL_GOOGLE_include_directive";
+enum string E_GL_ARB_shading_language_include = "GL_ARB_shading_language_include";
+
+enum string E_GL_AMD_shader_ballot = "GL_AMD_shader_ballot";
+enum string E_GL_AMD_shader_trinary_minmax = "GL_AMD_shader_trinary_minmax";
+enum string E_GL_AMD_shader_explicit_vertex_parameter = "GL_AMD_shader_explicit_vertex_parameter";
+enum string E_GL_AMD_gcn_shader = "GL_AMD_gcn_shader";
+enum string E_GL_AMD_gpu_shader_half_float = "GL_AMD_gpu_shader_half_float";
+enum string E_GL_AMD_texture_gather_bias_lod = "GL_AMD_texture_gather_bias_lod";
+enum string E_GL_AMD_gpu_shader_int16 = "GL_AMD_gpu_shader_int16";
+enum string E_GL_AMD_shader_image_load_store_lod = "GL_AMD_shader_image_load_store_lod";
+enum string E_GL_AMD_shader_fragment_mask = "GL_AMD_shader_fragment_mask";
+enum string E_GL_AMD_gpu_shader_half_float_fetch = "GL_AMD_gpu_shader_half_float_fetch";
+enum string E_GL_AMD_shader_early_and_late_fragment_tests = "GL_AMD_shader_early_and_late_fragment_tests";
+
+enum string E_GL_INTEL_shader_integer_functions2 = "GL_INTEL_shader_integer_functions2";
+
+enum string E_GL_NV_sample_mask_override_coverage = "GL_NV_sample_mask_override_coverage";
+enum string E_SPV_NV_geometry_shader_passthrough = "GL_NV_geometry_shader_passthrough";
+enum string E_GL_NV_viewport_array2 = "GL_NV_viewport_array2";
+enum string E_GL_NV_stereo_view_rendering = "GL_NV_stereo_view_rendering";
+enum string E_GL_NVX_multiview_per_view_attributes = "GL_NVX_multiview_per_view_attributes";
+enum string E_GL_NV_shader_atomic_int64 = "GL_NV_shader_atomic_int64";
+enum string E_GL_NV_conservative_raster_underestimation = "GL_NV_conservative_raster_underestimation";
+enum string E_GL_NV_shader_noperspective_interpolation = "GL_NV_shader_noperspective_interpolation";
+enum string E_GL_NV_shader_subgroup_partitioned = "GL_NV_shader_subgroup_partitioned";
+enum string E_GL_NV_shading_rate_image = "GL_NV_shading_rate_image";
+enum string E_GL_NV_ray_tracing = "GL_NV_ray_tracing";
+enum string E_GL_NV_ray_tracing_motion_blur = "GL_NV_ray_tracing_motion_blur";
+enum string E_GL_NV_fragment_shader_barycentric = "GL_NV_fragment_shader_barycentric";
+enum string E_GL_NV_compute_shader_derivatives = "GL_NV_compute_shader_derivatives";
+enum string E_GL_NV_shader_texture_footprint = "GL_NV_shader_texture_footprint";
+enum string E_GL_NV_mesh_shader = "GL_NV_mesh_shader";
+enum string E_GL_NV_cooperative_matrix = "GL_NV_cooperative_matrix";
+enum string E_GL_NV_shader_sm_builtins = "GL_NV_shader_sm_builtins";
+enum string E_GL_NV_integer_cooperative_matrix = "GL_NV_integer_cooperative_matrix";
+enum string E_GL_NV_shader_invocation_reorder = "GL_NV_shader_invocation_reorder";
+enum string E_GL_EXT_ray_tracing_position_fetch = "GL_EXT_ray_tracing_position_fetch";
+enum string E_GL_NV_displacement_micromap = "GL_NV_displacement_micromap";
+enum string E_GL_NV_shader_atomic_fp16_vector = "GL_NV_shader_atomic_fp16_vector";
+enum string E_GL_NV_cooperative_matrix2 = "GL_NV_cooperative_matrix2";
+enum string E_GL_NV_cooperative_vector = "GL_NV_cooperative_vector";
+enum string E_GL_NV_cluster_acceleration_structure = "GL_NV_cluster_acceleration_structure";
+enum string E_GL_NV_linear_swept_spheres = "GL_NV_linear_swept_spheres";
+enum string E_GL_NV_gpu_shader5 = "GL_NV_gpu_shader5";
+
 enum TExtensionBehavior {
   EBhMissing = 0,
   EBhRequire,
