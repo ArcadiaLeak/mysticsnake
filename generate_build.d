@@ -6,20 +6,21 @@ import std.conv;
 import std.file;
 import std.stdio : writeln;
 
+string fromFilepaths(Range)(string libname, Range filepaths) {
+  return i"artifacts/libmysticsnake_$(libname).a: $(filepaths.join(" "))\n".text ~
+    "\t" ~ "dmd -of=$@ -debug $^ -lib -dip1000";
+}
+
 void main() {
+  string Makefile;
 
-string glslangSources = "glslang"
-	.dirEntries("*.d", SpanMode.breadth, false)
-	.map!(e => e.name)
-	.join(" ");
+  foreach (libname; ["glslang"]) {
+    auto filepaths = libname
+      .dirEntries("*.d", SpanMode.breadth, false)
+      .map!(e => e.name);
 
-string Makefile = i`
+    Makefile ~= fromFilepaths(libname, filepaths);
+  }
 
-artifacts/libmysticsnake_glslang.a: $(glslangSources)
-	dmd -of=$@ -debug $^ -lib -dip1000
-
-`.text;
-
-write("Makefile", Makefile);
-
+  write("Makefile", Makefile);
 }
