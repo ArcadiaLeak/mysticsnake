@@ -108,7 +108,7 @@ class TPpContext {
                 ch = getch();
               } else {
                 if (!AlreadyComplained) {
-                  pp.parseContext.ppError(ppToken.loc, "name too long", "", "");
+                  // pp.parseContext.ppError(ppToken.loc, "name too long", "", "");
                   AlreadyComplained = 1;
                 }
                 ch = getch();
@@ -123,8 +123,32 @@ class TPpContext {
             if (len == 0) continue;
 
             ppToken.name[len] = '\0';
-            ungetch();
+            // ungetch();
             return EFixedAtoms.PpAtomIdentifier;
+          case '0':
+            ppToken.name[len++] = cast(char) ch;
+            ch = getch();
+            if (ch == 'x' || ch == 'X') {
+              bool isUnsigned = false;
+              bool isInt64 = false;
+              bool isInt16 = false;
+              ppToken.name[len++] = cast(char) ch;
+              ch = getch();
+              if (
+                (ch >= '0' && ch <= '9') ||
+                (ch >= 'A' && ch <= 'F') ||
+                (ch >= 'a' && ch <= 'f')
+              ) {
+                ival = 0;
+                do {
+                  
+                } while (
+                  (ch >= '0' && ch <= '9') ||
+                  (ch >= 'A' && ch <= 'F') ||
+                  (ch >= 'a' && ch <= 'f')
+                );
+              }
+            }
         }
 
         ch = getch();
@@ -172,7 +196,7 @@ class TPpContext {
 }
 
 class TPpToken {
-  string name;
+  char[MaxTokenLength + 1] name;
   union {
     int val;
     double dval;
@@ -186,7 +210,7 @@ class TPpToken {
     space = false;
     i64val = 0;
     loc.init();
-    name = "";
+    name[0] = 0;
     fullyExpanded = false;
   }
 }

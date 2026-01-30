@@ -2,6 +2,8 @@ module glslang.machine_independent.parse_context_base;
 
 import glslang;
 
+import std.format;
+
 struct TPragma {
   this(bool o, bool d) @safe { optimize = o; debug_ = d; }
   bool optimize;
@@ -66,10 +68,15 @@ class TParseContextBase : TParseVersions {
   void setScanContext(TScanContext c) @safe { scanContext = c; }
   void setPpContext(TPpContext c) @safe { ppContext = c; }
 
-  void outputMessage(
+  void outputMessage(Args...)(
     in TSourceLoc loc, string szReason, string szToken,
-    string szExtraInfo, TPrefixType prefix
+    string szExtraInfoFormat, TPrefixType prefix, Args args
   ) {
+    enum int maxSize = MaxTokenLength + 200;
+    char[maxSize] szExtraInfo;
+
+    sformat(szExtraInfo, szExtraInfoFormat, args);
+
     infoSink.info.prefix = prefix;
     infoSink.info.location(loc, cast(bool) (glslang_messages_t.MSG_DISPLAY_ERROR_COLUMN));
     infoSink.info.append = "'" ~ szToken ~ "' : " ~ szReason ~ " " ~ szExtraInfo ~ "\n";
@@ -79,16 +86,29 @@ class TParseContextBase : TParseVersions {
     }
   }
 
-  void warn(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo) {
-    return outputMessage(loc, szReason, szToken, szExtraInfo, TPrefixType.EPrefixWarning);
+  override void warn(
+    in TSourceLoc loc, string szReason,
+    string szToken, string szExtraInfo
+  ) {
+    return outputMessage(
+      loc, szReason, szToken, szExtraInfo,
+      TPrefixType.EPrefixWarning
+    );
   }
 
-  override void error(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo) {
+  override void error(
+    in TSourceLoc loc, string szReason,
+    string szToken, string szExtraInfo
+  ) {
     if (messages & glslang_messages_t.MSG_ONLY_PREPROCESSOR_BIT)
       return;
     if (messages & glslang_messages_t.MSG_ENHANCED && numErrors > 0)
       return;
-    return outputMessage(loc, szReason, szToken, szExtraInfo, TPrefixType.EPrefixError);
+
+    outputMessage(
+      loc, szReason, szToken, szExtraInfo,
+      TPrefixType.EPrefixError
+    );
 
     if ((messages & glslang_messages_t.MSG_CASCADING_ERRORS_BIT) == 0)
       currentScanner.setEndOfInput;

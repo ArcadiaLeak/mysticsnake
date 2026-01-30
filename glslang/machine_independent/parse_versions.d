@@ -68,12 +68,24 @@ class TParseVersions {
     in TSourceLoc loc, int profileMask, int minVersion, string extension,
     string featureDesc
   ) {
-    profileRequires(loc, profileMask, minVersion, extension ? [extension] : null, featureDesc);
+    profileRequires(
+      loc, profileMask, minVersion,
+      extension ? [extension] : null, featureDesc
+    );
   }
 
-  ref const(TSourceLoc) getCurrentLoc() const { return currentScanner.getSourceLoc(); }
+  ref const(TSourceLoc) getCurrentLoc() const =>
+    currentScanner.getSourceLoc();
 
-  abstract void error(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo);
+  abstract void warn(
+    in TSourceLoc loc, string szReason,
+    string szToken, string szExtraInfo
+  );
+
+  abstract void error(
+    in TSourceLoc loc, string szReason,
+    string szToken, string szExtraInfo
+  );
 
   void profileRequires(
     in TSourceLoc loc, int profileMask, int minVersion, string[] extensions,
@@ -99,7 +111,8 @@ class TParseVersions {
         }
       }
       if (!okay)
-        error(loc, "not supported for this version or the enabled extensions", featureDesc, "");
+        error(loc, "not supported for this version or the enabled extensions",
+          featureDesc, "");
     }
   }
 }

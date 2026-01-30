@@ -19,7 +19,7 @@ struct TInfoSinkBase {
     string shaderFileName;
   }
 
-  void append(string s) {
+  void append(const(char[]) s) {
     sink ~= s;
   }
 

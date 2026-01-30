@@ -1,5 +1,7 @@
 module glslang.include.common;
 
+enum int MaxTokenLength = 1024;
+
 struct TSourceLoc {
   string name;
   int string_;
