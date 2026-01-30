@@ -3,6 +3,7 @@ module glslang.machine_independent.scan;
 import glslang;
 
 import core.stdc.string;
+import std.algorithm.comparison;
 
 enum int EndOfInput = -1;
 
@@ -245,6 +246,14 @@ class TInputScanner {
   int takeFront() {
     scope(exit) popFront;
     return front;
+  }
+
+  ref const(TSourceLoc) getSourceLoc() const {
+    if (singleLogical) {
+      return logicalSourceLoc;
+    } else {
+      return loc[max(0, min(currentSource, sources.length - finale - 1))];
+    }
   }
 
   void setEndOfInput() {

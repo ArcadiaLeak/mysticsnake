@@ -93,4 +93,6 @@ class TParseContextBase : TParseVersions {
     if ((messages & glslang_messages_t.MSG_CASCADING_ERRORS_BIT) == 0)
       currentScanner.setEndOfInput;
   }
+
+  abstract bool lineContinuationCheck(in TSourceLoc, bool endOfComment);
 }

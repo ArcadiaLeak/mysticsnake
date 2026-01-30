@@ -16,7 +16,7 @@ class TParseContext : TParseContextBase {
     );
   }
 
-  bool lineContinuationCheck(in TSourceLoc loc, bool endOfComment) {
+  override bool lineContinuationCheck(in TSourceLoc loc, bool endOfComment) {
     string message = "line continuation";
 
     bool lineContinuationAllowed = (isEsProfile && version_ >= 300) ||

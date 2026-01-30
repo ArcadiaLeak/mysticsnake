@@ -16,6 +16,37 @@ class TPpContext {
     protected TInputScanner input;
 
     this(TPpContext pp, TInputScanner i) { super(pp); input = i; }
+
+    int getch() {
+      int ch = input.takeFront;
+
+      if (ch == '\\') {
+        do {
+          if (input.front == '\r' || input.front == '\n') {
+            bool allowed = pp.parseContext.lineContinuationCheck(
+              input.getSourceLoc, pp.inComment);
+            if (!allowed && pp.inComment)
+              return '\\';
+            
+            ch = input.front;
+            int nextch = input.front;
+            if (ch == '\r' && nextch == '\n')
+              ch = input.front;
+            else
+              ch = nextch;
+          } else
+            return '\\';
+        } while (ch == '\\');
+      }
+
+      if (ch == '\r' || ch == '\n') {
+        if (ch == '\r' && input.front == '\n')
+          return input.front;
+        return '\n';
+      }
+
+      return ch;
+    }
   }
 
   protected {
