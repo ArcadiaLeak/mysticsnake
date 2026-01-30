@@ -75,8 +75,60 @@ class TPpContext {
       ];
 
       ppToken.clear();
+      ch = getch();
+      while (true) {
+        while (ch == ' ' || ch == '\t') {
+          ppToken.space = true;
+          ch = getch();
+        }
 
-      return 0;
+        ppToken.loc = pp.parseContext.getCurrentLoc;
+        len = 0;
+        switch (ch) {
+          default:
+            if (ch > EFixedAtoms.PpAtomMaxSingle)
+              ch = EFixedAtoms.PpAtomBadToken;
+            return ch;
+
+          case 'A': case 'B': case 'C': case 'D': case 'E':
+          case 'F': case 'G': case 'H': case 'I': case 'J':
+          case 'K': case 'L': case 'M': case 'N': case 'O':
+          case 'P': case 'Q': case 'R': case 'S': case 'T':
+          case 'U': case 'V': case 'W': case 'X': case 'Y':
+          case 'Z': case '_':
+          case 'a': case 'b': case 'c': case 'd': case 'e':
+          case 'f': case 'g': case 'h': case 'i': case 'j':
+          case 'k': case 'l': case 'm': case 'n': case 'o':
+          case 'p': case 'q': case 'r': case 's': case 't':
+          case 'u': case 'v': case 'w': case 'x': case 'y':
+          case 'z':
+            do {
+              if (len < MaxTokenLength) {
+                ppToken.name[len++] = cast(char) ch;
+                ch = getch();
+              } else {
+                if (!AlreadyComplained) {
+                  pp.parseContext.ppError(ppToken.loc, "name too long", "", "");
+                  AlreadyComplained = 1;
+                }
+                ch = getch();
+              }
+            } while (
+              (ch >= 'a' && ch <= 'z') ||
+              (ch >= 'A' && ch <= 'Z') ||
+              (ch >= '0' && ch <= '9') ||
+              ch == '_'
+            );
+
+            if (len == 0) continue;
+
+            ppToken.name[len] = '\0';
+            ungetch();
+            return EFixedAtoms.PpAtomIdentifier;
+        }
+
+        ch = getch();
+      }
     }
   }
 

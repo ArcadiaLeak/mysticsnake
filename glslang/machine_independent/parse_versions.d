@@ -71,6 +71,8 @@ class TParseVersions {
     profileRequires(loc, profileMask, minVersion, extension ? [extension] : null, featureDesc);
   }
 
+  ref const(TSourceLoc) getCurrentLoc() const { return currentScanner.getSourceLoc(); }
+
   abstract void error(in TSourceLoc loc, string szReason, string szToken, string szExtraInfo);
 
   void profileRequires(
