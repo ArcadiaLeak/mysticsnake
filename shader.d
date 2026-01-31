@@ -55,7 +55,7 @@ const(uint[]) compileGLSLtoSPIRV(
     throw new Exception("ShaderCompiler not initialized. Call Initialize() first.");
   }
   
-  glslang_stage_t glslangStage = vertexShader ? GLSLANG_STAGE_VERTEX : GLSLANG_STAGE_FRAGMENT;
+  EShLanguage glslangStage = vertexShader ? GLSLANG_STAGE_VERTEX : GLSLANG_STAGE_FRAGMENT;
   glslang_resource_t* default_resource = glslang_default_resource();
 
   glslang_input_t input = glslang_input_t();

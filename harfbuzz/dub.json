@@ -1,7 +1,0 @@
-{
-  "name": "harfbuzz",
-  "targetType": "library",
-  "dependencies": {
-    "mysticsnake:freetype": "*"
-  }
-}
