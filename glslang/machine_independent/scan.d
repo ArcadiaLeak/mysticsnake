@@ -65,53 +65,55 @@ class TInputScanner {
     do {
       if (lookingInMiddle) {
         notFirstToken = true;
-        if (front != '\n' && front != '\r') {
-          do c = takeFront; while (
+        if (peek != '\n' && peek != '\r') {
+          do c = get; while (
             c != EndOfInput &&
             c != '\n' &&
             c != '\r'
           );
         }
-        while (front == '\n' || front == '\r') popFront;
-        if (front == EndOfInput) return true;
+        while (peek == '\n' || peek == '\r')
+          get;
+        if (peek == EndOfInput)
+          return true;
       }
       lookingInMiddle = true;
 
       consumeWhitespaceComment(foundNonSpaceTab);
       if (foundNonSpaceTab) versionNotFirst = true;
 
-      if (takeFront != '#') {
+      if (get != '#') {
         versionNotFirst = true;
         continue;
       }
 
-      do c = takeFront; while (c == ' ' || c == '\t');
+      do c = get; while (c == ' ' || c == '\t');
 
       if (
         c != 'v' ||
-        takeFront != 'e' ||
-        takeFront != 'r' ||
-        takeFront != 's' ||
-        takeFront != 'i' ||
-        takeFront != 'o' ||
-        takeFront != 'n'
+        get != 'e' ||
+        get != 'r' ||
+        get != 's' ||
+        get != 'i' ||
+        get != 'o' ||
+        get != 'n'
       ) {
         versionNotFirst = true;
         continue;
       }
 
-      do c = takeFront; while (c == ' ' || c == '\t');
+      do c = get; while (c == ' ' || c == '\t');
 
       while (c >= '0' && c <= '9') {
         version_ = 10 * version_ + (c - '0');
-        c = takeFront;
+        c = get;
       }
       if (version_ == 0) {
         versionNotFirst = true;
         continue;
       }
 
-      while (c == ' ' || c == '\t') c = takeFront;
+      while (c == ' ' || c == '\t') c = get;
 
       const int maxProfileLength = 13;
       char[maxProfileLength] profileString;
@@ -120,7 +122,7 @@ class TInputScanner {
         if (c == EndOfInput || c == ' ' || c == '\t' || c == '\n' || c == '\r')
           break;
         profileString[profileLength] = cast(char) c;
-        c = takeFront;
+        c = get;
       }
       if (c != EndOfInput && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
         versionNotFirst = true;
@@ -142,74 +144,73 @@ class TInputScanner {
     do {
       consumeWhiteSpace(foundNonSpaceTab);
 
-      int c = front;
-      if (c != '/' || c == EndOfInput) return;
+      int c = peek;
+      if (c != '/' || c == EndOfInput)
+        return;
 
       foundNonSpaceTab = true;
-      if (!consumeComment) return;
+      if (!consumeComment)
+        return;
     } while (true);
   }
 
   void consumeWhiteSpace(out bool foundNonSpaceTab) {
-    int c = front;
+    int c = peek;
     while (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
       if (c == '\r' || c == '\n') foundNonSpaceTab = true;
-      popFront;
-      c = front;
+      get;
+      c = peek;
     }
   }
 
   bool consumeComment() {
-    if (front != '/') return false;
+    if (peek != '/') return false;
 
-    popFront;
-    int c = front;
+    get;
+    int c = peek;
     if (c == '/') {
-      popFront;
-      c = takeFront;
+      get;
+      c = get;
       do {
         while (c != EndOfInput && c != '\\' && c != '\r' && c != '\n')
-          c = takeFront;
+          c = get;
 
         if (c == EndOfInput || c == '\r' || c == '\n') {
-          while (c == '\r' || c == '\n') c = takeFront;
+          while (c == '\r' || c == '\n') c = get;
 
           break;
         } else {
-          c = takeFront;
+          c = get;
 
-          if (c == '\r' && front == '\n') popFront;
-          c = takeFront;
+          if (c == '\r' && peek == '\n')
+            get;
+          c = get;
         }
       } while (true);
 
-      if (c != EndOfInput) refuseFront;
+      if (c != EndOfInput) unget;
 
       return true;
     } else if (c == '*') {
-      popFront;
-      c = takeFront;
+      get;
+      c = get;
       do {
-        while (c != EndOfInput && c != '*') c = takeFront;
+        while (c != EndOfInput && c != '*') c = get;
         if (c == '*') {
-          c = takeFront;
+          c = get;
           if (c == '/') break;
         } else break;
       } while (true);
     
       return true;
     } else {
-      refuseFront;
+      unget;
 
       return false;
     }
   }
 
-  bool empty() {
-    return front == EndOfInput;
-  }
-
-  int front() {
+  int peek() {
     if (currentSource >= sources.length) {
       endOfFileReached = true;
       return EndOfInput;
@@ -228,24 +229,22 @@ class TInputScanner {
     return sources[sourceToRead][charToRead];
   }
 
-  void popFront() {
-    int head = front;
-    if (head == EndOfInput) return;
+  int get() {
+    int ret = peek;
+    if (ret == EndOfInput)
+      return ret;
 
     ++loc[currentSource].column;
     ++logicalSourceLoc.column;
-    if (head == '\n') {
+    if (ret == '\n') {
       ++loc[currentSource].line;
       ++logicalSourceLoc.line;
       logicalSourceLoc.column = 0;
       loc[currentSource].column = 0;
     }
     advance();
-  }
 
-  int takeFront() {
-    scope(exit) popFront;
-    return front;
+    return ret;
   }
 
   ref const(TSourceLoc) getSourceLoc() const {
@@ -261,7 +260,7 @@ class TInputScanner {
     currentSource = cast(int) sources.length;
   }
 
-  void refuseFront() {
+  void unget() {
     if (endOfFileReached) return;
 
     if (currentChar > 0) {
@@ -288,7 +287,7 @@ class TInputScanner {
       else
         currentChar = sources[currentSource].length - 1;
     }
-    if (front == '\n') {
+    if (peek == '\n') {
       --loc[currentSource].line;
       --logicalSourceLoc.line;
     }
