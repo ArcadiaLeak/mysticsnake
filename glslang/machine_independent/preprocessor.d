@@ -1,6 +1,85 @@
-module glslang.machine_independent.preprocessor.pp_context;
+module glslang.machine_independent.preprocessor;
 
 import glslang;
+
+enum EFixedAtoms {
+  PpAtomMaxSingle = 127,
+
+  PpAtomBadToken,
+
+  PPAtomAddAssign,
+  PPAtomSubAssign,
+  PPAtomMulAssign,
+  PPAtomDivAssign,
+  PPAtomModAssign,
+
+  PpAtomRight,
+  PpAtomLeft,
+
+  PpAtomRightAssign,
+  PpAtomLeftAssign,
+  PpAtomAndAssign,
+  PpAtomOrAssign,
+  PpAtomXorAssign,
+
+  PpAtomAnd,
+  PpAtomOr,
+  PpAtomXor,
+
+  PpAtomEQ,
+  PpAtomNE,
+  PpAtomGE,
+  PpAtomLE,
+
+  PpAtomDecrement,
+  PpAtomIncrement,
+
+  PpAtomColonColon,
+
+  PpAtomPaste,
+
+  PpAtomConstInt,
+  PpAtomConstUint,
+  PpAtomConstInt64,
+  PpAtomConstUint64,
+  PpAtomConstInt16,
+  PpAtomConstUint16,
+  PpAtomConstFloat,
+  PpAtomConstDouble,
+  PpAtomConstFloat16,
+  PpAtomConstString,
+
+  PpAtomIdentifier,
+
+  PpAtomDefine,
+  PpAtomUndef,
+
+  PpAtomIf,
+  PpAtomIfdef,
+  PpAtomIfndef,
+  PpAtomElse,
+  PpAtomElif,
+  PpAtomEndif,
+
+  PpAtomLine,
+  PpAtomPragma,
+  PpAtomError,
+
+  PpAtomVersion,
+  PpAtomCore,
+  PpAtomCompatibility,
+  PpAtomEs,
+
+  PpAtomExtension,
+
+  PpAtomLineMacro,
+  PpAtomFileMacro,
+  PpAtomVersionMacro,
+
+  PpAtomInclude,
+
+  PpAtomLast,
+}
 
 class TPpContext {
   protected {
@@ -181,7 +260,7 @@ class tStringInput : tInput {
 
           if (len == 0) continue;
 
-          ppToken.name[len] = '\t';
+          ppToken.name[len] = '\0';
           // ungetch();
           return EFixedAtoms.PpAtomIdentifier;
         case '0':
