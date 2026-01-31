@@ -270,7 +270,7 @@ int scan(tStringInput self, TPpToken ppToken) {
             ch = self.getch();
           } else {
             if (!AlreadyComplained) {
-              // pp.parseContext.ppError(ppToken.loc, "name too long", "", "");
+              self.pp.parseContext.ppError(ppToken.loc, "name too long", "", "");
               AlreadyComplained = 1;
             }
             ch = self.getch();

@@ -114,5 +114,18 @@ class TParseContextBase : TParseVersions {
       currentScanner.setEndOfInput;
   }
 
+  void ppError(
+    in TSourceLoc loc, string szReason,
+    string szToken, string szExtraInfo
+  ) {
+    outputMessage(
+      loc, szReason, szToken, szExtraInfo,
+      TPrefixType.EPrefixError
+    );
+
+    if ((messages & glslang_messages_t.MSG_CASCADING_ERRORS_BIT) == 0)
+      currentScanner.setEndOfInput;
+  }
+
   abstract bool lineContinuationCheck(in TSourceLoc, bool endOfComment);
 }
