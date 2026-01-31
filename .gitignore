@@ -1,2 +1,3 @@
-/build/
-Makefile
+/mysticsnake
+*-test-library
+*.a

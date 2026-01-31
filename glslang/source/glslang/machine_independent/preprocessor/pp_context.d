@@ -181,7 +181,7 @@ class tStringInput : tInput {
 
           if (len == 0) continue;
 
-          ppToken.name[len] = '\t';
+          ppToken.name[len] = '\0';
           // ungetch();
           return EFixedAtoms.PpAtomIdentifier;
         case '0':
