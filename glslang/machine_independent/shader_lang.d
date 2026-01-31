@@ -498,7 +498,7 @@ cleanup:
   return false;
 }
 
-const int VersionCount = 17;
+enum int VersionCount = 17;
 
 int MapVersionToIndex(int version_) {
   int index = 0;
@@ -530,7 +530,7 @@ int MapVersionToIndex(int version_) {
   return index;
 }
 
-const int SpvVersionCount = 4;
+enum int SpvVersionCount = 4;
 
 int MapSpvVersionToIndex(in SpvVersion spvVersion) {
   int index = 0;
@@ -549,7 +549,7 @@ int MapSpvVersionToIndex(in SpvVersion spvVersion) {
   return index;
 }
 
-const int ProfileCount = 4;
+enum int ProfileCount = 4;
 
 int MapProfileToIndex(glslang_profile_t profile) {
   int index = 0;
@@ -567,7 +567,7 @@ int MapProfileToIndex(glslang_profile_t profile) {
   return index;
 }
 
-const int SourceCount = 2;
+enum int SourceCount = 2;
 
 int MapSourceToIndex(glslang_source_t source) {
   int index = 0;
