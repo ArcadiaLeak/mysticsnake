@@ -303,13 +303,16 @@ int scan(tStringInput self, TPpToken ppToken) {
           ) {
             ival = 0;
             do {
-              
+              //
             } while (
               (ch >= '0' && ch <= '9') ||
               (ch >= 'A' && ch <= 'F') ||
               (ch >= 'a' && ch <= 'f')
             );
+          } else {
+            //
           }
+          //
         }
     }
 
