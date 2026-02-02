@@ -49,47 +49,44 @@ class symbol_t {
   }
 }
 
-class symbol_list_t {
-  
+class symbol_list_t {}
+
+void symbols_new() {
+  acceptsymbol = symbol_get("$accept");
+  acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
+  acceptsymbol.content.number = nnterms++;
+
+  errtoken = symbol_get("YYerror");
+  errtoken.content.class_ = symbol_class_t.token_sym;
+  errtoken.content.number = ntokens++;
+
+  symbol_t errtoken_alias = symbol_get("error");
+  errtoken_alias.content.class_ = symbol_class_t.token_sym;
+  errtoken.make_alias(errtoken_alias);
+
+  undeftoken = symbol_get("YYUNDEF");
+  undeftoken.content.class_ = symbol_class_t.token_sym;
+  undeftoken.content.number = ntokens++;
+
+  symbol_t undeftoken_alias = symbol_get("$undefined");
+  undeftoken_alias.content.class_ = symbol_class_t.token_sym;
+  undeftoken.make_alias(undeftoken_alias);
 }
 
-class bison_t {
-  symbol_t acceptsymbol;
-  symbol_t errtoken;
-  symbol_t undeftoken;
-  
-  int nnterms = 0;
-  int ntokens = 1;
+symbol_t symbol_get(string key) =>
+  symbol_table.require(key, new symbol_t(key));
 
-  symbol_t[string] symbol_table;
+symbol_t acceptsymbol;
+symbol_t errtoken;
+symbol_t undeftoken;
 
-  this() {
-    symbols_new();
-  }
+symbol_list_t grammar;
 
-  void symbols_new() {
-    acceptsymbol = this.symbol_get("$accept");
-    acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
-    acceptsymbol.content.number = nnterms++;
+int nnterms = 0;
+int ntokens = 1;
 
-    errtoken = this.symbol_get("YYerror");
-    errtoken.content.class_ = symbol_class_t.token_sym;
-    errtoken.content.number = ntokens++;
+symbol_t[string] symbol_table;
 
-    symbol_t errtoken_alias = this.symbol_get("error");
-    errtoken_alias.content.class_ = symbol_class_t.token_sym;
-    errtoken.make_alias(errtoken_alias);
-
-    undeftoken = this.symbol_get("YYUNDEF");
-    undeftoken.content.class_ = symbol_class_t.token_sym;
-    undeftoken.content.number = ntokens++;
-
-    symbol_t undeftoken_alias = this.symbol_get("$undefined");
-    undeftoken_alias.content.class_ = symbol_class_t.token_sym;
-    undeftoken.make_alias(undeftoken_alias);
-  }
-
-  symbol_t symbol_get(string key) =>
-    symbol_table.require(key, new symbol_t(key));
+static this() {
+  symbols_new();
 }
-
