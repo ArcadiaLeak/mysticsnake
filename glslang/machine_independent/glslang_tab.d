@@ -27,13 +27,6 @@ class sym_content_t {
     class_ = symbol_class_t.unknown_sym;
     number = NUMBER_UNDEFINED;
   }
-
-  this(immutable symbol_t s, sym_content_arg_t sym_content_arg) immutable {
-    symbol = s;
-
-    class_ = sym_content_arg.class_;
-    number = sym_content_arg.number;
-  }
 }
 
 class symbol_t {
@@ -44,11 +37,6 @@ class symbol_t {
     this.tag = tag;
     this.content = new sym_content_t(this);
   }
-
-  this(string tag, sym_content_arg_t sym_content_arg) immutable {
-    this.tag = tag;
-    this.content = new immutable sym_content_t(this, sym_content_arg);
-  }
 }
 
 class symbol_list_t {
@@ -56,17 +44,19 @@ class symbol_list_t {
 }
 
 class reader_t {
-  immutable symbol_t acceptsymbol;
+  symbol_t acceptsymbol;
+  symbol_t errtoken;
 
   int nnterms = 0;
+  int ntokens = 1;
 
   this() {
-    acceptsymbol = new immutable symbol_t(
-      "$sccept",
-      sym_content_arg_t(
-        class_: symbol_class_t.nterm_sym,
-        number: nnterms++
-      )
-    );
+    acceptsymbol = new symbol_t("$accept");
+    acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
+    acceptsymbol.content.number = nnterms++;
+
+    errtoken = new symbol_t("YYerror");
+    errtoken.content.class_ = symbol_class_t.token_sym;
+    errtoken.content.number = ntokens++;
   }
 }
