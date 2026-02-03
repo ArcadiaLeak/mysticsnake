@@ -2879,16 +2879,488 @@ static this() {
   grammar_current_rule_symbol_append(symbol_get("statement_no_new_scope"));
   grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("for_init_statement"));
+  grammar_current_rule_symbol_append(symbol_get("expression_statement"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("for_init_statement"));
+  grammar_current_rule_symbol_append(symbol_get("declaration_statement"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("conditionopt"));
+  grammar_current_rule_symbol_append(symbol_get("condition"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("conditionopt"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("for_rest_statement"));
+  grammar_current_rule_symbol_append(symbol_get("conditionopt"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("for_rest_statement"));
+  grammar_current_rule_symbol_append(symbol_get("conditionopt"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("CONTINUE"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("BREAK"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("RETURN"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("RETURN"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("DISCARD"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("TERMINATE_INVOCATION"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("TERMINATE_RAY"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("jump_statement"));
+  grammar_current_rule_symbol_append(symbol_get("IGNORE_INTERSECTION"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("translation_unit"));
+  grammar_current_rule_symbol_append(symbol_get("external_declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("translation_unit"));
+  grammar_current_rule_symbol_append(symbol_get("translation_unit"));
+  grammar_current_rule_symbol_append(symbol_get("external_declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("external_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("function_definition"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("external_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("external_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_definition"));
+  grammar_current_rule_symbol_append(symbol_get("function_prototype"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_definition"));
+  grammar_current_rule_symbol_append(symbol_get("compound_statement_no_new_scope"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("attribute"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("attribute_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("attribute_list"));
+  grammar_current_rule_symbol_append(symbol_get("single_attribute"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("attribute_list"));
+  grammar_current_rule_symbol_append(symbol_get("attribute_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("single_attribute"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_attribute"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_attribute"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_attribute"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("constant_expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_requirements_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_extension_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_requirements_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_capability_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_extension_list"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_extension_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_extension_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_capability_list"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_capability_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_capability_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE_ID"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_EXECUTION_MODE_ID"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("FLOATCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("UINTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("BOOLCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("constant_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_execution_mode_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("constant_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_storage_class_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_STORAGE_CLASS"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_storage_class_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_STORAGE_CLASS"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE_ID"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE_ID"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE_STRING"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_string_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE_STRING"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_string_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("variable_identifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("FLOATCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("UINTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("BOOLCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_string_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_string_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_string_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_TYPE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_type_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_TYPE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_type_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_TYPE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_TYPE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_type_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_type_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_type_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("constant_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_type_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_INSTRUCTION"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_INSTRUCTION"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_id"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier_id"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier_id"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("STRING_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier_id"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
 }
