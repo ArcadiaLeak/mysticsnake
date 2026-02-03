@@ -756,5 +756,929 @@ static this() {
   grammar_current_rule_symbol_append(symbol_get("parameter_type_specifier"));
   grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("parameter_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("single_declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("initializer"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("initializer"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("initializer"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("initializer"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("invariant_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("INVARIANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SMOOTH"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("FLAT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("NOPERSPECTIVE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("EXPLICITINTERPAMD"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERVERTEXNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERVERTEXEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERPRIMITIVENV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERPRIMITIVEEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERVIEWNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PERTASKNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("LAYOUT"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier_id_list"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier_id_list"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier_id"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier_id"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("constant_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("layout_qualifier_id"));
+  grammar_current_rule_symbol_append(symbol_get("SHARED"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("precise_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PRECISE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("single_type_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("single_type_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("storage_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("precision_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("interpolation_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("invariant_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("precise_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("non_uniform_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_storage_class_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_BY_REFERENCE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("single_type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SPIRV_LITERAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CONST"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("INOUT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("IN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("OUT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CENTROID"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("UNIFORM"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("TILEIMAGEEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SHARED"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("BUFFER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("ATTRIBUTE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("VARYING"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PATCH"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SAMPLE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("HITATTRNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("HITOBJECTATTRNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("HITOBJECTATTREXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("HITATTREXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PAYLOADNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PAYLOADEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PAYLOADINNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PAYLOADINEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CALLDATANV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CALLDATAEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CALLDATAINNV"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("CALLDATAINEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("COHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("DEVICECOHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("QUEUEFAMILYCOHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("WORKGROUPCOHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SUBGROUPCOHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("NONPRIVATE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SHADERCALLCOHERENT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("VOLATILE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("RESTRICT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("READONLY"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("WRITEONLY"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("NONTEMPORAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SUBROUTINE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SUBROUTINE"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("type_name_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("storage_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("TASKPAYLOADWORKGROUPEXT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("non_uniform_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("NONUNIFORM"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_name_list"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_name_list"));
+  grammar_current_rule_symbol_append(symbol_get("type_name_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_opt"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_opt"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier_opt"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier_opt"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_ANGLE"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_ANGLE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("VOID"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOAT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("INT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UINT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BOOL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BVEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BVEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BVEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("IVEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("IVEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("IVEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UVEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UVEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UVEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT2X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT2X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT2X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT3X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT3X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT3X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT4X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT4X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("MAT4X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DOUBLE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BFLOAT16_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOATE5M2_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOATE4M3_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOAT16_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOAT32_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FLOAT64_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("INT8_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UINT8_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("INT16_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UINT16_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("INT32_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UINT32_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("INT64_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("UINT64_T"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DVEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DVEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DVEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BF16VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BF16VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("BF16VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE5M2VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE5M2VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE5M2VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE4M3VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE4M3VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("FE4M3VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F64VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F64VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F64VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I8VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I8VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I8VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I16VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I16VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I16VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I32VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I32VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I32VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I64VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I64VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("I64VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U8VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U8VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U8VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U16VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U16VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U16VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U32VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U32VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U32VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U64VEC2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U64VEC3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("U64VEC4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT2X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT2X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT2X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT3X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT3X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT3X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT4X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT4X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("DMAT4X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT2X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT2X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT2X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT3X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT3X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT3X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT4X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT4X3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F16MAT4X4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32MAT2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32MAT3"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32MAT4"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32MAT2X2"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
+  grammar_current_rule_symbol_append(symbol_get("F32MAT2X3"));
+  grammar_current_rule_end();
+
+
+
+
+
 
 }
