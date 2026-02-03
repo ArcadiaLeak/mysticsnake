@@ -1,64 +1,5 @@
 module glslang.machine_independent.glslang_tab;
 
-alias symbol_number_t = int;
-alias rule_number_t = int;
-
-enum symbol_class_t {
-  unknown_sym,
-  percent_type_sym,
-  token_sym,
-  nonterm_sym
-}
-
-enum symbol_number_t NUMBER_UNDEFINED = -1;
-
-struct sym_content_arg_t {
-  symbol_class_t class_;
-  symbol_number_t number;
-}
-
-class sym_content_t {
-  symbol_t symbol;
-  symbol_class_t class_;
-  symbol_number_t number;
-
-  this(symbol_t s) {
-    symbol = s;
-
-    class_ = symbol_class_t.unknown_sym;
-    number = NUMBER_UNDEFINED;
-  }
-}
-
-class symbol_t {
-  string tag;
-  sym_content_t content;
-  symbol_t alias_;
-  bool is_alias;
-
-  this(string tag) {
-    this.tag = tag;
-    this.content = new sym_content_t(this);
-  }
-
-  void make_alias(symbol_t str) {
-    str.content = this.content;
-    str.content.symbol = str;
-    str.is_alias = true;
-    str.alias_ = this;
-    this.alias_ = str;
-  }
-}
-
-class symbol_list_t {
-  symbol_t sym;
-  symbol_list_t next;
-
-  this(symbol_t sym) {
-    this.sym = sym;
-  }
-}
-
 void symbols_new() {
   acceptsymbol = symbol_get("$accept");
   acceptsymbol.content.class_ = symbol_class_t.nonterm_sym;
@@ -111,7 +52,6 @@ symbol_list_t grammar_symbol_append(symbol_t sym) {
 }
 
 void grammar_current_rule_begin(symbol_t lhs) {
-  ++nrules;
   previous_rule_end = grammar_end;
 
   current_rule = grammar_symbol_append(lhs);
@@ -132,33 +72,11 @@ void grammar_current_rule_end() {
 
 void grammar_midrule_action() {
   symbol_list_t midrule = new symbol_list_t(dummy_symbol_get());
-  ++nrules;
   ++nritems;
   //
 }
 
-symbol_t acceptsymbol;
-symbol_t errtoken;
-symbol_t undeftoken;
-
-symbol_list_t grammar;
-symbol_list_t grammar_end;
-
-symbol_list_t current_rule;
-symbol_list_t previous_rule_end;
-
-int nnonterms = 0;
-int ntokens = 1;
-
-int nritems = 0;
-
-rule_number_t nrules = 0;
-
-symbol_t[string] symbol_table;
-
-static this() {
-  symbols_new();
-
+void gram_init() {
   grammar_current_rule_begin(symbol_get("variable_identifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
@@ -3363,4 +3281,96 @@ static this() {
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
   grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
   grammar_current_rule_end();
+}
+
+void packgram() {
+  for (symbol_list_t p = grammar; p; p = p.next) {
+
+  }
+}
+
+alias symbol_number_t = int;
+alias rule_number_t = int;
+
+enum symbol_class_t {
+  unknown_sym,
+  percent_type_sym,
+  token_sym,
+  nonterm_sym
+}
+
+enum symbol_number_t NUMBER_UNDEFINED = -1;
+
+struct sym_content_arg_t {
+  symbol_class_t class_;
+  symbol_number_t number;
+}
+
+class sym_content_t {
+  symbol_t symbol;
+  symbol_class_t class_;
+  symbol_number_t number;
+
+  this(symbol_t s) {
+    symbol = s;
+
+    class_ = symbol_class_t.unknown_sym;
+    number = NUMBER_UNDEFINED;
+  }
+}
+
+class symbol_t {
+  string tag;
+  sym_content_t content;
+  symbol_t alias_;
+  bool is_alias;
+
+  this(string tag) {
+    this.tag = tag;
+    this.content = new sym_content_t(this);
+  }
+
+  void make_alias(symbol_t str) {
+    str.content = this.content;
+    str.content.symbol = str;
+    str.is_alias = true;
+    str.alias_ = this;
+    this.alias_ = str;
+  }
+}
+
+class symbol_list_t {
+  symbol_t sym;
+  symbol_list_t next;
+
+  this(symbol_t sym) {
+    this.sym = sym;
+  }
+}
+
+class rule_t {}
+
+symbol_t acceptsymbol;
+symbol_t errtoken;
+symbol_t undeftoken;
+
+symbol_list_t grammar;
+symbol_list_t grammar_end;
+
+symbol_list_t current_rule;
+symbol_list_t previous_rule_end;
+
+rule_t[] rules;
+
+int nnonterms = 0;
+int ntokens = 1;
+
+int nritems = 0;
+
+symbol_t[string] symbol_table;
+
+static this() {
+  symbols_new();
+  gram_init();
+  packgram();
 }
