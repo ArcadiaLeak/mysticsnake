@@ -574,6 +574,187 @@ static this() {
   grammar_current_rule_symbol_append(symbol_get("OR_ASSIGN"));
   grammar_current_rule_end();
 
-  
+  grammar_current_rule_begin(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("constant_expression"));
+  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_instruction_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_execution_mode_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("init_declarator_list"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("PRECISION"));
+  grammar_current_rule_symbol_append(symbol_get("precision_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("block_structure"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("block_structure"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("block_structure"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("declaration"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("identifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("block_structure"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("identifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("identifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("identifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("attribute"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("attribute"));
+  grammar_current_rule_symbol_append(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_prototype"));
+  grammar_current_rule_symbol_append(symbol_get("attribute"));
+  grammar_current_rule_symbol_append(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("attribute"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("function_header"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_header"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_declaration"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("DOT"));
+  grammar_current_rule_symbol_append(symbol_get("DOT"));
+  grammar_current_rule_symbol_append(symbol_get("DOT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_header"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("array_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declarator"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_symbol_append(symbol_get("initializer"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_declarator"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_declarator"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("parameter_declaration"));
+  grammar_current_rule_symbol_append(symbol_get("parameter_type_specifier"));
+  grammar_current_rule_end();
+
 
 }
