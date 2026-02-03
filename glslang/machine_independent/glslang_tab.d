@@ -85,6 +85,15 @@ symbol_t symbol_get(string key) {
   return symbol_table.require(key, new symbol_t(key));
 }
 
+symbol_t dummy_symbol_get() {
+  import std.format;
+  static int dummy_count = 0;
+
+  symbol_t sym = symbol_get(format("$@%d", ++dummy_count));
+  sym.content.class_ = symbol_class_t.nonterm_sym;
+  return sym;
+}
+
 symbol_list_t grammar_symbol_append(symbol_t sym) {
   symbol_list_t p = new symbol_list_t(sym);
 
@@ -119,6 +128,13 @@ void grammar_current_rule_symbol_append(symbol_t sym) {
 
 void grammar_current_rule_end() {
   grammar_symbol_append(null);
+}
+
+void grammar_midrule_action() {
+  symbol_list_t midrule = new symbol_list_t(dummy_symbol_get());
+  ++nrules;
+  ++nritems;
+  //
 }
 
 symbol_t acceptsymbol;
@@ -239,4 +255,325 @@ static this() {
   grammar_current_rule_symbol_append(symbol_get("postfix_expression"));
   grammar_current_rule_symbol_append(symbol_get("DEC_OP"));
   grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("integer_expression"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_or_method"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_generic"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+ 
+  grammar_current_rule_begin(symbol_get("function_call_generic"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header_no_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_header_no_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header"));
+  grammar_current_rule_symbol_append(symbol_get("VOID"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_header_no_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_header_with_parameters"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_call_header"));
+  grammar_current_rule_symbol_append(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("postfix_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("non_uniform_qualifier"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("postfix_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("INC_OP"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("DEC_OP"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_operator"));
+  grammar_current_rule_symbol_append(symbol_get("PLUS"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_operator"));
+  grammar_current_rule_symbol_append(symbol_get("DASH"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_operator"));
+  grammar_current_rule_symbol_append(symbol_get("BANG"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("unary_operator"));
+  grammar_current_rule_symbol_append(symbol_get("TILDE"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("STAR"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("SLASH"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_symbol_append(symbol_get("PERCENT"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("additive_expression"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("additive_expression"));
+  grammar_current_rule_symbol_append(symbol_get("additive_expression"));
+  grammar_current_rule_symbol_append(symbol_get("PLUS"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("additive_expression"));
+  grammar_current_rule_symbol_append(symbol_get("additive_expression"));
+  grammar_current_rule_symbol_append(symbol_get("DASH"));
+  grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("shift_expression"));
+  grammar_current_rule_symbol_append(symbol_get("additive_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("shift_expression"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_OP"));
+  grammar_current_rule_symbol_append(symbol_get("additive_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("shift_expression"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_OP"));
+  grammar_current_rule_symbol_append(symbol_get("additive_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_ANGLE"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_ANGLE"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("LE_OP"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_symbol_append(symbol_get("GE_OP"));
+  grammar_current_rule_symbol_append(symbol_get("shift_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("equality_expression"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("equality_expression"));
+  grammar_current_rule_symbol_append(symbol_get("equality_expression"));
+  grammar_current_rule_symbol_append(symbol_get("EQ_OP"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("equality_expression"));
+  grammar_current_rule_symbol_append(symbol_get("equality_expression"));
+  grammar_current_rule_symbol_append(symbol_get("NE_OP"));
+  grammar_current_rule_symbol_append(symbol_get("relational_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("equality_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("AMPERSAND"));
+  grammar_current_rule_symbol_append(symbol_get("equality_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("exclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("and_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("exclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("exclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("CARET"));
+  grammar_current_rule_symbol_append(symbol_get("and_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("inclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("exclusive_or_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("inclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("inclusive_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("VERTICAL_BAR"));
+  grammar_current_rule_symbol_append(symbol_get("exclusive_or_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("inclusive_or_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_and_expression"));
+  grammar_current_rule_symbol_append(symbol_get("AND_OP"));
+  grammar_current_rule_symbol_append(symbol_get("inclusive_or_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_xor_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_and_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_xor_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_xor_expression"));
+  grammar_current_rule_symbol_append(symbol_get("XOR_OP"));
+  grammar_current_rule_symbol_append(symbol_get("logical_and_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_xor_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("logical_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("OR_OP"));
+  grammar_current_rule_symbol_append(symbol_get("logical_xor_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("conditional_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_or_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("conditional_expression"));
+  grammar_current_rule_symbol_append(symbol_get("logical_or_expression"));
+  grammar_current_rule_symbol_append(symbol_get("QUESTION"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("COLON"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_expression"));
+  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_expression"));
+  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("EQUAL"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("MUL_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("DIV_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("MOD_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("ADD_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("SUB_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("AND_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("XOR_ASSIGN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("assignment_operator"));
+  grammar_current_rule_symbol_append(symbol_get("OR_ASSIGN"));
+  grammar_current_rule_end();
+
+  
+
 }
