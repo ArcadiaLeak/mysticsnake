@@ -387,6 +387,10 @@ void gram_init() {
   symbol_class_set(symbol_get("IIMAGE3D"), symbol_class_t.token_sym, true);
   symbol_class_set(symbol_get("UIMAGE3D"), symbol_class_t.token_sym, true);
 
+  symbol_class_set(symbol_get("IMAGE2DRECT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IIMAGE2DRECT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UIMAGE2DRECT"), symbol_class_t.token_sym, true);
+
   symbol_class_set(symbol_get("IMAGECUBE"), symbol_class_t.token_sym, true);
   symbol_class_set(symbol_get("IIMAGECUBE"), symbol_class_t.token_sym, true);
   symbol_class_set(symbol_get("UIMAGECUBE"), symbol_class_t.token_sym, true);
@@ -595,6 +599,104 @@ void gram_init() {
   symbol_class_set(symbol_get("PACKED"), symbol_class_t.token_sym, true);
   symbol_class_set(symbol_get("RESOURCE"), symbol_class_t.token_sym, true);
   symbol_class_set(symbol_get("SUPERP"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("FLOATCONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INTCONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINTCONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BOOLCONSTANT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("IDENTIFIER"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TYPE_NAME"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("CENTROID"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IN"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("OUT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INOUT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("STRUCT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("VOID"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("WHILE"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("BREAK"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CONTINUE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DO"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ELSE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FOR"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IF"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DISCARD"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("RETURN"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SWITCH"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CASE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DEFAULT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("TERMINATE_INVOCATION"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TERMINATE_RAY"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IGNORE_INTERSECTION"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("UNIFORM"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SHARED"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BUFFER"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TILEIMAGEEXT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("FLAT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SMOOTH"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("LAYOUT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("DOUBLECONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT16CONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT16CONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOAT16CONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT32CONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT32CONSTANT"), symbol_class_t.token_sym, true);
+  
+  symbol_class_set(symbol_get("INT64CONSTANT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT64CONSTANT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SUBROUTINE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DEMOTE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FUNCTION"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("PAYLOADNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PAYLOADINNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("HITATTRNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CALLDATANV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CALLDATAINNV"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("PAYLOADEXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PAYLOADINEXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("HITATTREXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CALLDATAEXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("CALLDATAINEXT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("PATCH"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("NONUNIFORM"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("COHERENT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("VOLATILE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("RESTRICT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("READONLY"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("WRITEONLY"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("NONTEMPORAL"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DEVICECOHERENT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("QUEUEFAMILYCOHERENT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("WORKGROUPCOHERENT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SUBGROUPCOHERENT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("NONPRIVATE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SHADERCALLCOHERENT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("NOPERSPECTIVE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("EXPLICITINTERPAMD"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERVERTEXEXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERVERTEXNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERPRIMITIVENV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERVIEWNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERTASKNV"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("PERPRIMITIVEEXT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TASKPAYLOADWORKGROUPEXT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("PRECISE"), symbol_class_t.token_sym, true);
 
   grammar_current_rule_begin(symbol_get("variable_identifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
