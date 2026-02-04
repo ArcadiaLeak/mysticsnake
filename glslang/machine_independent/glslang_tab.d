@@ -3,7 +3,7 @@ module glslang.machine_independent.glslang_tab;
 void symbols_new() {
   acceptsymbol = symbol_get("$accept");
   acceptsymbol.content.class_ = symbol_class_t.nonterm_sym;
-  acceptsymbol.content.number = nnonterms++;
+  acceptsymbol.content.number = nnterms++;
 
   errtoken = symbol_get("YYerror");
   errtoken.content.class_ = symbol_class_t.token_sym;
@@ -20,6 +20,11 @@ void symbols_new() {
   symbol_t undeftoken_alias = symbol_get("$undefined");
   undeftoken_alias.content.class_ = symbol_class_t.token_sym;
   undeftoken.make_alias(undeftoken_alias);
+}
+
+void symbol_class_set(symbol_t sym, symbol_class_t class_, bool declaring) {
+  sym_content_t s = sym.content;
+  s.class_ = class_;
 }
 
 symbol_t symbol_get(string key) {
@@ -77,6 +82,106 @@ void grammar_midrule_action() {
 }
 
 void gram_init() {
+  symbol_class_set(symbol_get("CONST"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BOOL"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOAT"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("BVEC2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BVEC3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BVEC4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("IVEC2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IVEC3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("IVEC4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("UVEC2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UVEC3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UVEC4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("VEC2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("VEC3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("VEC4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("MAT2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("MAT2X2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT2X3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT2X4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("MAT3X2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT3X3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT3X4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("MAT4X2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT4X3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("MAT4X4"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SAMPLER2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLER3D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLERCUBE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLER2DSHADOW"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SAMPLERCUBESHADOW"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLER2DARRAY"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SAMPLER2DARRAYSHADOW"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ISAMPLER2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ISAMPLER3D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ISAMPLERCUBE"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("ISAMPLER2DARRAY"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("USAMPLER2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("USAMPLER3D"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("USAMPLERCUBE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("USAMPLER2DARRAY"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("SAMPLER"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("SAMPLERSHADOW"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("TEXTURE2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TEXTURE3D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TEXTURECUBE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("TEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("ITEXTURE2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ITEXTURE3D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ITEXTURECUBE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("ITEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("UTEXTURE2D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UTEXTURE3D"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UTEXTURECUBE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UTEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("ATTRIBUTE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("VARYING"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("FLOATE5M2_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOATE4M3_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("BFLOAT16_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOAT16_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOAT32_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("DOUBLE"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("FLOAT64_T"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("INT64_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT64_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT32_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT32_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT16_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT16_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("INT8_T"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("UINT8_T"), symbol_class_t.token_sym, true);
+
+  symbol_class_set(symbol_get("I64VEC2"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("I64VEC3"), symbol_class_t.token_sym, true);
+  symbol_class_set(symbol_get("I64VEC4"), symbol_class_t.token_sym, true);
+
   grammar_current_rule_begin(symbol_get("variable_identifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
@@ -3285,6 +3390,8 @@ void gram_init() {
 
 void packgram() {
   for (symbol_list_t p = grammar; p; p = p.next) {
+    symbol_list_t lhs = p;
+
 
   }
 }
@@ -3362,7 +3469,7 @@ symbol_list_t previous_rule_end;
 
 rule_t[] rules;
 
-int nnonterms = 0;
+int nnterms = 0;
 int ntokens = 1;
 
 int nritems = 0;
@@ -3373,4 +3480,18 @@ static this() {
   symbols_new();
   gram_init();
   packgram();
+}
+
+void main() {
+  import std.stdio;
+
+  foreach (sym; symbol_table.byValue) {
+    sym_content_t s = sym.content;
+
+    if (s.number == NUMBER_UNDEFINED)
+      s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
+  }
+
+  writeln(ntokens);
+  writeln(nnterms);
 }

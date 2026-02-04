@@ -18,7 +18,7 @@ void main() {
   Makefile ~= "all:";
 
   foreach (target; libtargets) {
-    Makefile ~= i" build/lib$(target)_$(prjname).a".text;
+    Makefile ~= i" build/$(target)".text;
   }
 
   Makefile ~= "\n";
@@ -29,8 +29,8 @@ void main() {
       .map!(e => e.name)
       .join(" ");
 
-    Makefile ~= "\n" ~ i"build/lib$(libname)_$(prjname).a: $(srcPaths)\n".text ~
-      "\t" ~ "dmd -dip1000 -debug -lib $^ -of=$@\n";
+    Makefile ~= "\n" ~ i"build/$(libname): $(srcPaths)\n".text ~
+      "\t" ~ "dmd -dip1000 -debug $^ -of=$@\n";
   }
 
   write("Makefile", Makefile);
