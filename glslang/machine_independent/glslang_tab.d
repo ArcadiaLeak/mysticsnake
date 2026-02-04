@@ -1,6 +1,6 @@
 module glslang.machine_independent.glslang_tab;
 
-void symbols_new() {
+void gram_init_pre() {
   acceptsymbol = symbol_get("$accept");
   acceptsymbol.content.class_ = symbol_class_t.nonterm_sym;
   acceptsymbol.content.number = nnterms++;
@@ -8,18 +8,38 @@ void symbols_new() {
   errtoken = symbol_get("YYerror");
   errtoken.content.class_ = symbol_class_t.token_sym;
   errtoken.content.number = ntokens++;
-
-  symbol_t errtoken_alias = symbol_get("error");
-  errtoken_alias.content.class_ = symbol_class_t.token_sym;
-  errtoken.make_alias(errtoken_alias);
+  {
+    symbol_t alias_ = symbol_get("error");
+    alias_.content.class_ = symbol_class_t.token_sym;
+    errtoken.make_alias(alias_);
+  }
 
   undeftoken = symbol_get("YYUNDEF");
   undeftoken.content.class_ = symbol_class_t.token_sym;
   undeftoken.content.number = ntokens++;
+  {
+    symbol_t alias_ = symbol_get("$undefined");
+    alias_.content.class_ = symbol_class_t.token_sym;
+    undeftoken.make_alias(alias_);
+  }
+}
 
-  symbol_t undeftoken_alias = symbol_get("$undefined");
-  undeftoken_alias.content.class_ = symbol_class_t.token_sym;
-  undeftoken.make_alias(undeftoken_alias);
+void gram_init_post() {
+  eoftoken = symbol_get("YYEOF");
+  eoftoken.content.class_ = symbol_class_t.token_sym;
+  eoftoken.content.number = 0;
+  {
+    symbol_t alias_ = symbol_get("$end");
+    alias_.content.class_ = symbol_class_t.token_sym;
+    eoftoken.make_alias(alias_);
+  }
+
+  foreach (sym; symbol_table.byValue) {
+    sym_content_t s = sym.content;
+
+    if (s.number == NUMBER_UNDEFINED)
+      s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
+  }
 }
 
 void symbol_class_set(symbol_t sym, symbol_class_t class_, bool declaring) {
@@ -79,6 +99,14 @@ void grammar_midrule_action() {
   symbol_list_t midrule = new symbol_list_t(dummy_symbol_get());
   ++nritems;
   //
+}
+
+void packgram() {
+  for (symbol_list_t p = grammar; p; p = p.next) {
+    symbol_list_t lhs = p;
+
+
+  }
 }
 
 void gram_init() {
@@ -3908,14 +3936,6 @@ void gram_init() {
   grammar_current_rule_end();
 }
 
-void packgram() {
-  for (symbol_list_t p = grammar; p; p = p.next) {
-    symbol_list_t lhs = p;
-
-
-  }
-}
-
 alias symbol_number_t = int;
 alias rule_number_t = int;
 
@@ -3980,6 +4000,7 @@ class rule_t {}
 symbol_t acceptsymbol;
 symbol_t errtoken;
 symbol_t undeftoken;
+symbol_t eoftoken;
 
 symbol_list_t grammar;
 symbol_list_t grammar_end;
@@ -3997,20 +4018,14 @@ int nritems = 0;
 symbol_t[string] symbol_table;
 
 static this() {
-  symbols_new();
+  gram_init_pre();
   gram_init();
+  gram_init_post();
   packgram();
 }
 
 void main() {
   import std.stdio;
-
-  foreach (sym; symbol_table.byValue) {
-    sym_content_t s = sym.content;
-
-    if (s.number == NUMBER_UNDEFINED)
-      s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
-  }
 
   writeln(ntokens);
   writeln(nnterms);
