@@ -77,6 +77,7 @@ symbol_list_t grammar_symbol_append(symbol_t sym) {
 }
 
 void grammar_current_rule_begin(symbol_t lhs) {
+  ++nrules;
   previous_rule_end = grammar_end;
 
   current_rule = grammar_symbol_append(lhs);
@@ -98,6 +99,9 @@ void grammar_current_rule_end() {
 void grammar_midrule_action() {
   symbol_t dummy = dummy_symbol_get();
   symbol_list_t midrule = new symbol_list_t(dummy);
+
+  ++nrules;
+  ++nritems;
   
   if (previous_rule_end)
     previous_rule_end.next = midrule;
@@ -2589,10 +2593,6 @@ void gram_init() {
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
-  grammar_current_rule_symbol_append(symbol_get("F16SAMPLER2DRECT"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
   grammar_current_rule_symbol_append(symbol_get("F16SAMPLER2DRECTSHADOW"));
   grammar_current_rule_end();
 
@@ -3038,10 +3038,6 @@ void gram_init() {
 
   grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
   grammar_current_rule_symbol_append(symbol_get("SAMPLEREXTERNAL2DY2YEXT"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
-  grammar_current_rule_symbol_append(symbol_get("ATTACHMENTEXT"));
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
@@ -3588,10 +3584,6 @@ void gram_init() {
 
   grammar_current_rule_begin(symbol_get("single_attribute"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("single_attribute"));
-  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
   grammar_current_rule_symbol_append(symbol_get("constant_expression"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
@@ -3991,7 +3983,6 @@ void gram_init() {
 }
 
 alias symbol_number_t = int;
-alias rule_number_t = int;
 
 enum symbol_class_t {
   unknown_sym,
@@ -4063,6 +4054,7 @@ symbol_list_t current_rule;
 symbol_list_t previous_rule_end;
 
 rule_t[] rules;
+int nrules = 0;
 
 int nnterms = 0;
 int ntokens = 1;
@@ -4083,4 +4075,5 @@ void main() {
 
   writeln(ntokens);
   writeln(nnterms);
+  writeln(nrules);
 }
