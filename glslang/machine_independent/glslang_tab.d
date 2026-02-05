@@ -3597,6 +3597,16 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
   grammar_current_rule_end();
 
+  grammar_current_rule_begin(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_requirements_parameter"));
+  grammar_current_rule_end();
+
   grammar_current_rule_begin(symbol_get("spirv_requirements_parameter"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
@@ -3819,6 +3829,32 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("spirv_decorate_string_parameter_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_parameter_list"));
+  grammar_current_rule_symbol_append(symbol_get("COMMA"));
+  grammar_current_rule_symbol_append(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("FLOATCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("UINTCONSTANT"));
+  grammar_current_rule_end();
+
+  grammar_current_rule_begin(symbol_get("spirv_decorate_parameter"));
+  grammar_current_rule_symbol_append(symbol_get("BOOLCONSTANT"));
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter_list"));
