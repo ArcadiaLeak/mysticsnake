@@ -96,9 +96,20 @@ void grammar_current_rule_end() {
 }
 
 void grammar_midrule_action() {
-  symbol_list_t midrule = new symbol_list_t(dummy_symbol_get());
-  ++nritems;
-  //
+  symbol_t dummy = dummy_symbol_get();
+  symbol_list_t midrule = new symbol_list_t(dummy);
+  
+  if (previous_rule_end)
+    previous_rule_end.next = midrule;
+  else
+    grammar = midrule;
+
+  midrule.next = new symbol_list_t(null);
+  midrule.next.next = current_rule;
+
+  previous_rule_end = midrule.next;
+
+  grammar_current_rule_symbol_append(dummy);
 }
 
 void packgram() {
@@ -1082,6 +1093,7 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("conditional_expression"));
   grammar_current_rule_symbol_append(symbol_get("logical_or_expression"));
   grammar_current_rule_symbol_append(symbol_get("QUESTION"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("expression"));
   grammar_current_rule_symbol_append(symbol_get("COLON"));
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
@@ -1216,6 +1228,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
@@ -3147,6 +3160,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("STRUCT"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
@@ -3154,6 +3168,7 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("struct_specifier"));
   grammar_current_rule_symbol_append(symbol_get("STRUCT"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
@@ -3287,7 +3302,9 @@ void gram_init() {
 
   grammar_current_rule_begin(symbol_get("compound_statement"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("statement_list"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
 
@@ -3300,10 +3317,12 @@ void gram_init() {
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("statement_scoped"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("compound_statement"));
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("statement_scoped"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("simple_statement"));
   grammar_current_rule_end();
 
@@ -3388,9 +3407,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
   grammar_current_rule_symbol_append(symbol_get("expression"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("switch_statement_nonattributed"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
   grammar_current_rule_symbol_append(symbol_get("switch_statement_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
@@ -3426,6 +3443,7 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("WHILE"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("condition"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
   grammar_current_rule_symbol_append(symbol_get("statement_no_new_scope"));
@@ -3433,6 +3451,7 @@ void gram_init() {
 
   grammar_current_rule_begin(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("DO"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("statement"));
   grammar_current_rule_symbol_append(symbol_get("WHILE"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
@@ -3444,6 +3463,7 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("FOR"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("for_init_statement"));
   grammar_current_rule_symbol_append(symbol_get("for_rest_statement"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
@@ -3540,9 +3560,7 @@ void gram_init() {
 
   grammar_current_rule_begin(symbol_get("function_definition"));
   grammar_current_rule_symbol_append(symbol_get("function_prototype"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("function_definition"));
+  grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("compound_statement_no_new_scope"));
   grammar_current_rule_end();
 
