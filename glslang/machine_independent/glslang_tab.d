@@ -77,9 +77,12 @@ class sym_content_t {
 
 class symbol_t {
   string tag;
-  sym_content_t content;
+  int order_of_appearance;
+
   symbol_t alias_;
   bool is_alias;
+
+  sym_content_t content;
 
   this(string tag) {
     this.tag = tag;
@@ -186,9 +189,10 @@ void create_start_rule(symbol_t swtok, symbol_t start) {
   grammar = initial_rule;
 }
 
-void symbol_class_set(symbol_t sym, symbol_class_t class_, bool declaring) {
-  sym_content_t s = sym.content;
-  s.class_ = class_;
+void declare_sym(symbol_t sym, symbol_class_t class_) {
+  static int order_of_appearance = 0;
+  sym.content.class_ = class_;
+  sym.order_of_appearance = ++order_of_appearance;
 }
 
 symbol_t symbol_get(string key) {
@@ -291,621 +295,621 @@ void packgram() {
 }
 
 void gram_init() {
-  symbol_class_set(symbol_get("CONST"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BOOL"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOAT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("CONST"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BOOL"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOAT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("BVEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BVEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BVEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("BVEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BVEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BVEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IVEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IVEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IVEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IVEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IVEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IVEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("UVEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UVEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UVEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("UVEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UVEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UVEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("MAT2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("MAT2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("MAT2X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT2X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT2X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("MAT2X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT2X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT2X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("MAT3X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT3X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT3X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("MAT3X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT3X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT3X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("MAT4X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT4X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MAT4X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("MAT4X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT4X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MAT4X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLERCUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER2DSHADOW"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLERCUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER2DSHADOW"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLERCUBESHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLERCUBESHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER2DARRAYSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLERCUBE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER2DARRAYSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLERCUBE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ISAMPLER2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER3D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ISAMPLER2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER3D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("USAMPLERCUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("USAMPLERCUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLERSHADOW"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLERSHADOW"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TEXTURE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TEXTURECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TEXTURE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TEXTURECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TEXTURE2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ITEXTURE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ITEXTURE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("UTEXTURE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("UTEXTURE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ATTRIBUTE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VARYING"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ATTRIBUTE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VARYING"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FLOATE5M2_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOATE4M3_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BFLOAT16_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOAT16_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOAT32_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DOUBLE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOAT64_T"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FLOATE5M2_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOATE4M3_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BFLOAT16_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOAT16_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOAT32_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DOUBLE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOAT64_T"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("INT64_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT64_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT32_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT32_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT16_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT16_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT8_T"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT8_T"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("INT64_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT64_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT32_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT32_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT16_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT16_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT8_T"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT8_T"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I64VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I64VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I64VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I64VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("U64VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("U64VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I32VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I32VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I32VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I32VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I32VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I32VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("U32VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U32VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U32VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("U32VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U32VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U32VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I16VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I16VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I16VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I16VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I16VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I16VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("U16VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U16VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U16VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("U16VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U16VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U16VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I8VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I8VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("I8VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I8VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I8VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("I8VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("U8VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U8VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U8VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("U8VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U8VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U8VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("DVEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DVEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DVEC4"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("DVEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DVEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DVEC4"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("BF16VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BF16VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BF16VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("BF16VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BF16VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BF16VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FE5M2VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FE5M2VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FE5M2VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FE5M2VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FE5M2VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FE5M2VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FE4M3VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FE4M3VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FE4M3VEC4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FE4M3VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FE4M3VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FE4M3VEC4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16VEC4"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16VEC4"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F32VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32VEC4"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F32VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32VEC4"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F64VEC2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64VEC3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64VEC4"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F64VEC2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64VEC3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64VEC4"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("DMAT2X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT2X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT2X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("DMAT2X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT2X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT2X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("DMAT3X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT3X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT3X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("DMAT3X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT3X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT3X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("DMAT4X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT4X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DMAT4X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("DMAT4X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT4X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DMAT4X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16MAT2X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT2X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT2X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16MAT2X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT2X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT2X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16MAT3X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT3X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT3X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16MAT3X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT3X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT3X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16MAT4X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT4X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16MAT4X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16MAT4X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT4X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16MAT4X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F32MAT2X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT2X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT2X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F32MAT2X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT2X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT2X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F32MAT3X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT3X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT3X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F32MAT3X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT3X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT3X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F32MAT4X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT4X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F32MAT4X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F32MAT4X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT4X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F32MAT4X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F64MAT2X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT2X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT2X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F64MAT2X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT2X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT2X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F64MAT3X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT3X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT3X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F64MAT3X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT3X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT3X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F64MAT4X2"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT4X3"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F64MAT4X4"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F64MAT4X2"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT4X3"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F64MAT4X4"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ATOMIC_UINT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ACCSTRUCTNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ACCSTRUCTEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RAYQUERYEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ATOMIC_UINT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ACCSTRUCTNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ACCSTRUCTEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RAYQUERYEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FCOOPMATNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ICOOPMATNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UCOOPMATNV"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FCOOPMATNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ICOOPMATNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UCOOPMATNV"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("COOPMAT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("COOPVECNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITOBJECTNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITOBJECTATTRNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITOBJECTEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITOBJECTATTREXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("COOPMAT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("COOPVECNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITOBJECTNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITOBJECTATTRNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITOBJECTEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITOBJECTATTREXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TENSORLAYOUTNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TENSORVIEWNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TENSORARM"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TENSORLAYOUTNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TENSORVIEWNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TENSORARM"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLERCUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLERCUBEARRAYSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLERCUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLERCUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLERCUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLERCUBEARRAYSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLERCUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLERCUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER1DARRAYSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER1DSHADOW"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER1DARRAYSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER1DSHADOW"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLER2DRECTSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER2DRECT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLER2DRECTSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER2DRECT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLERBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLERBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLERBUFFER"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLERBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLERBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLERBUFFER"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER2DMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER2DMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLER2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISAMPLER2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLER2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISAMPLER2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SAMPLEREXTERNALOES"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLEREXTERNAL2DY2YEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SAMPLEREXTERNALOES"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLEREXTERNAL2DY2YEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ISAMPLER1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USAMPLER1DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ISAMPLER1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USAMPLER1DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16SAMPLER1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLERCUBE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SAMPLER1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLERCUBE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16SAMPLER1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLERCUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SAMPLER1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLERCUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16SAMPLERBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SAMPLERBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16SAMPLER1DSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER1DARRAYSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLER2DARRAYSHADOW"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SAMPLER1DSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER1DARRAYSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLER2DARRAYSHADOW"), symbol_class_t.token_sym);
   
-  symbol_class_set(symbol_get("F16SAMPLER2DRECTSHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLERCUBESHADOW"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SAMPLERCUBEARRAYSHADOW"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SAMPLER2DRECTSHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLERCUBESHADOW"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SAMPLERCUBEARRAYSHADOW"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IMAGE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE2D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IMAGE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE2D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("UIMAGE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IMAGE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE3D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("UIMAGE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IMAGE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE3D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE2DRECT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE2DRECT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGECUBE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGECUBE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGEBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGEBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGEBUFFER"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGEBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGEBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGEBUFFER"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE1DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE1DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGECUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGECUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGECUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGECUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGECUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGECUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE2DMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE2DMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IIMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UIMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IMAGE2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IIMAGE2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UIMAGE2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16IMAGE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE2DRECT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16IMAGE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE2DRECT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16IMAGECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGECUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16IMAGECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGECUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16IMAGEBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16IMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16IMAGEBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16IMAGE2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE1D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE1D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE2D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE2D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE3D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE3D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE2DRECT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE2DRECT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGECUBE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGECUBE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGECUBE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGECUBE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGEBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGEBUFFER"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGEBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGEBUFFER"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE1DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE1DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE2DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE2DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGECUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGECUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGECUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGECUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE2DMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE2DMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("I64IMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("U64IMAGE2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("I64IMAGE2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("U64IMAGE2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURECUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURECUBEARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURECUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURECUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURECUBEARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURECUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE1D"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE1D"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE1DARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE1DARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE2DRECT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE2DRECT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTUREBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTUREBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTUREBUFFER"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTUREBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTUREBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTUREBUFFER"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE2DMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE2DMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TEXTURE2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ITEXTURE2DMSARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UTEXTURE2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TEXTURE2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ITEXTURE2DMSARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UTEXTURE2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16TEXTURE1D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE2D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE3D"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE2DRECT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURECUBE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16TEXTURE1D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE2D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE3D"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE2DRECT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURECUBE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16TEXTURE1DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE2DARRAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURECUBEARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16TEXTURE1DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE2DARRAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURECUBEARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16TEXTUREBUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE2DMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16TEXTURE2DMSARRAY"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16TEXTUREBUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE2DMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16TEXTURE2DMSARRAY"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SUBPASSINPUT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SUBPASSINPUTMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISUBPASSINPUT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ISUBPASSINPUTMS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USUBPASSINPUT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("USUBPASSINPUTMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SUBPASSINPUT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SUBPASSINPUTMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISUBPASSINPUT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ISUBPASSINPUTMS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USUBPASSINPUT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("USUBPASSINPUTMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("F16SUBPASSINPUT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("F16SUBPASSINPUTMS"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("F16SUBPASSINPUT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("F16SUBPASSINPUTMS"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SPIRV_INSTRUCTION"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_EXECUTION_MODE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_EXECUTION_MODE_ID"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SPIRV_INSTRUCTION"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_EXECUTION_MODE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_EXECUTION_MODE_ID"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SPIRV_DECORATE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_DECORATE_ID"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_DECORATE_STRING"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SPIRV_DECORATE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_DECORATE_ID"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_DECORATE_STRING"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SPIRV_TYPE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_STORAGE_CLASS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_BY_REFERENCE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SPIRV_LITERAL"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SPIRV_TYPE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_STORAGE_CLASS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_BY_REFERENCE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SPIRV_LITERAL"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("ATTACHMENTEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IATTACHMENTEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UATTACHMENTEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("ATTACHMENTEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IATTACHMENTEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UATTACHMENTEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("LEFT_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_OP"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("LEFT_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_OP"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("INC_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DEC_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LE_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("GE_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("EQ_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("NE_OP"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("INC_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DEC_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LE_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("GE_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("EQ_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("NE_OP"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("AND_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("OR_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("XOR_OP"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MUL_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DIV_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ADD_ASSIGN"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("AND_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("OR_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("XOR_OP"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MUL_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DIV_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ADD_ASSIGN"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("MOD_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LEFT_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("AND_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("XOR_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("OR_ASSIGN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SUB_ASSIGN"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("MOD_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LEFT_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("AND_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("XOR_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("OR_ASSIGN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SUB_ASSIGN"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("STRING_LITERAL"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("STRING_LITERAL"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("LEFT_PAREN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_PAREN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LEFT_BRACKET"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_BRACKET"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LEFT_BRACE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_BRACE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DOT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("LEFT_PAREN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_PAREN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LEFT_BRACKET"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_BRACKET"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LEFT_BRACE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_BRACE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DOT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("COMMA"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("COLON"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("EQUAL"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SEMICOLON"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BANG"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DASH"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TILDE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PLUS"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("STAR"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SLASH"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERCENT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("COMMA"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("COLON"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("EQUAL"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SEMICOLON"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BANG"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DASH"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TILDE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PLUS"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("STAR"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SLASH"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERCENT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("LEFT_ANGLE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RIGHT_ANGLE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VERTICAL_BAR"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CARET"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("AMPERSAND"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("QUESTION"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("LEFT_ANGLE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RIGHT_ANGLE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VERTICAL_BAR"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CARET"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("AMPERSAND"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("QUESTION"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("INVARIANT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("INVARIANT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("HIGH_PRECISION"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("MEDIUM_PRECISION"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LOW_PRECISION"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PRECISION"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("HIGH_PRECISION"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("MEDIUM_PRECISION"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LOW_PRECISION"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PRECISION"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("PACKED"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RESOURCE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SUPERP"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("PACKED"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RESOURCE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SUPERP"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FLOATCONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INTCONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINTCONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BOOLCONSTANT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FLOATCONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INTCONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINTCONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BOOLCONSTANT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("IDENTIFIER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TYPE_NAME"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("IDENTIFIER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TYPE_NAME"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("CENTROID"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("OUT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INOUT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("CENTROID"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("OUT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INOUT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("STRUCT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VOID"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("WHILE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("STRUCT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VOID"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("WHILE"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("BREAK"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CONTINUE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DO"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("ELSE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FOR"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IF"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DISCARD"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RETURN"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SWITCH"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CASE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DEFAULT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("BREAK"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CONTINUE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DO"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("ELSE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FOR"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IF"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DISCARD"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RETURN"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SWITCH"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CASE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DEFAULT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("TERMINATE_INVOCATION"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TERMINATE_RAY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("IGNORE_INTERSECTION"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("TERMINATE_INVOCATION"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TERMINATE_RAY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("IGNORE_INTERSECTION"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("UNIFORM"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SHARED"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("BUFFER"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TILEIMAGEEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("UNIFORM"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SHARED"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("BUFFER"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TILEIMAGEEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("FLAT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SMOOTH"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("LAYOUT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("FLAT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SMOOTH"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("LAYOUT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("DOUBLECONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT16CONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT16CONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FLOAT16CONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("INT32CONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT32CONSTANT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("DOUBLECONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT16CONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT16CONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FLOAT16CONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("INT32CONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT32CONSTANT"), symbol_class_t.token_sym);
   
-  symbol_class_set(symbol_get("INT64CONSTANT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("UINT64CONSTANT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("INT64CONSTANT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("UINT64CONSTANT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SUBROUTINE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DEMOTE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("FUNCTION"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SUBROUTINE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DEMOTE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("FUNCTION"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("PAYLOADNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PAYLOADINNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITATTRNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CALLDATANV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CALLDATAINNV"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("PAYLOADNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PAYLOADINNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITATTRNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CALLDATANV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CALLDATAINNV"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("PAYLOADEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PAYLOADINEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("HITATTREXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CALLDATAEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("CALLDATAINEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("PAYLOADEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PAYLOADINEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("HITATTREXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CALLDATAEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("CALLDATAINEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("PATCH"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SAMPLE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("NONUNIFORM"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("PATCH"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SAMPLE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("NONUNIFORM"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("COHERENT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("VOLATILE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("RESTRICT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("READONLY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("WRITEONLY"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("NONTEMPORAL"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("DEVICECOHERENT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("QUEUEFAMILYCOHERENT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("WORKGROUPCOHERENT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("COHERENT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("VOLATILE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("RESTRICT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("READONLY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("WRITEONLY"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("NONTEMPORAL"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("DEVICECOHERENT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("QUEUEFAMILYCOHERENT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("WORKGROUPCOHERENT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("SUBGROUPCOHERENT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("NONPRIVATE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("SHADERCALLCOHERENT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("SUBGROUPCOHERENT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("NONPRIVATE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("SHADERCALLCOHERENT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("NOPERSPECTIVE"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("EXPLICITINTERPAMD"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERVERTEXEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERVERTEXNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERPRIMITIVENV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERVIEWNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERTASKNV"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("PERPRIMITIVEEXT"), symbol_class_t.token_sym, true);
-  symbol_class_set(symbol_get("TASKPAYLOADWORKGROUPEXT"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("NOPERSPECTIVE"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("EXPLICITINTERPAMD"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERVERTEXEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERVERTEXNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERPRIMITIVENV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERVIEWNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERTASKNV"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("PERPRIMITIVEEXT"), symbol_class_t.token_sym);
+  declare_sym(symbol_get("TASKPAYLOADWORKGROUPEXT"), symbol_class_t.token_sym);
 
-  symbol_class_set(symbol_get("PRECISE"), symbol_class_t.token_sym, true);
+  declare_sym(symbol_get("PRECISE"), symbol_class_t.token_sym);
 
   grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
 
