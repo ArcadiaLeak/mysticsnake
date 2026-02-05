@@ -40,6 +40,23 @@ void gram_init_post() {
     if (s.number == NUMBER_UNDEFINED)
       s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
   }
+
+  symbol_t start = start_symbols.sym;
+  create_start_rule(null, start);
+}
+
+void create_start_rule(symbol_t swtok, symbol_t start) {
+  symbol_list_t initial_rule = new symbol_list_t(acceptsymbol);
+  symbol_list_t p = initial_rule;
+  p.next = new symbol_list_t(start);
+  p = p.next;
+  p.next = new symbol_list_t(eoftoken);
+  p = p.next;
+  p.next = new symbol_list_t(null);
+  p = p.next;
+  p.next = grammar;
+  nrules += 1;
+  grammar = initial_rule;
 }
 
 void symbol_class_set(symbol_t sym, symbol_class_t class_, bool declaring) {
@@ -74,6 +91,10 @@ symbol_list_t grammar_symbol_append(symbol_t sym) {
     ++nritems;
 
   return p;
+}
+
+void grammar_start_symbols_add(symbol_list_t syms) {
+  start_symbols = syms;
 }
 
 void grammar_current_rule_begin(symbol_t lhs) {
@@ -740,6 +761,8 @@ void gram_init() {
   symbol_class_set(symbol_get("TASKPAYLOADWORKGROUPEXT"), symbol_class_t.token_sym, true);
 
   symbol_class_set(symbol_get("PRECISE"), symbol_class_t.token_sym, true);
+
+  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
 
   grammar_current_rule_begin(symbol_get("variable_identifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -4049,7 +4072,7 @@ symbol_t eoftoken;
 
 symbol_list_t grammar;
 symbol_list_t grammar_end;
-
+symbol_list_t start_symbols;
 symbol_list_t current_rule;
 symbol_list_t previous_rule_end;
 
