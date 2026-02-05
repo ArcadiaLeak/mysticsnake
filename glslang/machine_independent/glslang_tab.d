@@ -52,7 +52,7 @@ enum symbol_class_t {
   unknown_sym,
   percent_type_sym,
   token_sym,
-  nonterm_sym
+  nterm_sym
 }
 
 enum symbol_number_t NUMBER_UNDEFINED = -1;
@@ -127,23 +127,28 @@ void allocate_itemsets() {
 
 void gram_init_pre() {
   acceptsymbol = symbol_get("$accept");
-  acceptsymbol.content.class_ = symbol_class_t.nonterm_sym;
+  acceptsymbol.order_of_appearance = 0;
+  acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
   acceptsymbol.content.number = nnterms++;
 
   errtoken = symbol_get("YYerror");
+  errtoken.order_of_appearance = 0;
   errtoken.content.class_ = symbol_class_t.token_sym;
   errtoken.content.number = ntokens++;
   {
     symbol_t alias_ = symbol_get("error");
+    alias_.order_of_appearance = 0;
     alias_.content.class_ = symbol_class_t.token_sym;
     errtoken.make_alias(alias_);
   }
 
   undeftoken = symbol_get("YYUNDEF");
+  undeftoken.order_of_appearance = 0;
   undeftoken.content.class_ = symbol_class_t.token_sym;
   undeftoken.content.number = ntokens++;
   {
     symbol_t alias_ = symbol_get("$undefined");
+    alias_.order_of_appearance = 0;
     alias_.content.class_ = symbol_class_t.token_sym;
     undeftoken.make_alias(alias_);
   }
@@ -151,10 +156,12 @@ void gram_init_pre() {
 
 void gram_init_post() {
   eoftoken = symbol_get("YYEOF");
+  eoftoken.order_of_appearance = 0;
   eoftoken.content.class_ = symbol_class_t.token_sym;
   eoftoken.content.number = 0;
   {
     symbol_t alias_ = symbol_get("$end");
+    alias_.order_of_appearance = 0;
     alias_.content.class_ = symbol_class_t.token_sym;
     eoftoken.make_alias(alias_);
   }
@@ -189,10 +196,11 @@ void create_start_rule(symbol_t swtok, symbol_t start) {
   grammar = initial_rule;
 }
 
-void declare_sym(symbol_t sym, symbol_class_t class_) {
+symbol_t declare_sym(symbol_t sym, symbol_class_t class_) {
   static int order_of_appearance = 0;
   sym.content.class_ = class_;
   sym.order_of_appearance = ++order_of_appearance;
+  return sym;
 }
 
 symbol_t symbol_get(string key) {
@@ -201,11 +209,12 @@ symbol_t symbol_get(string key) {
 
 symbol_t dummy_symbol_get() {
   import std.format;
-  static int dummy_count = 0;
 
-  symbol_t sym = symbol_get(format("$@%d", ++dummy_count));
-  sym.content.class_ = symbol_class_t.nonterm_sym;
-  return sym;
+  static int dummy_count = 0;
+  return declare_sym(
+    symbol_get(format("$@%d", ++dummy_count)),
+    symbol_class_t.nterm_sym
+  );
 }
 
 symbol_list_t grammar_symbol_append(symbol_t sym) {
@@ -236,7 +245,7 @@ void grammar_current_rule_begin(symbol_t lhs) {
 
   if (lhs.content.class_ == symbol_class_t.unknown_sym ||
     lhs.content.class_ == symbol_class_t.percent_type_sym) {
-    lhs.content.class_ = symbol_class_t.nonterm_sym;
+    lhs.content.class_ = symbol_class_t.nterm_sym;
   }
 }
 
@@ -294,7 +303,7 @@ void packgram() {
   }
 }
 
-void gram_init() {
+void token_init() {
   declare_sym(symbol_get("CONST"), symbol_class_t.token_sym);
   declare_sym(symbol_get("BOOL"), symbol_class_t.token_sym);
   declare_sym(symbol_get("INT"), symbol_class_t.token_sym);
@@ -910,12 +919,10 @@ void gram_init() {
   declare_sym(symbol_get("TASKPAYLOADWORKGROUPEXT"), symbol_class_t.token_sym);
 
   declare_sym(symbol_get("PRECISE"), symbol_class_t.token_sym);
+}
 
-  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
-
-  grammar_current_rule_begin(symbol_get("variable_identifier"));
-  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
-  grammar_current_rule_end();
+void primary_expression_init() {
+  declare_sym(symbol_get("primary_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("primary_expression"));
   grammar_current_rule_symbol_append(symbol_get("variable_identifier"));
@@ -978,6 +985,10 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("primary_expression"));
   grammar_current_rule_symbol_append(symbol_get("FLOAT16CONSTANT"));
   grammar_current_rule_end();
+}
+
+void postfix_expression_init() {
+  declare_sym(symbol_get("postfix_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("postfix_expression"));
   grammar_current_rule_symbol_append(symbol_get("primary_expression"));
@@ -1009,18 +1020,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("postfix_expression"));
   grammar_current_rule_symbol_append(symbol_get("DEC_OP"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("integer_expression"));
-  grammar_current_rule_symbol_append(symbol_get("expression"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("function_call"));
-  grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
-  grammar_current_rule_end();
-
-  grammar_current_rule_begin(symbol_get("function_call_or_method"));
-  grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
-  grammar_current_rule_end();
+void function_call_generic_init() {
+  declare_sym(symbol_get("function_call_generic"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_call_generic"));
   grammar_current_rule_symbol_append(symbol_get("function_call_header_with_parameters"));
@@ -1031,6 +1034,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("function_call_header_no_parameters"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
   grammar_current_rule_end();
+}
+
+void function_call_header_no_parameters_init() {
+  declare_sym(symbol_get("function_call_header_no_parameters"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_call_header_no_parameters"));
   grammar_current_rule_symbol_append(symbol_get("function_call_header"));
@@ -1040,6 +1047,10 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("function_call_header_no_parameters"));
   grammar_current_rule_symbol_append(symbol_get("function_call_header"));
   grammar_current_rule_end();
+}
+
+void function_call_header_with_parameters_init() {
+  declare_sym(symbol_get("function_call_header_with_parameters"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_call_header_with_parameters"));
   grammar_current_rule_symbol_append(symbol_get("function_call_header"));
@@ -1051,11 +1062,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("function_call_header"));
-  grammar_current_rule_symbol_append(symbol_get("function_identifier"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
-  grammar_current_rule_end();
+void function_identifier_init() {
+  declare_sym(symbol_get("function_identifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_identifier"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
@@ -1068,6 +1078,10 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("function_identifier"));
   grammar_current_rule_symbol_append(symbol_get("non_uniform_qualifier"));
   grammar_current_rule_end();
+}
+
+void unary_expression_init() {
+  declare_sym(symbol_get("unary_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("unary_expression"));
   grammar_current_rule_symbol_append(symbol_get("postfix_expression"));
@@ -1087,6 +1101,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
   grammar_current_rule_end();
+}
+
+void unary_operator_init() {
+  declare_sym(symbol_get("unary_operator"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("unary_operator"));
   grammar_current_rule_symbol_append(symbol_get("PLUS"));
@@ -1103,6 +1121,10 @@ void gram_init() {
   grammar_current_rule_begin(symbol_get("unary_operator"));
   grammar_current_rule_symbol_append(symbol_get("TILDE"));
   grammar_current_rule_end();
+}
+
+void multiplicative_expression_init() {
+  declare_sym(symbol_get("multiplicative_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("multiplicative_expression"));
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
@@ -1125,6 +1147,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("PERCENT"));
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
   grammar_current_rule_end();
+}
+
+void additive_expression_init() {
+  declare_sym(symbol_get("additive_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("additive_expression"));
   grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
@@ -1141,6 +1167,10 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("DASH"));
   grammar_current_rule_symbol_append(symbol_get("multiplicative_expression"));
   grammar_current_rule_end();
+}
+
+void shift_expression_init() {
+  declare_sym(symbol_get("shift_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("shift_expression"));
   grammar_current_rule_symbol_append(symbol_get("additive_expression"));
@@ -1157,7 +1187,11 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("RIGHT_OP"));
   grammar_current_rule_symbol_append(symbol_get("additive_expression"));
   grammar_current_rule_end();
+}
 
+void relational_expression_init() {
+  declare_sym(symbol_get("relational_expression"), symbol_class_t.nterm_sym);
+  
   grammar_current_rule_begin(symbol_get("relational_expression"));
   grammar_current_rule_symbol_append(symbol_get("shift_expression"));
   grammar_current_rule_end();
@@ -1185,7 +1219,53 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("GE_OP"));
   grammar_current_rule_symbol_append(symbol_get("shift_expression"));
   grammar_current_rule_end();
+}
 
+void nterm_init() {
+  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
+
+  declare_sym(symbol_get("variable_identifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("variable_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  primary_expression_init();
+  postfix_expression_init();
+
+  declare_sym(symbol_get("integer_expression"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("integer_expression"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_end();
+
+  declare_sym(symbol_get("function_call"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
+  grammar_current_rule_end();
+
+  declare_sym(symbol_get("function_call_or_method"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call_or_method"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
+  grammar_current_rule_end();
+
+  function_call_generic_init();
+  function_call_header_no_parameters_init();
+  function_call_header_with_parameters_init();
+
+  declare_sym(symbol_get("function_call_header"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call_header"));
+  grammar_current_rule_symbol_append(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_end();
+
+  function_identifier_init();
+  unary_expression_init();
+  unary_operator_init();
+  multiplicative_expression_init();
+  additive_expression_init();
+  shift_expression_init();
+  relational_expression_init();
+
+  declare_sym(symbol_get("equality_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("equality_expression"));
   grammar_current_rule_symbol_append(symbol_get("relational_expression"));
   grammar_current_rule_end();
@@ -1202,6 +1282,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("relational_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("and_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("and_expression"));
   grammar_current_rule_symbol_append(symbol_get("equality_expression"));
   grammar_current_rule_end();
@@ -1212,6 +1293,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("equality_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("exclusive_or_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("exclusive_or_expression"));
   grammar_current_rule_symbol_append(symbol_get("and_expression"));
   grammar_current_rule_end();
@@ -1222,6 +1304,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("and_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("inclusive_or_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("inclusive_or_expression"));
   grammar_current_rule_symbol_append(symbol_get("exclusive_or_expression"));
   grammar_current_rule_end();
@@ -1232,6 +1315,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("exclusive_or_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("logical_and_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("logical_and_expression"));
   grammar_current_rule_symbol_append(symbol_get("inclusive_or_expression"));
   grammar_current_rule_end();
@@ -1242,6 +1326,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("inclusive_or_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("logical_xor_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("logical_xor_expression"));
   grammar_current_rule_symbol_append(symbol_get("logical_and_expression"));
   grammar_current_rule_end();
@@ -1252,6 +1337,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("logical_and_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("logical_or_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("logical_or_expression"));
   grammar_current_rule_symbol_append(symbol_get("logical_xor_expression"));
   grammar_current_rule_end();
@@ -1262,6 +1348,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("logical_xor_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("conditional_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("conditional_expression"));
   grammar_current_rule_symbol_append(symbol_get("logical_or_expression"));
   grammar_current_rule_end();
@@ -1275,6 +1362,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("assignment_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("assignment_expression"));
   grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
   grammar_current_rule_end();
@@ -1285,6 +1373,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("assignment_operator"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("assignment_operator"));
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
   grammar_current_rule_end();
@@ -1329,6 +1418,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("OR_ASSIGN"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("expression"));
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
   grammar_current_rule_end();
@@ -1339,10 +1429,12 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("constant_expression"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("constant_expression"));
   grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("declaration"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("declaration"));
   grammar_current_rule_symbol_append(symbol_get("function_prototype"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
@@ -1400,6 +1492,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("block_structure"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("block_structure"));
   grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -1409,6 +1502,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("identifier_list"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("identifier_list"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
@@ -1419,6 +1513,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("function_prototype"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_prototype"));
   grammar_current_rule_symbol_append(symbol_get("function_declarator"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
@@ -1443,6 +1538,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("attribute"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("function_declarator"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_declarator"));
   grammar_current_rule_symbol_append(symbol_get("function_header"));
   grammar_current_rule_end();
@@ -1451,6 +1547,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("function_header_with_parameters"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("function_header_with_parameters"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_header_with_parameters"));
   grammar_current_rule_symbol_append(symbol_get("function_header"));
   grammar_current_rule_symbol_append(symbol_get("parameter_declaration"));
@@ -1470,12 +1567,14 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("DOT"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("function_header"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_header"));
   grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("parameter_declarator"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("parameter_declarator"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -1494,6 +1593,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("initializer"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("parameter_declaration"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("parameter_declaration"));
   grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("parameter_declarator"));
@@ -1512,6 +1612,7 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("parameter_type_specifier"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("parameter_type_specifier"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("parameter_type_specifier"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
   grammar_current_rule_end();
@@ -4152,4 +4253,9 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
   grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
   grammar_current_rule_end();
+}
+
+void gram_init() {
+  token_init();
+  nterm_init();
 }
