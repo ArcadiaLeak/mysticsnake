@@ -1,5 +1,127 @@
 module glslang.machine_independent.glslang_tab;
 
+symbol_t acceptsymbol;
+symbol_t errtoken;
+symbol_t undeftoken;
+symbol_t eoftoken;
+
+symbol_t[string] symbol_table;
+
+symbol_list_t grammar;
+symbol_list_t grammar_end;
+symbol_list_t start_symbols;
+symbol_list_t current_rule;
+symbol_list_t previous_rule_end;
+
+item_number_t[] ritem;
+int nritems = 0;
+
+rule_t[] rules;
+rule_number_t nrules = 0;
+
+int nnterms = 0;
+int ntokens = 1;
+int nsyms = 0;
+
+item_index_t[][] kernel_base;
+item_index_t[] kernel_items;
+
+static this() {
+  gram_init_pre();
+  gram_init();
+  gram_init_post();
+  generate_states();
+}
+
+void main() {
+  import std.stdio;
+
+  writeln(ntokens);
+  writeln(nnterms);
+  writeln(nrules);
+  writeln(nritems);
+}
+
+alias symbol_number_t = int;
+alias rule_number_t = int;
+alias item_number_t = int;
+
+alias item_index_t = uint;
+
+enum symbol_class_t {
+  unknown_sym,
+  percent_type_sym,
+  token_sym,
+  nonterm_sym
+}
+
+enum symbol_number_t NUMBER_UNDEFINED = -1;
+
+struct sym_content_arg_t {
+  symbol_class_t class_;
+  symbol_number_t number;
+}
+
+class sym_content_t {
+  symbol_t symbol;
+  symbol_class_t class_;
+  symbol_number_t number;
+
+  this(symbol_t s) {
+    symbol = s;
+
+    class_ = symbol_class_t.unknown_sym;
+    number = NUMBER_UNDEFINED;
+  }
+}
+
+class symbol_t {
+  string tag;
+  sym_content_t content;
+  symbol_t alias_;
+  bool is_alias;
+
+  this(string tag) {
+    this.tag = tag;
+    this.content = new sym_content_t(this);
+  }
+
+  void make_alias(symbol_t str) {
+    str.content = this.content;
+    str.content.symbol = str;
+    str.is_alias = true;
+    str.alias_ = this;
+    this.alias_ = str;
+  }
+}
+
+class symbol_list_t {
+  symbol_t sym;
+  symbol_list_t next;
+
+  this(symbol_t sym) {
+    this.sym = sym;
+  }
+}
+
+struct rule_t {
+  sym_content_t lhs;
+  item_number_t[] rhs;
+}
+
+void generate_states() {
+  allocate_storage();
+}
+
+void allocate_storage() {
+  allocate_itemsets();
+}
+
+void allocate_itemsets() {
+  size_t count = 0;
+  size_t[] symbol_count = new size_t[nsyms];
+}
+
 void gram_init_pre() {
   acceptsymbol = symbol_get("$accept");
   acceptsymbol.content.class_ = symbol_class_t.nonterm_sym;
@@ -34,6 +156,9 @@ void gram_init_post() {
     eoftoken.make_alias(alias_);
   }
 
+  symbol_t start = start_symbols.sym;
+  create_start_rule(null, start);
+
   foreach (sym; symbol_table.byValue) {
     sym_content_t s = sym.content;
 
@@ -41,8 +166,9 @@ void gram_init_post() {
       s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
   }
 
-  symbol_t start = start_symbols.sym;
-  create_start_rule(null, start);
+  nsyms = ntokens + nnterms;
+
+  packgram();
 }
 
 void create_start_rule(symbol_t swtok, symbol_t start) {
@@ -56,6 +182,7 @@ void create_start_rule(symbol_t swtok, symbol_t start) {
   p = p.next;
   p.next = grammar;
   nrules += 1;
+  nritems += 3;
   grammar = initial_rule;
 }
 
@@ -138,10 +265,28 @@ void grammar_midrule_action() {
 }
 
 void packgram() {
+  import std.range.primitives;
+
+  int itemno = 0;
+  ritem = new item_number_t[nritems];
+
+  rule_number_t ruleno = 0;
+  rules = new rule_t[nrules];
+
   for (symbol_list_t p = grammar; p; p = p.next) {
     symbol_list_t lhs = p;
 
+    rules[ruleno].lhs = lhs.sym.content;
+    rules[ruleno].rhs = ritem[itemno..$];
 
+    size_t rule_length = 0;
+    for (p = lhs.next; p.sym; p = p.next) {
+      ++rule_length;
+      ritem[itemno++] = p.sym.content.number;
+    }
+
+    ritem[itemno++] = ruleno;
+    ++ruleno;
   }
 }
 
@@ -4003,100 +4148,4 @@ void gram_init() {
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
   grammar_current_rule_symbol_append(symbol_get("INTCONSTANT"));
   grammar_current_rule_end();
-}
-
-alias symbol_number_t = int;
-
-enum symbol_class_t {
-  unknown_sym,
-  percent_type_sym,
-  token_sym,
-  nonterm_sym
-}
-
-enum symbol_number_t NUMBER_UNDEFINED = -1;
-
-struct sym_content_arg_t {
-  symbol_class_t class_;
-  symbol_number_t number;
-}
-
-class sym_content_t {
-  symbol_t symbol;
-  symbol_class_t class_;
-  symbol_number_t number;
-
-  this(symbol_t s) {
-    symbol = s;
-
-    class_ = symbol_class_t.unknown_sym;
-    number = NUMBER_UNDEFINED;
-  }
-}
-
-class symbol_t {
-  string tag;
-  sym_content_t content;
-  symbol_t alias_;
-  bool is_alias;
-
-  this(string tag) {
-    this.tag = tag;
-    this.content = new sym_content_t(this);
-  }
-
-  void make_alias(symbol_t str) {
-    str.content = this.content;
-    str.content.symbol = str;
-    str.is_alias = true;
-    str.alias_ = this;
-    this.alias_ = str;
-  }
-}
-
-class symbol_list_t {
-  symbol_t sym;
-  symbol_list_t next;
-
-  this(symbol_t sym) {
-    this.sym = sym;
-  }
-}
-
-class rule_t {}
-
-symbol_t acceptsymbol;
-symbol_t errtoken;
-symbol_t undeftoken;
-symbol_t eoftoken;
-
-symbol_list_t grammar;
-symbol_list_t grammar_end;
-symbol_list_t start_symbols;
-symbol_list_t current_rule;
-symbol_list_t previous_rule_end;
-
-rule_t[] rules;
-int nrules = 0;
-
-int nnterms = 0;
-int ntokens = 1;
-
-int nritems = 0;
-
-symbol_t[string] symbol_table;
-
-static this() {
-  gram_init_pre();
-  gram_init();
-  gram_init_post();
-  packgram();
-}
-
-void main() {
-  import std.stdio;
-
-  writeln(ntokens);
-  writeln(nnterms);
-  writeln(nrules);
 }
