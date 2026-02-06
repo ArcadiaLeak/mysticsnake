@@ -1729,114 +1729,8 @@ void interpolation_qualifier_init() {
   grammar_current_rule_end();
 }
 
-void nterm_init() {
-  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
-
-  declare_sym(symbol_get("variable_identifier"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("variable_identifier"));
-  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
-  grammar_current_rule_end();
-
-  primary_expression_init();
-  postfix_expression_init();
-
-  declare_sym(symbol_get("integer_expression"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("integer_expression"));
-  grammar_current_rule_symbol_append(symbol_get("expression"));
-  grammar_current_rule_end();
-
-  declare_sym(symbol_get("function_call"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("function_call"));
-  grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
-  grammar_current_rule_end();
-
-  declare_sym(symbol_get("function_call_or_method"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("function_call_or_method"));
-  grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
-  grammar_current_rule_end();
-
-  function_call_generic_init();
-  function_call_header_no_parameters_init();
-  function_call_header_with_parameters_init();
-
-  declare_sym(symbol_get("function_call_header"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("function_call_header"));
-  grammar_current_rule_symbol_append(symbol_get("function_identifier"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
-  grammar_current_rule_end();
-
-  function_identifier_init();
-  unary_expression_init();
-  unary_operator_init();
-  multiplicative_expression_init();
-  additive_expression_init();
-  shift_expression_init();
-  relational_expression_init();
-  equality_expression_init();
-  and_expression_init();
-  exclusive_or_expression_init();
-  inclusive_or_expression_init();
-  logical_and_expression_init();
-  logical_xor_expression_init();
-  logical_or_expression_init();
-  conditional_expression_init();
-  assignment_expression_init();
-  assignment_operator_init();
-  expression_init();
-
-  declare_sym(symbol_get("constant_expression"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("constant_expression"));
-  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
-  grammar_current_rule_end();
-
-  declaration_init();
-
-  declare_sym(symbol_get("block_structure"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("block_structure"));
-  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
-  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
-  grammar_midrule_action();
-  grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
-  grammar_current_rule_end();
-
-  identifier_list_init();
-  function_prototype_init();
-  function_declarator_init();
-  function_header_with_parameters_init();
-
-  declare_sym(symbol_get("function_header"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("function_header"));
-  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
-  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
-  grammar_current_rule_end();
-
-  parameter_declarator_init();
-  parameter_declaration_init();
-
-  declare_sym(symbol_get("parameter_type_specifier"), symbol_class_t.nterm_sym);
-  grammar_current_rule_begin(symbol_get("parameter_type_specifier"));
-  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
-  grammar_current_rule_end();
-
-  init_declarator_list_init();
-  single_declaration_init();
-  fully_specified_type_init();
-
-  grammar_current_rule_begin(symbol_get("invariant_qualifier"));
-  grammar_current_rule_symbol_append(symbol_get("INVARIANT"));
-  grammar_current_rule_end();
-
-  interpolation_qualifier_init();
-
-  grammar_current_rule_begin(symbol_get("layout_qualifier"));
-  grammar_current_rule_symbol_append(symbol_get("LAYOUT"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
-  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id_list"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
-  grammar_current_rule_end();
+void layout_qualifier_id_list_init() {
+  declare_sym(symbol_get("layout_qualifier_id_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("layout_qualifier_id_list"));
   grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id"));
@@ -1847,6 +1741,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id"));
   grammar_current_rule_end();
+}
+
+void layout_qualifier_id_init() {
+  declare_sym(symbol_get("layout_qualifier_id"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("layout_qualifier_id"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -1861,10 +1759,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("layout_qualifier_id"));
   grammar_current_rule_symbol_append(symbol_get("SHARED"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("precise_qualifier"));
-  grammar_current_rule_symbol_append(symbol_get("PRECISE"));
-  grammar_current_rule_end();
+void type_qualifier_init() {
+  declare_sym(symbol_get("type_qualifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("single_type_qualifier"));
@@ -1874,6 +1772,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("single_type_qualifier"));
   grammar_current_rule_end();
+}
+
+void single_type_qualifier_init() {
+  declare_sym(symbol_get("single_type_qualifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("single_type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("storage_qualifier"));
@@ -1918,6 +1820,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("single_type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("SPIRV_LITERAL"));
   grammar_current_rule_end();
+}
+
+void storage_qualifier_init() {
+  declare_sym(symbol_get("storage_qualifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("storage_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("CONST"));
@@ -2081,10 +1987,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("storage_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("TASKPAYLOADWORKGROUPEXT"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("non_uniform_qualifier"));
-  grammar_current_rule_symbol_append(symbol_get("NONUNIFORM"));
-  grammar_current_rule_end();
+void type_name_list_init() {
+  declare_sym(symbol_get("type_name_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_name_list"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -2095,6 +2001,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
+}
+
+void type_specifier_init() {
+  declare_sym(symbol_get("type_specifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_specifier"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier_nonarray"));
@@ -2106,6 +2016,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_opt"));
   grammar_current_rule_symbol_append(symbol_get("array_specifier"));
   grammar_current_rule_end();
+}
+
+void array_specifier_init() {
+  declare_sym(symbol_get("array_specifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("array_specifier"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
@@ -2130,6 +2044,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACKET"));
   grammar_current_rule_end();
+}
+
+void type_parameter_specifier_opt_init() {
+  declare_sym(symbol_get("type_parameter_specifier_opt"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_parameter_specifier_opt"));
   grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier"));
@@ -2137,12 +2055,10 @@ void nterm_init() {
 
   grammar_current_rule_begin(symbol_get("type_parameter_specifier_opt"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("type_parameter_specifier"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_ANGLE"));
-  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_list"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_ANGLE"));
-  grammar_current_rule_end();
+void type_parameter_specifier_list_init() {
+  declare_sym(symbol_get("type_parameter_specifier_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_parameter_specifier_list"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
@@ -2157,6 +2073,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
   grammar_current_rule_end();
+}
+
+void type_specifier_nonarray_init() {
+  declare_sym(symbol_get("type_specifier_nonarray"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
   grammar_current_rule_symbol_append(symbol_get("VOID"));
@@ -3509,6 +3429,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
   grammar_current_rule_symbol_append(symbol_get("TYPE_NAME"));
   grammar_current_rule_end();
+}
+
+void precision_qualifier_init() {
+  declare_sym(symbol_get("precision_qualifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("precision_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("HIGH_PRECISION"));
@@ -3521,6 +3445,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("precision_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("LOW_PRECISION"));
   grammar_current_rule_end();
+}
+
+void struct_specifier_init() {
+  declare_sym(symbol_get("struct_specifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("struct_specifier"));
   grammar_current_rule_symbol_append(symbol_get("STRUCT"));
@@ -3538,6 +3466,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
+}
+
+void struct_declaration_list_init() {
+  declare_sym(symbol_get("struct_declaration_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("struct_declaration"));
@@ -3547,6 +3479,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
   grammar_current_rule_symbol_append(symbol_get("struct_declaration"));
   grammar_current_rule_end();
+}
+
+void struct_declaration_init() {
+  declare_sym(symbol_get("struct_declaration"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("struct_declaration"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
@@ -3560,6 +3496,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("struct_declarator_list"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_end();
+}
+
+void struct_declarator_list_init() {
+  declare_sym(symbol_get("struct_declarator_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("struct_declarator_list"));
   grammar_current_rule_symbol_append(symbol_get("struct_declarator"));
@@ -3570,6 +3510,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("struct_declarator"));
   grammar_current_rule_end();
+}
+
+void struct_declarator_init() {
+  declare_sym(symbol_get("struct_declarator"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("struct_declarator"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -3579,6 +3523,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_symbol_append(symbol_get("array_specifier"));
   grammar_current_rule_end();
+}
+
+void initializer_init() {
+  declare_sym(symbol_get("initializer"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("initializer"));
   grammar_current_rule_symbol_append(symbol_get("assignment_expression"));
@@ -3601,6 +3549,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
+}
+
+void initializer_list_init() {
+  declare_sym(symbol_get("initializer_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("initializer_list"));
   grammar_current_rule_symbol_append(symbol_get("initializer"));
@@ -3611,10 +3563,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("COMMA"));
   grammar_current_rule_symbol_append(symbol_get("initializer"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("declaration_statement"));
-  grammar_current_rule_symbol_append(symbol_get("declaration"));
-  grammar_current_rule_end();
+void statement_init() {
+  declare_sym(symbol_get("statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("statement"));
   grammar_current_rule_symbol_append(symbol_get("compound_statement"));
@@ -3623,6 +3575,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("statement"));
   grammar_current_rule_symbol_append(symbol_get("simple_statement"));
   grammar_current_rule_end();
+}
+
+void simple_statement_init() {
+  declare_sym(symbol_get("simple_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("simple_statement"));
   grammar_current_rule_symbol_append(symbol_get("declaration_statement"));
@@ -3655,11 +3611,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("simple_statement"));
   grammar_current_rule_symbol_append(symbol_get("demote_statement"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("demote_statement"));
-  grammar_current_rule_symbol_append(symbol_get("DEMOTE"));
-  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
-  grammar_current_rule_end();
+void compound_statement_init() {
+  declare_sym(symbol_get("compound_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("compound_statement"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
@@ -3673,6 +3628,10 @@ void nterm_init() {
   grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
+}
+
+void statement_no_new_scope_init() {
+  declare_sym(symbol_get("statement_no_new_scope"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("statement_no_new_scope"));
   grammar_current_rule_symbol_append(symbol_get("compound_statement_no_new_scope"));
@@ -3681,6 +3640,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("statement_no_new_scope"));
   grammar_current_rule_symbol_append(symbol_get("simple_statement"));
   grammar_current_rule_end();
+}
+
+void statement_scoped_init() {
+  declare_sym(symbol_get("statement_scoped"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("statement_scoped"));
   grammar_midrule_action();
@@ -3691,6 +3654,10 @@ void nterm_init() {
   grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("simple_statement"));
   grammar_current_rule_end();
+}
+
+void compound_statement_no_new_scope_init() {
+  declare_sym(symbol_get("compound_statement_no_new_scope"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("compound_statement_no_new_scope"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
@@ -3702,6 +3669,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("statement_list"));
   grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
   grammar_current_rule_end();
+}
+
+void statement_list_init() {
+  declare_sym(symbol_get("statement_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("statement_list"));
   grammar_current_rule_symbol_append(symbol_get("statement"));
@@ -3711,6 +3682,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("statement_list"));
   grammar_current_rule_symbol_append(symbol_get("statement"));
   grammar_current_rule_end();
+}
+
+void expression_statement_init() {
+  declare_sym(symbol_get("expression_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("expression_statement"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
@@ -3720,6 +3695,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("expression"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_end();
+}
+
+void selection_statement_init() {
+  declare_sym(symbol_get("selection_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("selection_statement"));
   grammar_current_rule_symbol_append(symbol_get("selection_statement_nonattributed"));
@@ -3729,14 +3708,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("attribute"));
   grammar_current_rule_symbol_append(symbol_get("selection_statement_nonattributed"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("selection_statement_nonattributed"));
-  grammar_current_rule_symbol_append(symbol_get("IF"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
-  grammar_current_rule_symbol_append(symbol_get("expression"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
-  grammar_current_rule_symbol_append(symbol_get("selection_rest_statement"));
-  grammar_current_rule_end();
+void selection_rest_statement_init() {
+  declare_sym(symbol_get("selection_rest_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("selection_rest_statement"));
   grammar_current_rule_symbol_append(symbol_get("statement_scoped"));
@@ -3747,6 +3722,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("selection_rest_statement"));
   grammar_current_rule_symbol_append(symbol_get("statement_scoped"));
   grammar_current_rule_end();
+}
+
+void condition_init() {
+  declare_sym(symbol_get("condition"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("condition"));
   grammar_current_rule_symbol_append(symbol_get("expression"));
@@ -3758,6 +3737,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("EQUAL"));
   grammar_current_rule_symbol_append(symbol_get("initializer"));
   grammar_current_rule_end();
+}
+
+void switch_statement_init() {
+  declare_sym(symbol_get("switch_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("switch_statement"));
   grammar_current_rule_symbol_append(symbol_get("switch_statement_nonattributed"));
@@ -3767,17 +3750,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("attribute"));
   grammar_current_rule_symbol_append(symbol_get("switch_statement_nonattributed"));
   grammar_current_rule_end();
+}
 
-  grammar_current_rule_begin(symbol_get("switch_statement_nonattributed"));
-  grammar_current_rule_symbol_append(symbol_get("SWITCH"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
-  grammar_current_rule_symbol_append(symbol_get("expression"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
-  grammar_midrule_action();
-  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
-  grammar_current_rule_symbol_append(symbol_get("switch_statement_list"));
-  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
-  grammar_current_rule_end();
+void switch_statement_list_init() {
+  declare_sym(symbol_get("switch_statement_list"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("switch_statement_list"));
   grammar_current_rule_end();
@@ -3785,6 +3761,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("switch_statement_list"));
   grammar_current_rule_symbol_append(symbol_get("statement_list"));
   grammar_current_rule_end();
+}
+
+void case_label_init() {
+  declare_sym(symbol_get("case_label"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("case_label"));
   grammar_current_rule_symbol_append(symbol_get("CASE"));
@@ -3796,6 +3776,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("DEFAULT"));
   grammar_current_rule_symbol_append(symbol_get("COLON"));
   grammar_current_rule_end();
+}
+
+void iteration_statement_init() {
+  declare_sym(symbol_get("iteration_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("iteration_statement"));
   grammar_current_rule_symbol_append(symbol_get("iteration_statement_nonattributed"));
@@ -3805,6 +3789,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("attribute"));
   grammar_current_rule_symbol_append(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_end();
+}
+
+void iteration_statement_nonattributed_init() {
+  declare_sym(symbol_get("iteration_statement_nonattributed"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("WHILE"));
@@ -3835,6 +3823,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
   grammar_current_rule_symbol_append(symbol_get("statement_no_new_scope"));
   grammar_current_rule_end();
+}
+
+void for_init_statement_init() {
+  declare_sym(symbol_get("for_init_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("for_init_statement"));
   grammar_current_rule_symbol_append(symbol_get("expression_statement"));
@@ -3843,6 +3835,10 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("for_init_statement"));
   grammar_current_rule_symbol_append(symbol_get("declaration_statement"));
   grammar_current_rule_end();
+}
+
+void conditionopt_init() {
+  declare_sym(symbol_get("conditionopt"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("conditionopt"));
   grammar_current_rule_symbol_append(symbol_get("condition"));
@@ -3850,6 +3846,10 @@ void nterm_init() {
 
   grammar_current_rule_begin(symbol_get("conditionopt"));
   grammar_current_rule_end();
+}
+
+void for_rest_statement_init() {
+  declare_sym(symbol_get("for_rest_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("for_rest_statement"));
   grammar_current_rule_symbol_append(symbol_get("conditionopt"));
@@ -3861,6 +3861,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_symbol_append(symbol_get("expression"));
   grammar_current_rule_end();
+}
+
+void jump_statement_init() {
+  declare_sym(symbol_get("jump_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("jump_statement"));
   grammar_current_rule_symbol_append(symbol_get("CONTINUE"));
@@ -3902,6 +3906,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("IGNORE_INTERSECTION"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_end();
+}
+
+void translation_unit_init() {
+  declare_sym(symbol_get("translation_unit"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("translation_unit"));
   grammar_current_rule_symbol_append(symbol_get("external_declaration"));
@@ -3911,6 +3919,10 @@ void nterm_init() {
   grammar_current_rule_symbol_append(symbol_get("translation_unit"));
   grammar_current_rule_symbol_append(symbol_get("external_declaration"));
   grammar_current_rule_end();
+}
+
+void external_declaration_init() {
+  declare_sym(symbol_get("external_declaration"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("external_declaration"));
   grammar_current_rule_symbol_append(symbol_get("function_definition"));
@@ -3923,13 +3935,225 @@ void nterm_init() {
   grammar_current_rule_begin(symbol_get("external_declaration"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
   grammar_current_rule_end();
+}
 
+void nterm_init() {
+  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
+
+  declare_sym(symbol_get("variable_identifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("variable_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_end();
+
+  primary_expression_init();
+  postfix_expression_init();
+
+  declare_sym(symbol_get("integer_expression"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("integer_expression"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_end();
+
+  declare_sym(symbol_get("function_call"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
+  grammar_current_rule_end();
+
+  declare_sym(symbol_get("function_call_or_method"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call_or_method"));
+  grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
+  grammar_current_rule_end();
+
+  function_call_generic_init();
+  function_call_header_no_parameters_init();
+  function_call_header_with_parameters_init();
+
+  declare_sym(symbol_get("function_call_header"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_call_header"));
+  grammar_current_rule_symbol_append(symbol_get("function_identifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_end();
+
+  function_identifier_init();
+  unary_expression_init();
+  unary_operator_init();
+  multiplicative_expression_init();
+  additive_expression_init();
+  shift_expression_init();
+  relational_expression_init();
+  equality_expression_init();
+  and_expression_init();
+  exclusive_or_expression_init();
+  inclusive_or_expression_init();
+  logical_and_expression_init();
+  logical_xor_expression_init();
+  logical_or_expression_init();
+  conditional_expression_init();
+  assignment_expression_init();
+  assignment_operator_init();
+  expression_init();
+
+  declare_sym(symbol_get("constant_expression"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("constant_expression"));
+  grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
+  grammar_current_rule_end();
+
+  declaration_init();
+
+  declare_sym(symbol_get("block_structure"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("block_structure"));
+  grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_midrule_action();
+  grammar_current_rule_symbol_append(symbol_get("struct_declaration_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
+  grammar_current_rule_end();
+
+  identifier_list_init();
+  function_prototype_init();
+  function_declarator_init();
+  function_header_with_parameters_init();
+
+  declare_sym(symbol_get("function_header"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("function_header"));
+  grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
+  grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_end();
+
+  parameter_declarator_init();
+  parameter_declaration_init();
+
+  declare_sym(symbol_get("parameter_type_specifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("parameter_type_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("type_specifier"));
+  grammar_current_rule_end();
+
+  init_declarator_list_init();
+  single_declaration_init();
+  fully_specified_type_init();
+
+  declare_sym(symbol_get("invariant_qualifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("invariant_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("INVARIANT"));
+  grammar_current_rule_end();
+
+  interpolation_qualifier_init();
+
+  declare_sym(symbol_get("layout_qualifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("layout_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("LAYOUT"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("layout_qualifier_id_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_end();
+
+  layout_qualifier_id_list_init();
+  layout_qualifier_id_init();
+
+  declare_sym(symbol_get("precise_qualifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("precise_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("PRECISE"));
+  grammar_current_rule_end();
+
+  type_qualifier_init();
+  single_type_qualifier_init();
+  storage_qualifier_init();
+
+  declare_sym(symbol_get("non_uniform_qualifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("non_uniform_qualifier"));
+  grammar_current_rule_symbol_append(symbol_get("NONUNIFORM"));
+  grammar_current_rule_end();
+
+  type_name_list_init();
+  type_specifier_init();
+  array_specifier_init();
+  type_parameter_specifier_opt_init();
+
+  declare_sym(symbol_get("type_parameter_specifier"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("type_parameter_specifier"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_ANGLE"));
+  grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_ANGLE"));
+  grammar_current_rule_end();
+
+  type_parameter_specifier_list_init();
+  type_specifier_nonarray_init();
+  precision_qualifier_init();
+  struct_specifier_init();
+  struct_declaration_list_init();
+  struct_declaration_init();
+  struct_declarator_list_init();
+  struct_declarator_init();
+  initializer_init();
+  initializer_list_init();
+
+  declare_sym(symbol_get("declaration_statement"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("declaration_statement"));
+  grammar_current_rule_symbol_append(symbol_get("declaration"));
+  grammar_current_rule_end();
+
+  statement_init();
+  simple_statement_init();
+
+  declare_sym(symbol_get("demote_statement"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("demote_statement"));
+  grammar_current_rule_symbol_append(symbol_get("DEMOTE"));
+  grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
+  grammar_current_rule_end();
+
+  compound_statement_init();
+  statement_no_new_scope_init();
+  statement_scoped_init();
+  compound_statement_no_new_scope_init();
+  statement_list_init();
+  expression_statement_init();
+  selection_statement_init();
+
+  declare_sym(symbol_get("selection_statement_nonattributed"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("selection_statement_nonattributed"));
+  grammar_current_rule_symbol_append(symbol_get("IF"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("selection_rest_statement"));
+  grammar_current_rule_end();
+
+  selection_rest_statement_init();
+  condition_init();
+  switch_statement_init();
+
+  declare_sym(symbol_get("switch_statement_nonattributed"), symbol_class_t.nterm_sym);
+  grammar_current_rule_begin(symbol_get("switch_statement_nonattributed"));
+  grammar_current_rule_symbol_append(symbol_get("SWITCH"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
+  grammar_current_rule_symbol_append(symbol_get("expression"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
+  grammar_midrule_action();
+  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACE"));
+  grammar_current_rule_symbol_append(symbol_get("switch_statement_list"));
+  grammar_current_rule_symbol_append(symbol_get("RIGHT_BRACE"));
+  grammar_current_rule_end();
+
+  switch_statement_list_init();
+  case_label_init();
+  iteration_statement_init();
+  iteration_statement_nonattributed_init();
+  for_init_statement_init();
+  conditionopt_init();
+  for_rest_statement_init();
+  jump_statement_init();
+  translation_unit_init();
+  external_declaration_init();
+  
+  declare_sym(symbol_get("function_definition"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_definition"));
   grammar_current_rule_symbol_append(symbol_get("function_prototype"));
   grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("compound_statement_no_new_scope"));
   grammar_current_rule_end();
 
+  declare_sym(symbol_get("attribute"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("attribute"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
