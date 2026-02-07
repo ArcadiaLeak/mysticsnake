@@ -1,14 +1,14 @@
 module glslang.machine_independent.glslang_tab;
 
-static parser_meta = new const parser_init();
+static parser_init = new const parser_init_t();
 
 void main() {
   import std.stdio;
 
-  writeln(parser_meta.ntokens);
-  writeln(parser_meta.nnterms);
-  writeln(parser_meta.nrules);
-  writeln(parser_meta.nritems);
+  writeln(parser_init.ntokens);
+  writeln(parser_init.nnterms);
+  writeln(parser_init.nrules);
+  writeln(parser_init.nritems);
 }
 
 alias item_number_t = int;
@@ -71,10 +71,12 @@ class symbol_t {
   }
 }
 
-class parser_init {
+class parser_init_t {
   symbol_t[] symbols;
   symbol_t[] symbols_sorted;
   symbol_t[string] symbol_table;
+
+  symbol_t acceptsymbol;
 
   item_number_t[] ritem;
   int nritems = 0;
@@ -88,6 +90,8 @@ class parser_init {
   int nsyms = 0;
 
   item_index_t[][] kernel_base;
+  int[] kernel_size;
+
   item_index_t[] kernel_items;
 
   bool[][] fderives;
@@ -95,7 +99,7 @@ class parser_init {
   bool[] ruleset;
 
   this() {
-    new gram_init(this);
+    new gram_init_t(this);
     derives_compute();
     generate_states();
   }
@@ -141,7 +145,7 @@ class parser_init {
     }
   }
 
-  void print_derives() {
+  void print_derives() const {
     import std.range.primitives;
     import std.stdio;
 
@@ -149,11 +153,14 @@ class parser_init {
 
     for (symbol_number_t i = ntokens; i < nsyms; ++i) {
       writef("  %s derives\n", symbols[i].tag);
-      for (rule_t[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
-        writef("    %3d ", rp.front.front.number);
-        if (rp.front.front.rhs.front >= 0)
-          for (item_number_t[] rhsp = rp.front.front.rhs; rhsp.front >= 0; rhsp.popFront)
-            writef(" %s", symbols[rhsp.front].tag);
+      foreach (rp; derives[i - ntokens]) {
+        if (rp is null) break;
+        writef("    %3d ", rp.front.number);
+        if (rp.front.rhs.front >= 0)
+          foreach (rhsi; rp.front.rhs) {
+            if (rhsi < 0) break;
+            writef(" %s", symbols[rhsi].tag);
+          }
         else
           writef(" %s", cast(dchar) 0x03b5);
         write("\n");
@@ -166,6 +173,15 @@ class parser_init {
   void generate_states() {
     allocate_storage();
     closure_new(nritems);
+
+    kernel_size[0] = 0;
+    for (rule_number_t r = 0; r < nrules && rules[r].lhs.symbol == acceptsymbol; ++r)
+      kernel_base[0][kernel_size[0]++] = cast(int) (ritem.length - rules[r].rhs.length);
+    state_list_append(0, kernel_size[0], kernel_base[0]);
+  }
+
+  void state_list_append(symbol_number_t sym, size_t core_size, item_index_t[] core) {
+    
   }
 
   void closure_new(int n) {
@@ -198,7 +214,7 @@ class parser_init {
             fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
   }
 
-  void print_fderives() {
+  void print_fderives() const {
     import std.range.primitives;
     import std.stdio;
 
@@ -210,8 +226,10 @@ class parser_init {
         if (flag) {
           writef("    %3d ", r);
           if (rules[r].rhs.front >= 0)
-            for (item_number_t[] rhsp = rules[r].rhs; rhsp.front >= 0; rhsp.popFront)
-              writef(" %s", symbols[rhsp.front].tag);
+            foreach (rhsi; rules[r].rhs) {
+              if (rhsi < 0) break;
+              writef(" %s", symbols[rhsi].tag);
+            }
           else
             writef(" %s", cast(dchar) 0x03b5);
           write("\n");
@@ -251,7 +269,7 @@ class parser_init {
       firsts[i][i] = true;
   }
 
-  void print_firsts(in bool[][] firsts) {
+  void print_firsts(in bool[][] firsts) const {
     import std.stdio;
 
     write("FIRSTS\n");
@@ -288,11 +306,13 @@ class parser_init {
       kernel_base[i] = kernel_items[count..$];
       count += symbol_count[i];
     }
+
+    kernel_size = new int[nsyms];
   }
 }
 
-class gram_init {
-  parser_init root;
+class gram_init_t {
+  parser_init_t root;
 
   symbol_t acceptsymbol;
   symbol_t errtoken;
@@ -317,7 +337,7 @@ class gram_init {
     }
   }
 
-  this(parser_init r) {
+  this(parser_init_t r) {
     root = r;
 
     gram_init_pre();
@@ -438,6 +458,7 @@ class gram_init {
     acceptsymbol.order_of_appearance = 0;
     acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
     acceptsymbol.content.number = root.nnterms++;
+    root.acceptsymbol = acceptsymbol;
 
     errtoken = symbol_get("YYerror");
     errtoken.order_of_appearance = 0;
