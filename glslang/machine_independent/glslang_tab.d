@@ -1,14 +1,17 @@
 module glslang.machine_independent.glslang_tab;
 
-static parser_init = new const parser_init_t();
+const parser_init_t parser_init;
+shared static this() { parser_init = new const parser_init_t(); }
 
 void main() {
   import std.stdio;
-
+  
   writeln(parser_init.ntokens);
   writeln(parser_init.nnterms);
   writeln(parser_init.nrules);
   writeln(parser_init.nritems);
+
+  parser_init.print_derives();
 }
 
 alias item_number_t = int;
