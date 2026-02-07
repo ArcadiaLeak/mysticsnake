@@ -28,6 +28,9 @@ int nsyms = 0;
 item_index_t[][] kernel_base;
 item_index_t[] kernel_items;
 
+bool[][] fderives;
+bool[][] firsts;
+
 static this() {
   gram_init_pre();
   gram_init();
@@ -181,6 +184,71 @@ void print_derives() {
 
 void generate_states() {
   allocate_storage();
+  closure_new(nritems);
+}
+
+void closure_new(int n) {
+  set_fderives();
+}
+
+void set_fderives() {
+  bool[] buffer = new bool[nnterms * nrules];
+  fderives = new bool[][nnterms];
+
+  size_t j;
+  for (size_t i = 0; i < nnterms; i++) {
+    j = i + 1;
+    fderives[i] = buffer[i * nrules..j * nrules];
+  }
+
+  set_firsts();
+}
+
+void set_firsts() {
+  import std.range.primitives;
+
+  bool[] buffer = new bool[nnterms * nnterms];
+  firsts = new bool[][nnterms];
+  {
+    size_t j;
+    for (size_t i = 0; i < nnterms; i++) {
+      j = i + 1;
+      firsts[i] = buffer[i * nnterms..j * nnterms];
+    }
+  }
+  
+  for (symbol_number_t i = ntokens; i < nsyms; ++i)
+    for (symbol_number_t j = 0; derives[i - ntokens][j]; ++j) {
+      item_number_t sym = derives[i - ntokens][j].front.rhs.front;
+      if(sym >= ntokens)
+        firsts[i - ntokens][sym - ntokens] = true;
+    }
+  
+  for (size_t i = 0; i < firsts.length; i++)
+    for (size_t j = 0; j < firsts.length; j++)
+      if (firsts[j][i])
+        for (size_t k = 0; k < firsts[j].length; k++)
+          firsts[j][k] = firsts[j][k] || firsts[i][k];
+
+  for (size_t i = 0; i < firsts.length; i++)
+    firsts[i][i] = true;
+
+  print_firsts();
+}
+
+void print_firsts() {
+  import std.stdio;
+  import std.range;
+
+  write("FIRSTS\n");
+
+  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
+    writef("  %s firsts\n", symbols[i].tag);
+    foreach (j, flag; firsts[i - ntokens])
+      if (flag) writef("    %s\n", symbols[j + ntokens].tag);
+  }
+
+  write("\n\n");
 }
 
 void allocate_storage() {
@@ -1196,7 +1264,7 @@ void unary_expression_init() {
   grammar_current_rule_end();
 
   grammar_current_rule_begin(symbol_get("unary_expression"));
-  grammar_current_rule_symbol_append(symbol_get("unary_expression"));
+  grammar_current_rule_symbol_append(symbol_get("unary_operator"));
   grammar_current_rule_symbol_append(symbol_get("unary_expression"));
   grammar_current_rule_end();
 }
