@@ -29,7 +29,6 @@ item_index_t[][] kernel_base;
 item_index_t[] kernel_items;
 
 bool[][] fderives;
-bool[][] firsts;
 
 static this() {
   gram_init_pre();
@@ -156,13 +155,11 @@ void derives_compute() {
     q.front = null;
     q.popFront;
   }
-
-  print_derives();
 }
 
 void print_derives() {
+  import std.range.primitives;
   import std.stdio;
-  import std.range;
 
   write("DERIVES\n");
 
@@ -192,19 +189,52 @@ void closure_new(int n) {
 }
 
 void set_fderives() {
+  import std.range.primitives;
+
   bool[] buffer = new bool[nnterms * nrules];
   fderives = new bool[][nnterms];
-
-  size_t j;
-  for (size_t i = 0; i < nnterms; i++) {
-    j = i + 1;
-    fderives[i] = buffer[i * nrules..j * nrules];
+  {
+    size_t j;
+    for (size_t i = 0; i < nnterms; i++) {
+      j = i + 1;
+      fderives[i] = buffer[i * nrules..j * nrules];
+    }
   }
 
-  set_firsts();
+  bool[][] firsts;
+  set_firsts(firsts);
+
+  for (symbol_number_t i = ntokens; i < nsyms; ++i)
+    for (symbol_number_t j = ntokens; j < nsyms; ++j)
+      if (firsts[i - ntokens][j - ntokens])
+        for (rule_number_t k = 0; derives[j - ntokens][k]; ++k)
+          fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
 }
 
-void set_firsts() {
+void print_fderives() {
+  import std.range.primitives;
+  import std.stdio;
+
+  write("FDERIVES\n");
+
+  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
+    writef("  %s derives\n", symbols[i].tag);
+    foreach (r, flag; fderives[i - ntokens])
+      if (flag) {
+        writef("    %3d ", r);
+        if (rules[r].rhs.front >= 0)
+          for (item_number_t[] rhsp = rules[r].rhs; rhsp.front >= 0; rhsp.popFront)
+            writef(" %s", symbols[rhsp.front].tag);
+        else
+          writef(" %s", cast(dchar) 0x03b5);
+        write("\n");
+      }
+  }
+
+  write("\n\n");
+}
+
+void set_firsts(out bool[][] firsts) {
   import std.range.primitives;
 
   bool[] buffer = new bool[nnterms * nnterms];
@@ -232,13 +262,10 @@ void set_firsts() {
 
   for (size_t i = 0; i < firsts.length; i++)
     firsts[i][i] = true;
-
-  print_firsts();
 }
 
-void print_firsts() {
+void print_firsts(in bool[][] firsts) {
   import std.stdio;
-  import std.range;
 
   write("FIRSTS\n");
 
@@ -4631,7 +4658,7 @@ void nterm_init() {
   declare_sym(symbol_get("function_call_header"), symbol_class_t.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_call_header"));
   grammar_current_rule_symbol_append(symbol_get("function_identifier"));
-  grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
+  grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
   grammar_current_rule_end();
 
   function_identifier_init();
