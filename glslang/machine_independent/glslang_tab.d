@@ -173,15 +173,6 @@ class parser_init_t {
   void generate_states() {
     allocate_storage();
     closure_new(nritems);
-
-    kernel_size[0] = 0;
-    for (rule_number_t r = 0; r < nrules && rules[r].lhs.symbol == acceptsymbol; ++r)
-      kernel_base[0][kernel_size[0]++] = cast(int) (ritem.length - rules[r].rhs.length);
-    state_list_append(0, kernel_size[0], kernel_base[0]);
-  }
-
-  void state_list_append(symbol_number_t sym, size_t core_size, item_index_t[] core) {
-    
   }
 
   void closure_new(int n) {
