@@ -4,7 +4,8 @@ symbol_t acceptsymbol;
 symbol_t errtoken;
 symbol_t undeftoken;
 symbol_t eoftoken;
-
+symbol_t[] symbols;
+symbol_t[] symbols_sorted;
 symbol_t[string] symbol_table;
 
 symbol_list_t grammar;
@@ -18,6 +19,7 @@ int nritems = 0;
 
 rule_t[] rules;
 rule_number_t nrules = 0;
+rule_t[][][] derives;
 
 int nnterms = 0;
 int ntokens = 1;
@@ -30,6 +32,7 @@ static this() {
   gram_init_pre();
   gram_init();
   gram_init_post();
+  derives_compute();
   generate_states();
 }
 
@@ -108,8 +111,72 @@ class symbol_list_t {
 }
 
 struct rule_t {
+  rule_number_t number;
   sym_content_t lhs;
   item_number_t[] rhs;
+}
+
+void derives_compute() {
+  import std.range;
+
+  struct rule_list_t {
+    rule_list_t[] next;
+    rule_t[] value;
+  }
+
+  rule_list_t[][] dset = new rule_list_t[][nnterms];
+  rule_list_t[] delts = new rule_list_t[nrules];
+
+  for (rule_number_t r = nrules - 1; r >= 0; --r) {
+    symbol_number_t lhs = rules[r].lhs.number;
+    rule_list_t[] p = delts[r..$];
+
+    p.front.next = dset[lhs - ntokens];
+    p.front.value = rules[r..$];
+
+    dset[lhs - ntokens] = p;
+  }
+
+  derives = new rule_t[][][nnterms];
+  rule_t[][] q = new rule_t[][nnterms + nrules];
+
+  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
+    rule_list_t[] p = dset[i - ntokens];
+    derives[i - ntokens] = q;
+
+    while (p) {
+      q.front = p.front.value;
+      q.popFront;
+      p = p.front.next;
+    }
+
+    q.front = null;
+    q.popFront;
+  }
+
+  print_derives();
+}
+
+void print_derives() {
+  import std.stdio;
+  import std.range;
+
+  write("DERIVES\n");
+
+  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
+    writef("  %s derives\n", symbols[i].tag);
+    for (rule_t[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
+      writef("    %3d ", rp.front.front.number);
+      if (rp.front.front.rhs.front >= 0)
+        for (item_number_t[] rhsp = rp.front.front.rhs; rhsp.front >= 0; rhsp.popFront)
+          writef(" %s", symbols[rhsp.front].tag);
+      else
+        writef(" %s", cast(dchar) 0x03b5);
+      write("\n");
+    }
+  }
+
+  write("\n\n");
 }
 
 void generate_states() {
@@ -123,6 +190,22 @@ void allocate_storage() {
 void allocate_itemsets() {
   size_t count = 0;
   size_t[] symbol_count = new size_t[nsyms];
+
+  for (rule_number_t r = 0; r < nrules; ++r)
+    for (size_t i = 0; rules[r].rhs[i] >= 0; i++) {
+      symbol_number_t sym = rules[r].rhs[i];
+      count += 1;
+      symbol_count[sym] += 1;
+    }
+
+  kernel_base = new item_index_t[][nsyms];
+  kernel_items = new item_index_t[count];
+
+  count = 0;
+  for (symbol_number_t i = 0; i < nsyms; i++) {
+    kernel_base[i] = kernel_items[count..$];
+    count += symbol_count[i];
+  }
 }
 
 void gram_init_pre() {
@@ -155,6 +238,9 @@ void gram_init_pre() {
 }
 
 void gram_init_post() {
+  import std.algorithm.sorting;
+  import std.array;
+
   eoftoken = symbol_get("YYEOF");
   eoftoken.order_of_appearance = 0;
   eoftoken.content.class_ = symbol_class_t.token_sym;
@@ -169,7 +255,10 @@ void gram_init_post() {
   symbol_t start = start_symbols.sym;
   create_start_rule(null, start);
 
-  foreach (sym; symbol_table.byValue) {
+  symbols_sorted = symbol_table.values
+    .sort!("a.order_of_appearance < b.order_of_appearance")
+    .array;
+  foreach (sym; symbols_sorted) {
     sym_content_t s = sym.content;
 
     if (s.number == NUMBER_UNDEFINED)
@@ -177,6 +266,14 @@ void gram_init_post() {
   }
 
   nsyms = ntokens + nnterms;
+  symbols = new symbol_t[nsyms];
+
+  foreach (sym; symbols_sorted) {
+    if (sym.content.class_ == symbol_class_t.nterm_sym)
+      sym.content.number += ntokens;
+
+    symbols[sym.content.number] = sym.content.symbol;
+  }
 
   packgram();
 }
@@ -289,6 +386,7 @@ void packgram() {
   for (symbol_list_t p = grammar; p; p = p.next) {
     symbol_list_t lhs = p;
 
+    rules[ruleno].number = ruleno;
     rules[ruleno].lhs = lhs.sym.content;
     rules[ruleno].rhs = ritem[itemno..$];
 
@@ -298,7 +396,7 @@ void packgram() {
       ritem[itemno++] = p.sym.content.number;
     }
 
-    ritem[itemno++] = ruleno;
+    ritem[itemno++] = -1 - ruleno;
     ++ruleno;
   }
 }
