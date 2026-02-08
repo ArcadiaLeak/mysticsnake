@@ -78,6 +78,20 @@ struct GramMeta {
       );
     }
   }
+
+   void declareNterm(string[] tags ...) {
+    foreach (tag; tags) {
+      symbolBuf ~= Symbol(
+        tag: tag,
+        iContent: symContentBuf.length
+      );
+      symContentBuf ~= SymContent(
+        number: nnterms++,
+        kind: SymKind.Nterm,
+        iSymbol: symbolBuf.length - 1
+      );
+    }
+  }
 }
 
 GramMeta buildGramMeta() {
@@ -284,6 +298,52 @@ GramMeta buildGramMeta() {
   gramMetaWip.declareToken("SUBGROUPCOHERENT", "NONPRIVATE", "SHADERCALLCOHERENT");
   gramMetaWip.declareToken("NOPERSPECTIVE", "EXPLICITINTERPAMD", "PERVERTEXEXT", "PERVERTEXNV", "PERPRIMITIVENV", "PERVIEWNV", "PERTASKNV", "PERPRIMITIVEEXT", "TASKPAYLOADWORKGROUPEXT");
   gramMetaWip.declareToken("PRECISE");
+
+  gramMetaWip.declareNterm("variable_identifier");
+  gramMetaWip.declareNterm("primary_expression", "postfix_expression", "integer_expression");
+  gramMetaWip.declareNterm("function_call", "function_call_or_method", "function_call_generic");
+  gramMetaWip.declareNterm("function_call_header_no_parameters", "function_call_header_with_parameters");
+  gramMetaWip.declareNterm("function_call_header", "function_identifier");
+  gramMetaWip.declareNterm("unary_expression", "unary_operator");
+  gramMetaWip.declareNterm("multiplicative_expression", "additive_expression", "shift_expression");
+  gramMetaWip.declareNterm("relational_expression", "equality_expression", "and_expression");
+  gramMetaWip.declareNterm("exclusive_or_expression", "inclusive_or_expression", "logical_and_expression");
+  gramMetaWip.declareNterm("logical_xor_expression", "logical_or_expression", "conditional_expression");
+  gramMetaWip.declareNterm("assignment_expression", "assignment_operator");
+  gramMetaWip.declareNterm("expression", "constant_expression", "declaration");
+  gramMetaWip.declareNterm("block_structure", "identifier_list", "function_prototype", "function_declarator");
+  gramMetaWip.declareNterm("function_header_with_parameters", "function_header");
+  gramMetaWip.declareNterm("parameter_declarator", "parameter_declaration", "parameter_type_specifier");
+  gramMetaWip.declareNterm("init_declarator_list", "single_declaration", "fully_specified_type");
+  gramMetaWip.declareNterm("invariant_qualifier", "interpolation_qualifier");
+  gramMetaWip.declareNterm("layout_qualifier", "layout_qualifier_id_list", "layout_qualifier_id");
+  gramMetaWip.declareNterm("precise_qualifier", "type_qualifier", "single_type_qualifier", "storage_qualifier");
+  gramMetaWip.declareNterm("non_uniform_qualifier");
+  gramMetaWip.declareNterm("type_name_list", "type_specifier", "array_specifier");
+  gramMetaWip.declareNterm("type_parameter_specifier_opt", "type_parameter_specifier", "type_parameter_specifier_list");
+  gramMetaWip.declareNterm("type_specifier_nonarray", "precision_qualifier");
+  gramMetaWip.declareNterm("struct_specifier", "struct_declaration_list", "struct_declaration");
+  gramMetaWip.declareNterm("struct_declarator_list", "struct_declarator");
+  gramMetaWip.declareNterm("initializer", "initializer_list");
+  gramMetaWip.declareNterm("declaration_statement", "statement", "simple_statement", "demote_statement");
+  gramMetaWip.declareNterm("compound_statement", "statement_no_new_scope", "statement_scoped", "compound_statement_no_new_scope");
+  gramMetaWip.declareNterm("statement_list", "expression_statement", "selection_statement");
+  gramMetaWip.declareNterm("selection_statement_nonattributed", "selection_rest_statement");
+  gramMetaWip.declareNterm("condition");
+  gramMetaWip.declareNterm("switch_statement", "switch_statement_nonattributed", "switch_statement_list", "case_label");
+  gramMetaWip.declareNterm("iteration_statement", "iteration_statement_nonattributed");
+  gramMetaWip.declareNterm("for_init_statement", "conditionopt", "for_rest_statement", "jump_statement");
+  gramMetaWip.declareNterm("translation_unit", "external_declaration");
+  gramMetaWip.declareNterm("function_definition", "attribute", "attribute_list", "single_attribute");
+  gramMetaWip.declareNterm("spirv_requirements_list", "spirv_requirements_parameter");
+  gramMetaWip.declareNterm("spirv_extension_list", "spirv_capability_list");
+  gramMetaWip.declareNterm("spirv_execution_mode_qualifier", "spirv_execution_mode_parameter_list");
+  gramMetaWip.declareNterm("spirv_execution_mode_parameter", "spirv_execution_mode_id_parameter_list");
+  gramMetaWip.declareNterm("spirv_storage_class_qualifier", "spirv_decorate_qualifier");
+  gramMetaWip.declareNterm("spirv_decorate_parameter_list", "spirv_decorate_parameter");
+  gramMetaWip.declareNterm("spirv_decorate_id_parameter_list", "spirv_decorate_id_parameter", "spirv_decorate_string_parameter_list");
+  gramMetaWip.declareNterm("spirv_type_specifier", "spirv_type_parameter_list", "spirv_type_parameter");
+  gramMetaWip.declareNterm("spirv_instruction_qualifier", "spirv_instruction_qualifier_list", "spirv_instruction_qualifier_id");
 
   return gramMetaWip;
 }
