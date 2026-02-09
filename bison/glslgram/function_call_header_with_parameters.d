@@ -2,7 +2,7 @@ module bison.glslgram.function_call_header_with_parameters;
 
 import bison;
 
-void function_call_header_with_parameters() {
+auto function_call_header_with_parameters() {
   declare_sym(symbol_get("function_call_header_with_parameters"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_call_header_with_parameters"));

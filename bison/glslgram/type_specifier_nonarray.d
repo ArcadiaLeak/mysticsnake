@@ -2,7 +2,7 @@ module bison.glslgram.unary_expression;
 
 import bison;
 
-private void batch(string tags ...) {
+private auto batch(string tags ...) {
   foreach (tag; tags) {
     grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));
     grammar_current_rule_symbol_append(symbol_get(tag));
@@ -10,7 +10,7 @@ private void batch(string tags ...) {
   }
 }
 
-void type_specifier_nonarray() {
+auto type_specifier_nonarray() {
   declare_sym(symbol_get("type_specifier_nonarray"), symbol_class_t.nterm_sym);
 
   batch("VOID", "FLOAT", "INT", "UINT", "BOOL");

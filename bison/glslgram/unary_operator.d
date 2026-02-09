@@ -2,7 +2,7 @@ module bison.glslgram.unary_operator;
 
 import bison;
 
-void unary_operator() {
+auto unary_operator() {
   declare_sym(symbol_get("unary_operator"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("unary_operator"));

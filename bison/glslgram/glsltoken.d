@@ -7,7 +7,7 @@ import std.range;
 private auto batch(string[] tags ...) =>
   tags.each!"symbol_get(a).declare_sym(symbol_class_t.token_sym)";
 
-void glsltoken() {
+auto glsltoken() {
   batch("CONST", "BOOL", "INT", "UINT", "FLOAT");
   batch("BVEC2", "BVEC3", "BVEC4", "IVEC2", "IVEC3", "IVEC4");
   batch("UVEC2", "UVEC3", "UVEC4", "VEC2", "VEC3", "VEC4");

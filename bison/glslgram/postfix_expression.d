@@ -2,7 +2,7 @@ module bison.glslgram.postfix_expression;
 
 import bison;
 
-void postfix_expression() {
+auto postfix_expression() {
   declare_sym(symbol_get("postfix_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("postfix_expression"));

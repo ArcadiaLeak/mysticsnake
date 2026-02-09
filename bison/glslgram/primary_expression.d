@@ -2,7 +2,7 @@ module bison.glslgram.primary_expression;
 
 import bison;
 
-private void batch(string tags ...) {
+private auto batch(string tags ...) {
   foreach (tag; tags) {
     grammar_current_rule_begin(symbol_get("primary_expression"));
     grammar_current_rule_symbol_append(symbol_get(tag));
@@ -10,7 +10,7 @@ private void batch(string tags ...) {
   }
 }
 
-void primary_expression() {
+auto primary_expression() {
   declare_sym(symbol_get("primary_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("primary_expression"));

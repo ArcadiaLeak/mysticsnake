@@ -1,6 +1,6 @@
 module bison.glslgram.additive_expression;
 
-void additive_expression() {
+auto additive_expression() {
   declare_sym(symbol_get("additive_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("additive_expression"));

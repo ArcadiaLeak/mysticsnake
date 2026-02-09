@@ -2,7 +2,7 @@ module bison.glslgram.multiplicative_expression;
 
 import bison;
 
-void multiplicative_expression() {
+auto multiplicative_expression() {
   declare_sym(symbol_get("multiplicative_expression"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("multiplicative_expression"));

@@ -2,7 +2,7 @@ module bison.glslgram.function_identifier;
 
 import bison;
 
-void function_identifier() {
+auto function_identifier() {
   declare_sym(symbol_get("function_identifier"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("function_identifier"));
