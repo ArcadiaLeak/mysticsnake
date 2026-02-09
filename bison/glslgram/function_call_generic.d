@@ -1,5 +1,4 @@
 module bison.glslgram.function_call_generic;
-
 import bison;
 
 auto function_call_generic() {

@@ -1,5 +1,4 @@
 module bison.glslgram.function_identifier;
-
 import bison;
 
 auto function_identifier() {

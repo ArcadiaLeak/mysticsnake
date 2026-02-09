@@ -1,5 +1,4 @@
 module bison.glslgram.unary_operator;
-
 import bison;
 
 auto unary_operator() {

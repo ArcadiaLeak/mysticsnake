@@ -1,5 +1,4 @@
 module bison.glslgram.multiplicative_expression;
-
 import bison;
 
 auto multiplicative_expression() {

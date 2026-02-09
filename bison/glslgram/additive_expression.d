@@ -1,4 +1,5 @@
 module bison.glslgram.additive_expression;
+import bison;
 
 auto additive_expression() {
   declare_sym(symbol_get("additive_expression"), symbol_class_t.nterm_sym);

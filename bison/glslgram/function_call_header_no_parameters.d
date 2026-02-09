@@ -1,5 +1,4 @@
 module bison.glslgram.function_call_header_no_parameters;
-
 import bison;
 
 auto function_call_header_no_parameters() {

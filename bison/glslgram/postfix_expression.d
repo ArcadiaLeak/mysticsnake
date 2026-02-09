@@ -1,5 +1,4 @@
 module bison.glslgram.postfix_expression;
-
 import bison;
 
 auto postfix_expression() {
