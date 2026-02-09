@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.relational_expression;
 import bison;
 
 auto relational_expression() {

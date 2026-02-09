@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.declaration;
 import bison;
 
 auto declaration() {

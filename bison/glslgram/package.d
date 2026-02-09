@@ -1,26 +1,4 @@
 module bison.glslgram;
 
-public import bison.glslgram.additive_expression;
-public import bison.glslgram.and_expression;
-public import bison.glslgram.declaration;
-public import bison.glslgram.equality_expression;
-public import bison.glslgram.exclusive_or_expression;
-public import bison.glslgram.function_call_generic;
-public import bison.glslgram.function_call_header_no_parameters;
-public import bison.glslgram.function_call_header_with_parameters;
-public import bison.glslgram.function_identifier;
-public import bison.glslgram.glsltoken;
-public import bison.glslgram.inclusive_or_expression;
-public import bison.glslgram.initializer;
-public import bison.glslgram.interpolation_qualifier;
-public import bison.glslgram.multiplicative_expression;
-public import bison.glslgram.postfix_expression;
-public import bison.glslgram.primary_expression;
-public import bison.glslgram.relational_expression;
-public import bison.glslgram.shift_expression;
-public import bison.glslgram.simple_statement;
-public import bison.glslgram.single_type_qualifier;
-public import bison.glslgram.storage_qualifier;
-public import bison.glslgram.type_specifier_nonarray;
-public import bison.glslgram.unary_expression;
-public import bison.glslgram.unary_operator;
+import bison.glslgram.glslnterm;
+import bison.glslgram.glsltoken;

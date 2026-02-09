@@ -1,4 +1,4 @@
-module bison.glslgram.additive_expression;
+module bison.glslgram.and_expression;
 import bison;
 
 auto and_expression() {

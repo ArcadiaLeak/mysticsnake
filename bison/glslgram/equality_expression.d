@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.equality_expression;
 import bison;
 
 auto equality_expression() {

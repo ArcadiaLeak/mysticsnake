@@ -1,4 +1,4 @@
-module bison.glslgram.function_identifier;
+module bison.glslgram.inclusive_or_expression;
 import bison;
 
 auto inclusive_or_expression() {

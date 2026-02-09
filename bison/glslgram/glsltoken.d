@@ -1,4 +1,4 @@
-module bison.glslgram.function_identifier;
+module bison.glslgram.glsltoken;
 import bison;
 
 private enum string[] TOKEN = [

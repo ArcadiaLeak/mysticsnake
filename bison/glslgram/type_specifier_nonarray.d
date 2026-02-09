@@ -1,4 +1,4 @@
-module bison.glslgram.unary_expression;
+module bison.glslgram.type_specifier_nonarray;
 import bison;
 
 private enum string[] RHSALT = [

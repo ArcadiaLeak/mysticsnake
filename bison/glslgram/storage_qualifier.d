@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.storage_qualifier;
 import bison;
 
 private enum string[] RHSALT = [

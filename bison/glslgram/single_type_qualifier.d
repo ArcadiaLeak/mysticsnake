@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.single_type_qualifier;
 import bison;
 
 auto single_type_qualifier() {

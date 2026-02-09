@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.interpolation_qualifier;
 import bison;
 
 void interpolation_qualifier() {

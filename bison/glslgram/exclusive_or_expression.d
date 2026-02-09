@@ -1,4 +1,4 @@
-module bison.glslgram.shift_expression;
+module bison.glslgram.exclusive_or_expression;
 import bison;
 
 void exclusive_or_expression() {
