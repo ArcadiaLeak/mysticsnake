@@ -1,7 +1,7 @@
 module bison.glslgram.function_identifier;
 import bison;
 
-void simple_statement() {
+auto simple_statement() {
   declare_sym(symbol_get("simple_statement"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("simple_statement"));

@@ -2,6 +2,7 @@ module bison.glslgram;
 
 public import bison.glslgram.additive_expression;
 public import bison.glslgram.and_expression;
+public import bison.glslgram.declaration;
 public import bison.glslgram.equality_expression;
 public import bison.glslgram.exclusive_or_expression;
 public import bison.glslgram.function_call_generic;
