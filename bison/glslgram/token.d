@@ -3,8 +3,7 @@ module bison.glslgram.token;
 import bison;
 
 private void decltoken(string[] tags ...) {
-  foreach (tag; tags)
-    declare_sym(symbol_get(tag), symbol_class_t.token_sym);
+  foreach (tag; tags) declare_sym(symbol_get(tag), symbol_class_t.token_sym);
 }
 
 void token() {
