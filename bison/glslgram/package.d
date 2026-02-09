@@ -15,6 +15,7 @@ public import bison.glslgram.postfix_expression;
 public import bison.glslgram.primary_expression;
 public import bison.glslgram.relational_expression;
 public import bison.glslgram.shift_expression;
+public import bison.glslgram.storage_qualifier;
 public import bison.glslgram.type_specifier_nonarray;
 public import bison.glslgram.unary_expression;
 public import bison.glslgram.unary_operator;

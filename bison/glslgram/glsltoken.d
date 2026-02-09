@@ -1,7 +1,7 @@
 module bison.glslgram.function_identifier;
 import bison;
 
-string[] TOKEN = [
+private enum string[] TOKEN = [
   "CONST", "BOOL", "INT", "UINT", "FLOAT",
   "BVEC2", "BVEC3", "BVEC4", "IVEC2", "IVEC3", "IVEC4", "UVEC2", "UVEC3",
   "UVEC4", "VEC2", "VEC3", "VEC4", "MAT2", "MAT3", "MAT4", "MAT2X2", "MAT2X3",
