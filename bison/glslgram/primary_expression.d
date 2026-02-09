@@ -2,7 +2,7 @@ module bison.glslgram.primary_expression;
 
 import bison;
 
-private void declrule(string tags ...) {
+private void batch(string tags ...) {
   foreach (tag; tags) {
     grammar_current_rule_begin(symbol_get("primary_expression"));
     grammar_current_rule_symbol_append(symbol_get(tag));
@@ -23,8 +23,8 @@ void primary_expression() {
   grammar_current_rule_symbol_append(symbol_get("RIGHT_PAREN"));
   grammar_current_rule_end();
 
-  declrule("FLOATCONSTANT", "INTCONSTANT", "UINTCONSTANT", "BOOLCONSTANT");
-  declrule("STRING_LITERAL", "INT32CONSTANT", "UINT32CONSTANT", "INT64CONSTANT");
-  declrule("UINT64CONSTANT", "INT16CONSTANT", "UINT16CONSTANT", "DOUBLECONSTANT");
-  declrule("FLOAT16CONSTANT");
+  batch("FLOATCONSTANT", "INTCONSTANT", "UINTCONSTANT", "BOOLCONSTANT");
+  batch("STRING_LITERAL", "INT32CONSTANT", "UINT32CONSTANT", "INT64CONSTANT");
+  batch("UINT64CONSTANT", "INT16CONSTANT", "UINT16CONSTANT", "DOUBLECONSTANT");
+  batch("FLOAT16CONSTANT");
 }
