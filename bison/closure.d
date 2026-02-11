@@ -100,14 +100,13 @@ void print_fderives() {
   write("\n\n");
 }
 
-void closure(const item_index[] core) {
+void closure(const state s) {
   if (TRACE_CLOSURE)
-    closure_print("input", core);
+    closure_print("input", s.items);
 
   ruleset[] = 0;
-  itemset = itemset.ptr[0..itemset.capacity];
 
-  foreach (c; core)
+  foreach (c; s.items)
     if (ritem[c] >= ntokens)
       ruleset[] |= fderives[ritem[c] - ntokens][];
 
@@ -117,8 +116,8 @@ void closure(const item_index[] core) {
   foreach (ruleno, flag; ruleset)
     if (flag) {
       size_t itemno = ritem.length - rules[ruleno].rhs.length;
-      while (c < core.length && core[c] < itemno) {
-        itemset[nitemset] = core[c];
+      while (c < s.items.length && s.items[c] < itemno) {
+        itemset[nitemset] = s.items[c];
         nitemset++;
         c++;
       }
@@ -126,15 +125,14 @@ void closure(const item_index[] core) {
       nitemset++;
     }
 
-  while (c < core.length) {
-    itemset[nitemset] = core[c];
+  while (c < s.items.length) {
+    itemset[nitemset] = s.items[c];
     nitemset++;
     c++;
   }
-  itemset = itemset.ptr[0..nitemset];
 
   if (TRACE_CLOSURE)
-    closure_print("output", itemset);
+    closure_print("output", itemset[0..nitemset]);
 }
 
 void closure_print(string title, const item_index[] arr) {

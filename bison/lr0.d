@@ -9,11 +9,15 @@ class state_list {
 state_list first_state;
 state_list last_state;
 
+rule[][] redset;
+
 item_index[][] kernel_base;
 item_index[] kernel_items;
 
 void allocate_storage() {
   allocate_itemsets();
+
+  redset = new rule[][nrules];
 }
 
 void allocate_itemsets() {
@@ -52,7 +56,8 @@ void generate_states() {
   for (state_list list = first_state; list; list = list.next) {
     state s = list.state_;
 
-    s.items.closure;
+    s.closure;
+    s.save_reductions;
   }
 }
 
@@ -70,4 +75,20 @@ state state_list_append(symbol_number sym, item_index[] core) {
   last_state = node;
 
   return res;
+}
+
+void save_reductions(state s) {
+  int count = 0;
+
+  foreach (i; itemset[0..nitemset]) {
+    item_number item = ritem[i];
+    if (item < 0) {
+      rule_number r = rule_number(-1 - item);
+      redset[count++] = rules[r..$];
+      if (r == 0)
+        final_state = s;
+    }
+  }
+
+  s.reductions = redset[0..count].dup;
 }
