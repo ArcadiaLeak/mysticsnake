@@ -73,7 +73,6 @@ void print_firsts() {
 }
 
 void print_fderives() {
-  import std.range.primitives;
   import std.stdio;
 
   write("FDERIVES\n");
@@ -83,9 +82,9 @@ void print_fderives() {
     foreach (r, flag; fderives[i - ntokens])
       if (flag) {
         writef("    %3d ", r);
-        if (rules[r].rhs.front >= 0)
-          for (item_number[] rhsp = rules[r].rhs; rhsp.front >= 0; rhsp.popFront)
-            writef(" %s", symbols[rhsp.front].tag);
+        if (rules[r].rhs[0] >= 0)
+          for (int k = 0; rules[r].rhs[k] >= 0; k++)
+            writef(" %s", symbols[rules[r].rhs[k]].tag);
         else
           writef(" %s", cast(dchar) 0x03b5);
         write("\n");
@@ -96,7 +95,10 @@ void print_fderives() {
 }
 
 void closure(const item_index[] core) {
+  closure_print("input", core);
+
   ruleset[] = 0;
+  itemset = itemset.ptr[0..itemset.capacity];
 
   foreach (c; core)
     if (ritem[c] >= ntokens)
@@ -105,20 +107,41 @@ void closure(const item_index[] core) {
   nitemset = 0;
   size_t c = 0;
 
-  foreach (ruleno, rul; ruleset) {
-    size_t itemno = ritem.length - rules[ruleno].rhs.length;
-    while (c < core.length && core[c] < itemno) {
-      itemset[nitemset] = core[c];
+  foreach (ruleno, flag; ruleset)
+    if (flag) {
+      size_t itemno = ritem.length - rules[ruleno].rhs.length;
+      while (c < core.length && core[c] < itemno) {
+        itemset[nitemset] = core[c];
+        nitemset++;
+        c++;
+      }
+      itemset[nitemset] = itemno;
       nitemset++;
-      c++;
     }
-    itemset[nitemset] = itemno;
-    nitemset++;
-  }
 
   while (c < core.length) {
     itemset[nitemset] = core[c];
     nitemset++;
     c++;
   }
+  itemset = itemset.ptr[0..nitemset];
+
+  closure_print("input", itemset);
+}
+
+void closure_print(string title, const item_index[] arr) {
+  import std.stdio;
+
+  writef("Closure: %s\n", title);
+
+  foreach (i; arr) {
+    writef("  %2d: .", i);
+    item_number[] rp = ritem[i..$];
+    size_t r;
+    for (r = 0; rp[r] >= 0; r++)
+      writef(" %s", symbols[rp[r]].tag);
+    writef("  (rule %d)\n", -1 - rp[r]);
+  }
+
+  write("\n\n");
 }
