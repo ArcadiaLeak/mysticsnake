@@ -48,6 +48,12 @@ void generate_states() {
     kernel_base[0] = kernel_base[0][0..kernel_size];
     state_list_append(symbol_number(0), kernel_base[0]);
   }
+
+  for (state_list list = first_state; list; list = list.next) {
+    state s = list.state_;
+
+    s.items.closure;
+  }
 }
 
 state state_list_append(symbol_number sym, item_index[] core) {

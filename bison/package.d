@@ -24,7 +24,5 @@ void main() {
     writeln(nnterms);
     writeln(nrules);
     writeln(nritems);
-
-    print_firsts();
   }
 }

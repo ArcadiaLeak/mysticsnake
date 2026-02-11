@@ -52,7 +52,7 @@ void set_firsts() {
   for (size_t i = 0; i < firsts.length; i++)
     for (size_t j = 0; j < firsts.length; j++)
       if (firsts[j][i])
-        firsts[j][] = firsts[j][] || firsts[i][];
+        firsts[j][] |= firsts[i][];
 
   for (size_t i = 0; i < firsts.length; i++)
     firsts[i][i] = true;
@@ -95,14 +95,14 @@ void print_fderives() {
 }
 
 void closure(const item_index[] core) {
-  debug closure_print("input", core);
+  closure_print("input", core);
 
   ruleset[] = 0;
   itemset = itemset.ptr[0..itemset.capacity];
 
   foreach (c; core)
     if (ritem[c] >= ntokens)
-      ruleset[] = ruleset[] || fderives[ritem[c] - ntokens][];
+      ruleset[] |= fderives[ritem[c] - ntokens][];
 
   nitemset = 0;
   size_t c = 0;
@@ -126,7 +126,7 @@ void closure(const item_index[] core) {
   }
   itemset = itemset.ptr[0..nitemset];
 
-  debug closure_print("input", itemset);
+  closure_print("output", itemset);
 }
 
 void closure_print(string title, const item_index[] arr) {
