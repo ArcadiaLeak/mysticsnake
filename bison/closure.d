@@ -33,6 +33,9 @@ void set_fderives() {
       if (firsts[i - ntokens][j - ntokens])
         for (int k = 0; derives[j - ntokens][k]; ++k)
           fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
+
+  if (TRACE_SETS)
+    print_fderives();
 }
 
 void set_firsts() {
@@ -56,6 +59,9 @@ void set_firsts() {
 
   for (size_t i = 0; i < firsts.length; i++)
     firsts[i][i] = true;
+
+  if (TRACE_SETS)
+    print_firsts();
 }
 
 void print_firsts() {
@@ -95,7 +101,8 @@ void print_fderives() {
 }
 
 void closure(const item_index[] core) {
-  closure_print("input", core);
+  if (TRACE_CLOSURE)
+    closure_print("input", core);
 
   ruleset[] = 0;
   itemset = itemset.ptr[0..itemset.capacity];
@@ -126,7 +133,8 @@ void closure(const item_index[] core) {
   }
   itemset = itemset.ptr[0..nitemset];
 
-  closure_print("output", itemset);
+  if (TRACE_CLOSURE)
+    closure_print("output", itemset);
 }
 
 void closure_print(string title, const item_index[] arr) {

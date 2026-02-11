@@ -10,6 +10,9 @@ package import bison.state;
 package import bison.symlist;
 package import bison.symtab;
 
+enum bool TRACE_SETS = 0;
+enum bool TRACE_CLOSURE = 0;
+
 void main() {
   gram_init_pre();
   glslgram();

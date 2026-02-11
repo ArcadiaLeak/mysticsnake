@@ -38,6 +38,9 @@ void derives_compute() {
     dvs_storage[0] = null;
     dvs_storage = dvs_storage[1..$];
   }
+
+  if (TRACE_SETS)
+    print_derives();
 }
 
 void print_derives() {
