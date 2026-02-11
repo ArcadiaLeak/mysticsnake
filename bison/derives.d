@@ -1,22 +1,22 @@
 module bison.derives;
 import bison;
 
-rule_t[][][] derives;
+rule[][][] derives;
 
 void derives_compute() {
   import std.range;
 
-  struct rule_list_t {
-    rule_list_t[] next;
-    rule_t[] value;
+  struct rule_list {
+    rule_list[] next;
+    rule[] value;
   }
 
-  rule_list_t[][] dset = new rule_list_t[][nnterms];
-  rule_list_t[] delts = new rule_list_t[nrules];
+  rule_list[][] dset = new rule_list[][nnterms];
+  rule_list[] delts = new rule_list[nrules];
 
-  for (rule_number_t r = nrules - 1; r >= 0; --r) {
-    symbol_number_t lhs = rules[r].lhs.number;
-    rule_list_t[] p = delts[r..$];
+  for (rule_number r = nrules - 1; r >= 0; --r) {
+    symbol_number lhs = rules[r].lhs.number;
+    rule_list[] p = delts[r..$];
 
     p.front.next = dset[lhs - ntokens];
     p.front.value = rules[r..$];
@@ -24,11 +24,11 @@ void derives_compute() {
     dset[lhs - ntokens] = p;
   }
 
-  derives = new rule_t[][][nnterms];
-  rule_t[][] q = new rule_t[][nnterms + nrules];
+  derives = new rule[][][nnterms];
+  rule[][] q = new rule[][nnterms + nrules];
 
-  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
-    rule_list_t[] p = dset[i - ntokens];
+  for (symbol_number i = ntokens; i < nsyms; ++i) {
+    rule_list[] p = dset[i - ntokens];
     derives[i - ntokens] = q;
 
     while (p) {
@@ -48,12 +48,12 @@ void print_derives() {
 
   write("DERIVES\n");
 
-  for (symbol_number_t i = ntokens; i < nsyms; ++i) {
+  for (symbol_number i = ntokens; i < nsyms; ++i) {
     writef("  %s derives\n", symbols[i].tag);
-    for (rule_t[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
+    for (rule[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
       writef("    %3d ", rp.front.front.number);
       if (rp.front.front.rhs.front >= 0)
-        for (item_number_t[] rhsp = rp.front.front.rhs; rhsp.front >= 0; rhsp.popFront)
+        for (item_number[] rhsp = rp.front.front.rhs; rhsp.front >= 0; rhsp.popFront)
           writef(" %s", symbols[rhsp.front].tag);
       else
         writef(" %s", cast(dchar) 0x03b5);

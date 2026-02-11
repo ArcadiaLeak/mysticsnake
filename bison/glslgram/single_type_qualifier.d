@@ -2,7 +2,7 @@ module bison.glslgram.single_type_qualifier;
 import bison;
 
 auto single_type_qualifier() {
-  declare_sym(symbol_get("single_type_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("single_type_qualifier"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("single_type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("storage_qualifier"));

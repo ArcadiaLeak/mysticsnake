@@ -2,7 +2,7 @@ module bison.glslgram.iteration_statement_nonattributed;
 import bison;
 
 auto iteration_statement_nonattributed() {
-  declare_sym(symbol_get("iteration_statement_nonattributed"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("iteration_statement_nonattributed"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("iteration_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("WHILE"));

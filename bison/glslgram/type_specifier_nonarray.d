@@ -76,7 +76,7 @@ private enum string[] RHSALT = [
 ];
 
 auto type_specifier_nonarray() {
-  declare_sym(symbol_get("type_specifier_nonarray"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("type_specifier_nonarray"), symbol_class_.nterm_sym);
   
   static foreach (tag; RHSALT) {
     grammar_current_rule_begin(symbol_get("type_specifier_nonarray"));

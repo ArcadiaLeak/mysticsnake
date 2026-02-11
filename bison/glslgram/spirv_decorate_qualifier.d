@@ -2,7 +2,7 @@ module bison.glslgram.spirv_decorate_qualifier;
 import bison;
 
 auto spirv_decorate_qualifier() {
-  declare_sym(symbol_get("spirv_decorate_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("spirv_decorate_qualifier"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("spirv_decorate_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("SPIRV_DECORATE"));

@@ -100,9 +100,9 @@ import bison.glslgram.unary_expression;
 import bison.glslgram.unary_operator;
 
 auto glslnterm() {
-  grammar_start_symbols_add(new symbol_list_t(symbol_get("translation_unit")));
+  grammar_start_symbols_add(new symbol_list(symbol_get("translation_unit")));
 
-  declare_sym(symbol_get("variable_identifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("variable_identifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("variable_identifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
   grammar_current_rule_end();
@@ -110,17 +110,17 @@ auto glslnterm() {
   primary_expression();
   postfix_expression();
 
-  declare_sym(symbol_get("integer_expression"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("integer_expression"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("integer_expression"));
   grammar_current_rule_symbol_append(symbol_get("expression"));
   grammar_current_rule_end();
 
-  declare_sym(symbol_get("function_call"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("function_call"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_call"));
   grammar_current_rule_symbol_append(symbol_get("function_call_or_method"));
   grammar_current_rule_end();
 
-  declare_sym(symbol_get("function_call_or_method"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("function_call_or_method"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_call_or_method"));
   grammar_current_rule_symbol_append(symbol_get("function_call_generic"));
   grammar_current_rule_end();
@@ -129,7 +129,7 @@ auto glslnterm() {
   function_call_header_no_parameters();
   function_call_header_with_parameters();
 
-  declare_sym(symbol_get("function_call_header"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("function_call_header"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_call_header"));
   grammar_current_rule_symbol_append(symbol_get("function_identifier"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
@@ -154,14 +154,14 @@ auto glslnterm() {
   assignment_operator();
   expression();
 
-  declare_sym(symbol_get("constant_expression"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("constant_expression"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("constant_expression"));
   grammar_current_rule_symbol_append(symbol_get("conditional_expression"));
   grammar_current_rule_end();
 
   declaration();
 
-  declare_sym(symbol_get("block_structure"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("block_structure"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("block_structure"));
   grammar_current_rule_symbol_append(symbol_get("type_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -176,7 +176,7 @@ auto glslnterm() {
   function_declarator();
   function_header_with_parameters();
 
-  declare_sym(symbol_get("function_header"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("function_header"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_header"));
   grammar_current_rule_symbol_append(symbol_get("fully_specified_type"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));
@@ -186,7 +186,7 @@ auto glslnterm() {
   parameter_declarator();
   parameter_declaration();
 
-  declare_sym(symbol_get("parameter_type_specifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("parameter_type_specifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("parameter_type_specifier"));
   grammar_current_rule_symbol_append(symbol_get("type_specifier"));
   grammar_current_rule_end();
@@ -195,14 +195,14 @@ auto glslnterm() {
   single_declaration();
   fully_specified_type();
 
-  declare_sym(symbol_get("invariant_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("invariant_qualifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("invariant_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("INVARIANT"));
   grammar_current_rule_end();
 
   interpolation_qualifier();
 
-  declare_sym(symbol_get("layout_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("layout_qualifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("layout_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("LAYOUT"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
@@ -213,7 +213,7 @@ auto glslnterm() {
   layout_qualifier_id_list();
   layout_qualifier_id();
 
-  declare_sym(symbol_get("precise_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("precise_qualifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("precise_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("PRECISE"));
   grammar_current_rule_end();
@@ -222,7 +222,7 @@ auto glslnterm() {
   single_type_qualifier();
   storage_qualifier();
 
-  declare_sym(symbol_get("non_uniform_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("non_uniform_qualifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("non_uniform_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("NONUNIFORM"));
   grammar_current_rule_end();
@@ -232,7 +232,7 @@ auto glslnterm() {
   array_specifier();
   type_parameter_specifier_opt();
 
-  declare_sym(symbol_get("type_parameter_specifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("type_parameter_specifier"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("type_parameter_specifier"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_ANGLE"));
   grammar_current_rule_symbol_append(symbol_get("type_parameter_specifier_list"));
@@ -250,7 +250,7 @@ auto glslnterm() {
   initializer();
   initializer_list();
 
-  declare_sym(symbol_get("declaration_statement"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("declaration_statement"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("declaration_statement"));
   grammar_current_rule_symbol_append(symbol_get("declaration"));
   grammar_current_rule_end();
@@ -258,7 +258,7 @@ auto glslnterm() {
   statement();
   simple_statement();
 
-  declare_sym(symbol_get("demote_statement"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("demote_statement"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("demote_statement"));
   grammar_current_rule_symbol_append(symbol_get("DEMOTE"));
   grammar_current_rule_symbol_append(symbol_get("SEMICOLON"));
@@ -272,7 +272,7 @@ auto glslnterm() {
   expression_statement();
   selection_statement();
 
-  declare_sym(symbol_get("selection_statement_nonattributed"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("selection_statement_nonattributed"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("selection_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("IF"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
@@ -285,7 +285,7 @@ auto glslnterm() {
   condition();
   switch_statement();
 
-  declare_sym(symbol_get("switch_statement_nonattributed"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("switch_statement_nonattributed"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("switch_statement_nonattributed"));
   grammar_current_rule_symbol_append(symbol_get("SWITCH"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_PAREN"));
@@ -308,14 +308,14 @@ auto glslnterm() {
   translation_unit();
   external_declaration();
   
-  declare_sym(symbol_get("function_definition"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("function_definition"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("function_definition"));
   grammar_current_rule_symbol_append(symbol_get("function_prototype"));
   grammar_midrule_action();
   grammar_current_rule_symbol_append(symbol_get("compound_statement_no_new_scope"));
   grammar_current_rule_end();
 
-  declare_sym(symbol_get("attribute"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("attribute"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("attribute"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
   grammar_current_rule_symbol_append(symbol_get("LEFT_BRACKET"));
@@ -339,7 +339,7 @@ auto glslnterm() {
   spirv_decorate_parameter_list();
   spirv_decorate_parameter();
   
-  declare_sym(symbol_get("spirv_decorate_id_parameter_list"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("spirv_decorate_id_parameter_list"), symbol_class_.nterm_sym);
   grammar_current_rule_begin(symbol_get("spirv_decorate_id_parameter_list"));
   grammar_current_rule_symbol_append(symbol_get("spirv_decorate_id_parameter_list"));
   grammar_current_rule_symbol_append(symbol_get("COMMA"));

@@ -9,7 +9,7 @@ private enum string[] RHSALT = [
 
 
 auto assignment_operator() {
-  declare_sym(symbol_get("assignment_operator"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("assignment_operator"), symbol_class_.nterm_sym);
 
   static foreach (tag; RHSALT) {
     grammar_current_rule_begin(symbol_get("assignment_operator"));

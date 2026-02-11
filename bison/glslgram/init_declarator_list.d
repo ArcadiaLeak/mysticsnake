@@ -2,7 +2,7 @@ module bison.glslgram.init_declarator_list;
 import bison;
 
 auto init_declarator_list() {
-  declare_sym(symbol_get("init_declarator_list"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("init_declarator_list"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("init_declarator_list"));
   grammar_current_rule_symbol_append(symbol_get("single_declaration"));

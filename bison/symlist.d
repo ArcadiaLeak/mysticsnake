@@ -1,11 +1,11 @@
 module bison.symlist;
 import bison;
 
-class symbol_list_t {
-  symbol_t sym;
-  symbol_list_t next;
+class symbol_list {
+  symbol sym;
+  symbol_list next;
 
-  this(symbol_t sym) {
+  this(symbol sym) {
     this.sym = sym;
   }
 }

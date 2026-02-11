@@ -2,7 +2,7 @@ module bison.glslgram.spirv_instruction_qualifier_id;
 import bison;
 
 void spirv_instruction_qualifier_id() {
-  declare_sym(symbol_get("spirv_instruction_qualifier_id"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("spirv_instruction_qualifier_id"), symbol_class_.nterm_sym);
   
   grammar_current_rule_begin(symbol_get("spirv_instruction_qualifier_id"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));

@@ -2,7 +2,7 @@ module bison.glslgram.single_attribute;
 import bison;
 
 auto single_attribute() {
-  declare_sym(symbol_get("single_attribute"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("single_attribute"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("single_attribute"));
   grammar_current_rule_symbol_append(symbol_get("IDENTIFIER"));

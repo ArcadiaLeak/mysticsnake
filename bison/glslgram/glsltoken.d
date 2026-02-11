@@ -90,5 +90,5 @@ private enum string[] TOKEN = [
 ];
 
 auto glsltoken() {
-  static foreach (tag; TOKEN) declare_sym(symbol_get(tag), symbol_class_t.token_sym);
+  static foreach (tag; TOKEN) declare_sym(symbol_get(tag), symbol_class_.token_sym);
 }

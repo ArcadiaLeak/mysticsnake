@@ -2,7 +2,7 @@ module bison.glslgram.interpolation_qualifier;
 import bison;
 
 void interpolation_qualifier() {
-  declare_sym(symbol_get("interpolation_qualifier"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("interpolation_qualifier"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("interpolation_qualifier"));
   grammar_current_rule_symbol_append(symbol_get("SMOOTH"));

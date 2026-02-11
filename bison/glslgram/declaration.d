@@ -2,7 +2,7 @@ module bison.glslgram.declaration;
 import bison;
 
 auto declaration() {
-  declare_sym(symbol_get("declaration"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("declaration"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("declaration"));
   grammar_current_rule_symbol_append(symbol_get("function_prototype"));

@@ -2,7 +2,7 @@ module bison.glslgram.jump_statement;
 import bison;
 
 auto jump_statement() {
-  declare_sym(symbol_get("jump_statement"), symbol_class_t.nterm_sym);
+  declare_sym(symbol_get("jump_statement"), symbol_class_.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("jump_statement"));
   grammar_current_rule_symbol_append(symbol_get("CONTINUE"));

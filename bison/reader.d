@@ -1,22 +1,22 @@
 module bison.reader;
 import bison;
 
-symbol_list_t grammar;
-symbol_list_t start_symbols;
+symbol_list grammar;
+symbol_list start_symbols;
 
-symbol_list_t grammar_end;
+symbol_list grammar_end;
 
-symbol_list_t current_rule;
-symbol_list_t previous_rule_end;
+symbol_list current_rule;
+symbol_list previous_rule_end;
 
-void create_start_rule(symbol_t swtok, symbol_t start) {
-  symbol_list_t initial_rule = new symbol_list_t(acceptsymbol);
-  symbol_list_t p = initial_rule;
-  p.next = new symbol_list_t(start);
+void create_start_rule(symbol swtok, symbol start) {
+  symbol_list initial_rule = new symbol_list(acceptsymbol);
+  symbol_list p = initial_rule;
+  p.next = new symbol_list(start);
   p = p.next;
-  p.next = new symbol_list_t(eoftoken);
+  p.next = new symbol_list(eoftoken);
   p = p.next;
-  p.next = new symbol_list_t(null);
+  p.next = new symbol_list(null);
   p = p.next;
   p.next = grammar;
   nrules += 1;
@@ -24,8 +24,8 @@ void create_start_rule(symbol_t swtok, symbol_t start) {
   grammar = initial_rule;
 }
 
-symbol_list_t grammar_symbol_append(symbol_t sym) {
-  symbol_list_t p = new symbol_list_t(sym);
+symbol_list grammar_symbol_append(symbol sym) {
+  symbol_list p = new symbol_list(sym);
 
   if (grammar_end)
     grammar_end.next = p;
@@ -40,23 +40,23 @@ symbol_list_t grammar_symbol_append(symbol_t sym) {
   return p;
 }
 
-void grammar_start_symbols_add(symbol_list_t syms) {
+void grammar_start_symbols_add(symbol_list syms) {
   start_symbols = syms;
 }
 
-void grammar_current_rule_begin(symbol_t lhs) {
+void grammar_current_rule_begin(symbol lhs) {
   ++nrules;
   previous_rule_end = grammar_end;
 
   current_rule = grammar_symbol_append(lhs);
 
-  if (lhs.content.class_ == symbol_class_t.unknown_sym ||
-    lhs.content.class_ == symbol_class_t.percent_type_sym) {
-    lhs.content.class_ = symbol_class_t.nterm_sym;
+  if (lhs.content.class_ == symbol_class_.unknown_sym ||
+    lhs.content.class_ == symbol_class_.percent_type_sym) {
+    lhs.content.class_ = symbol_class_.nterm_sym;
   }
 }
 
-void grammar_current_rule_symbol_append(symbol_t sym) {
+void grammar_current_rule_symbol_append(symbol sym) {
   grammar_symbol_append(sym);
 }
 
@@ -65,8 +65,8 @@ void grammar_current_rule_end() {
 }
 
 void grammar_midrule_action() {
-  symbol_t dummy = dummy_symbol_get();
-  symbol_list_t midrule = new symbol_list_t(dummy);
+  symbol dummy = dummy_symbol_get();
+  symbol_list midrule = new symbol_list(dummy);
 
   ++nrules;
   ++nritems;
@@ -76,7 +76,7 @@ void grammar_midrule_action() {
   else
     grammar = midrule;
 
-  midrule.next = new symbol_list_t(null);
+  midrule.next = new symbol_list(null);
   midrule.next.next = current_rule;
 
   previous_rule_end = midrule.next;
@@ -88,13 +88,13 @@ void packgram() {
   import std.range.primitives;
 
   int itemno = 0;
-  ritem = new item_number_t[nritems];
+  ritem = new item_number[nritems];
 
-  rule_number_t ruleno = 0;
-  rules = new rule_t[nrules];
+  rule_number ruleno = 0;
+  rules = new rule[nrules];
 
-  for (symbol_list_t p = grammar; p; p = p.next) {
-    symbol_list_t lhs = p;
+  for (symbol_list p = grammar; p; p = p.next) {
+    symbol_list lhs = p;
 
     rules[ruleno].number = ruleno;
     rules[ruleno].lhs = lhs.sym.content;
@@ -114,28 +114,28 @@ void packgram() {
 void gram_init_pre() {
   acceptsymbol = symbol_get("$accept");
   acceptsymbol.order_of_appearance = 0;
-  acceptsymbol.content.class_ = symbol_class_t.nterm_sym;
+  acceptsymbol.content.class_ = symbol_class_.nterm_sym;
   acceptsymbol.content.number = nnterms++;
 
   errtoken = symbol_get("YYerror");
   errtoken.order_of_appearance = 0;
-  errtoken.content.class_ = symbol_class_t.token_sym;
+  errtoken.content.class_ = symbol_class_.token_sym;
   errtoken.content.number = ntokens++;
   {
-    symbol_t alias_ = symbol_get("error");
+    symbol alias_ = symbol_get("error");
     alias_.order_of_appearance = 0;
-    alias_.content.class_ = symbol_class_t.token_sym;
+    alias_.content.class_ = symbol_class_.token_sym;
     errtoken.make_alias(alias_);
   }
 
   undeftoken = symbol_get("YYUNDEF");
   undeftoken.order_of_appearance = 0;
-  undeftoken.content.class_ = symbol_class_t.token_sym;
+  undeftoken.content.class_ = symbol_class_.token_sym;
   undeftoken.content.number = ntokens++;
   {
-    symbol_t alias_ = symbol_get("$undefined");
+    symbol alias_ = symbol_get("$undefined");
     alias_.order_of_appearance = 0;
-    alias_.content.class_ = symbol_class_t.token_sym;
+    alias_.content.class_ = symbol_class_.token_sym;
     undeftoken.make_alias(alias_);
   }
 }
@@ -146,36 +146,36 @@ void gram_init_post() {
 
   eoftoken = symbol_get("YYEOF");
   eoftoken.order_of_appearance = 0;
-  eoftoken.content.class_ = symbol_class_t.token_sym;
+  eoftoken.content.class_ = symbol_class_.token_sym;
   eoftoken.content.number = 0;
   {
-    symbol_t alias_ = symbol_get("$end");
+    symbol alias_ = symbol_get("$end");
     alias_.order_of_appearance = 0;
-    alias_.content.class_ = symbol_class_t.token_sym;
+    alias_.content.class_ = symbol_class_.token_sym;
     eoftoken.make_alias(alias_);
   }
 
-  symbol_t start = start_symbols.sym;
+  symbol start = start_symbols.sym;
   create_start_rule(null, start);
 
   symbols_sorted = symbol_table.values
     .sort!("a.order_of_appearance < b.order_of_appearance")
     .array;
   foreach (sym; symbols_sorted) {
-    sym_content_t s = sym.content;
+    sym_content s = sym.content;
 
     if (s.number == NUMBER_UNDEFINED)
-      s.number = s.class_ == symbol_class_t.token_sym ? ntokens++ : nnterms++;
+      s.number = s.class_ == symbol_class_.token_sym ? ntokens++ : nnterms++;
   }
 
   nsyms = ntokens + nnterms;
-  symbols = new symbol_t[nsyms];
+  symbols = new symbol[nsyms];
 
   foreach (sym; symbols_sorted) {
-    if (sym.content.class_ == symbol_class_t.nterm_sym)
+    if (sym.content.class_ == symbol_class_.nterm_sym)
       sym.content.number += ntokens;
 
-    symbols[sym.content.number] = sym.content.symbol;
+    symbols[sym.content.number] = sym.content.symbol_;
   }
 
   packgram();
