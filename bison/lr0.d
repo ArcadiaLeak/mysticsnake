@@ -6,6 +6,9 @@ class state_list {
   state state_;
 }
 
+state_list first_state;
+state_list last_state;
+
 item_index[][] kernel_base;
 item_index[] kernel_items;
 
@@ -43,5 +46,22 @@ void generate_states() {
     for (int r = 0; r < nrules && rules[r].lhs.symbol_ == acceptsymbol; ++r)
       kernel_base[0][kernel_size++] = item_index(ritem.length - rules[r].rhs.length);
     kernel_base[0] = kernel_base[0][0..kernel_size];
+    state_list_append(symbol_number(0), kernel_base[0]);
   }
+}
+
+state state_list_append(symbol_number sym, item_index[] core) {
+  state_list node = new state_list;
+  state res = new state(sym, core);
+
+  node.next = null;
+  node.state_ = res;
+
+  if (!first_state)
+    first_state = node;
+  if (last_state)
+    last_state.next = node;
+  last_state = node;
+
+  return res;
 }
