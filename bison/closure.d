@@ -95,7 +95,7 @@ void print_fderives() {
 }
 
 void closure(const item_index[] core) {
-  closure_print("input", core);
+  debug closure_print("input", core);
 
   ruleset[] = 0;
   itemset = itemset.ptr[0..itemset.capacity];
@@ -126,7 +126,7 @@ void closure(const item_index[] core) {
   }
   itemset = itemset.ptr[0..nitemset];
 
-  closure_print("input", itemset);
+  debug closure_print("input", itemset);
 }
 
 void closure_print(string title, const item_index[] arr) {
