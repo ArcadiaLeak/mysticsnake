@@ -8,9 +8,12 @@ enum symbol_class_ {
   nterm_sym
 }
 
-alias symbol_number = int;
+struct symbol_number {
+  int _;
+  alias _ this;
+}
 
-enum symbol_number NUMBER_UNDEFINED = -1;
+enum NUMBER_UNDEFINED = symbol_number(-1);
 
 symbol acceptsymbol;
 symbol errtoken;

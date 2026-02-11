@@ -90,13 +90,13 @@ void packgram() {
   int itemno = 0;
   ritem = new item_number[nritems];
 
-  rule_number ruleno = 0;
+  int ruleno = 0;
   rules = new rule[nrules];
 
   for (symbol_list p = grammar; p; p = p.next) {
     symbol_list lhs = p;
 
-    rules[ruleno].number = ruleno;
+    rules[ruleno].number = rule_number(ruleno);
     rules[ruleno].lhs = lhs.sym.content;
     rules[ruleno].rhs = ritem[itemno..$];
 

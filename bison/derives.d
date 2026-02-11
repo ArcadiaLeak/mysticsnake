@@ -4,8 +4,6 @@ import bison;
 rule[][][] derives;
 
 void derives_compute() {
-  import std.range;
-
   struct rule_list {
     rule_list[] next;
     rule[] value;
@@ -14,31 +12,31 @@ void derives_compute() {
   rule_list[][] dset = new rule_list[][nnterms];
   rule_list[] delts = new rule_list[nrules];
 
-  for (rule_number r = nrules - 1; r >= 0; --r) {
+  for (int r = nrules - 1; r >= 0; --r) {
     symbol_number lhs = rules[r].lhs.number;
     rule_list[] p = delts[r..$];
 
-    p.front.next = dset[lhs - ntokens];
-    p.front.value = rules[r..$];
+    p[0].next = dset[lhs - ntokens];
+    p[0].value = rules[r..$];
 
     dset[lhs - ntokens] = p;
   }
 
   derives = new rule[][][nnterms];
-  rule[][] q = new rule[][nnterms + nrules];
+  rule[][] dvs_storage = new rule[][nnterms + nrules];
 
-  for (symbol_number i = ntokens; i < nsyms; ++i) {
+  for (int i = ntokens; i < nsyms; ++i) {
     rule_list[] p = dset[i - ntokens];
-    derives[i - ntokens] = q;
+    derives[i - ntokens] = dvs_storage;
 
     while (p) {
-      q.front = p.front.value;
-      q.popFront;
-      p = p.front.next;
+      dvs_storage[0] = p[0].value;
+      dvs_storage = dvs_storage[1..$];
+      p = p[0].next;
     }
 
-    q.front = null;
-    q.popFront;
+    dvs_storage[0] = null;
+    dvs_storage = dvs_storage[1..$];
   }
 }
 
@@ -48,7 +46,7 @@ void print_derives() {
 
   write("DERIVES\n");
 
-  for (symbol_number i = ntokens; i < nsyms; ++i) {
+  for (int i = ntokens; i < nsyms; ++i) {
     writef("  %s derives\n", symbols[i].tag);
     for (rule[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
       writef("    %3d ", rp.front.front.number);

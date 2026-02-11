@@ -5,18 +5,27 @@ item_number[] ritem;
 int nritems = 0;
 
 rule[] rules;
-rule_number nrules = 0;
+rule_number nrules = rule_number(0);
 
 symbol[] symbols;
 int nsyms = 0;
 int ntokens = 1;
 int nnterms = 0;
 
-alias item_number = int;
+struct item_number {
+  int _;
+  alias _ this;
+}
 
-alias item_index = uint;
+struct item_index {
+  size_t _;
+  alias _ this;
+}
 
-alias rule_number = int;
+struct rule_number {
+  int _;
+  alias _ this;
+}
 
 struct rule {
   rule_number number;

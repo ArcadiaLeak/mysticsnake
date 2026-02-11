@@ -23,10 +23,10 @@ void set_fderives() {
 
   set_firsts(firsts);
 
-  for (symbol_number i = ntokens; i < nsyms; ++i)
-    for (symbol_number j = ntokens; j < nsyms; ++j)
+  for (int i = ntokens; i < nsyms; ++i)
+    for (int j = ntokens; j < nsyms; ++j)
       if (firsts[i - ntokens][j - ntokens])
-        for (rule_number k = 0; derives[j - ntokens][k]; ++k)
+        for (int k = 0; derives[j - ntokens][k]; ++k)
           fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
 }
 
@@ -43,8 +43,8 @@ void set_firsts(out bool[][] firsts) {
     }
   }
   
-  for (symbol_number i = ntokens; i < nsyms; ++i)
-    for (symbol_number j = 0; derives[i - ntokens][j]; ++j) {
+  for (int i = ntokens; i < nsyms; ++i)
+    for (int j = 0; derives[i - ntokens][j]; ++j) {
       item_number sym = derives[i - ntokens][j].front.rhs.front;
       if(sym >= ntokens)
         firsts[i - ntokens][sym - ntokens] = true;
@@ -60,12 +60,12 @@ void set_firsts(out bool[][] firsts) {
     firsts[i][i] = true;
 }
 
-void print_firsts(in bool[][] firsts) {
+void print_firsts() {
   import std.stdio;
 
   write("FIRSTS\n");
 
-  for (symbol_number i = ntokens; i < nsyms; ++i) {
+  for (int i = ntokens; i < nsyms; ++i) {
     writef("  %s firsts\n", symbols[i].tag);
     foreach (j, flag; firsts[i - ntokens])
       if (flag) writef("    %s\n", symbols[j + ntokens].tag);
@@ -80,7 +80,7 @@ void print_fderives() {
 
   write("FDERIVES\n");
 
-  for (symbol_number i = ntokens; i < nsyms; ++i) {
+  for (int i = ntokens; i < nsyms; ++i) {
     writef("  %s derives\n", symbols[i].tag);
     foreach (r, flag; fderives[i - ntokens])
       if (flag) {
