@@ -9,15 +9,20 @@ class state_list {
 state_list first_state;
 state_list last_state;
 
+bool[] shift_symbol;
+
 rule[][] redset;
 
 item_index[][] kernel_base;
+int[] kernel_size;
+
 item_index[] kernel_items;
 
 void allocate_storage() {
   allocate_itemsets();
 
   redset = new rule[][nrules];
+  shift_symbol = new bool[nsyms];
 }
 
 void allocate_itemsets() {
@@ -39,6 +44,8 @@ void allocate_itemsets() {
     kernel_base[i] = kernel_items[count..$];
     count += symbol_count[i];
   }
+
+  kernel_size = new int[nsyms];
 }
 
 void generate_states() {
@@ -46,11 +53,10 @@ void generate_states() {
   closure_new(nritems);
 
   {
-    size_t kernel_size = 0;
+    kernel_size[0] = 0;
     for (int r = 0; r < nrules && rules[r].lhs.symbol_ == acceptsymbol; ++r)
-      kernel_base[0][kernel_size++] = item_index(ritem.length - rules[r].rhs.length);
-    kernel_base[0] = kernel_base[0][0..kernel_size];
-    state_list_append(symbol_number(0), kernel_base[0]);
+      kernel_base[0][kernel_size[0]++] = item_index(ritem.length - rules[r].rhs.length);
+    state_list_append(symbol_number(0), kernel_base[0][0..kernel_size[0]]);
   }
 
   for (state_list list = first_state; list; list = list.next) {
@@ -58,6 +64,7 @@ void generate_states() {
 
     s.closure;
     s.save_reductions;
+    s.new_itemsets;
   }
 }
 
@@ -91,4 +98,42 @@ void save_reductions(state s) {
   }
 
   s.reductions = redset[0..count].dup;
+}
+
+void new_itemsets(state s) {
+  kernel_size[] = 0;
+  shift_symbol[] = 0;
+
+  foreach (i; itemset[0..nitemset]) {
+    if (ritem[i] >= 0) {
+      symbol_number sym = symbol_number(ritem[i]);
+      shift_symbol[sym] = true;
+      kernel_base[sym][kernel_size[sym]] = i + 1;
+      kernel_size[sym]++;
+    }
+  }
+
+  if (TRACE_AUTOMATON) {
+    import std.stdio;
+    write("final kernel:\n");
+    kernel_print();
+    writef("new_itemsets: end: state = %d\n\n", s.number);
+  }
+}
+
+void core_print(item_index[] core) {
+  foreach (c; core) {
+    import std.stdio;
+    item_print(ritem[c..$]);
+    write("\n");
+  }
+}
+
+void kernel_print() {
+  for (int i = 0; i < nsyms; ++i)
+    if (kernel_size[i]) {
+      import std.stdio;
+      writef("kernel[%s] =\n", symbols[i].tag);
+      core_print(kernel_base[i][0..kernel_size[i]]);
+    }
 }

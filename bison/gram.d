@@ -32,3 +32,33 @@ struct rule {
   sym_content lhs;
   item_number[] rhs;
 }
+
+void item_print(item_number[] item) {
+  const ref rule r = item_rule(item);
+  rule_lhs_print(r);
+
+  import std.stdio;
+  if (r.rhs[0] >= 0) {
+    foreach (sym; r.rhs[0..r.rhs.length - item.length])
+      writef(" %s", symbols[sym].tag);
+    writef(" %s", cast(dchar) 0x2022);
+    foreach (sym; item)
+      if (sym >= 0) writef(" %s", symbols[sym._].tag);
+      else break;
+  } else
+    writef(" %s %s", cast(dchar) 0x03b5, cast(dchar) 0x2022);
+}
+
+ref rule item_rule(item_number[] item) {
+  item_number[] sp = item;
+  while (sp[0] >= 0)
+    sp = sp[1..$];
+  rule_number r = rule_number(-1 - sp[0]);
+  return rules[r];
+}
+
+void rule_lhs_print(in rule r) {
+  import std.stdio;
+  writef("  %3d ", r.number);
+  writef("%s:", r.lhs.symbol_.tag);
+}
