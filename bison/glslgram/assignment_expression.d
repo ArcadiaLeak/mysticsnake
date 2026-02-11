@@ -1,4 +1,4 @@
-module bison.glslgram.conditional_expression;
+module bison.glslgram.assignment_expression;
 import bison;
 
 auto assignment_expression() {

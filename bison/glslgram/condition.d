@@ -1,7 +1,7 @@
 module bison.glslgram.condition;
 import bison;
 
-auto condition_init() {
+auto condition() {
   declare_sym(symbol_get("condition"), symbol_class_t.nterm_sym);
 
   grammar_current_rule_begin(symbol_get("condition"));
