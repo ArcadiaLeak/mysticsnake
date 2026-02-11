@@ -1,27 +1,32 @@
 module bison.closure;
 import bison;
 
+import std.range.interfaces;
+
+item_index[] itemset;
+size_t nitemset;
+
+bool[] ruleset;
+
 bool[][] fderives;
 bool[][] firsts;
 
 void closure_new(int n) {
+  itemset = new item_index[n];
+  ruleset = new bool[nrules];
+
+
   set_fderives();
 }
 
 void set_fderives() {
-  import std.range.primitives;
+  import std.array;
+  import std.range;
 
   bool[] buffer = new bool[nnterms * nrules];
-  fderives = new bool[][nnterms];
-  {
-    size_t j;
-    for (size_t i = 0; i < nnterms; i++) {
-      j = i + 1;
-      fderives[i] = buffer[i * nrules..j * nrules];
-    }
-  }
+  fderives = buffer.chunks(nrules).array;
 
-  set_firsts(firsts);
+  set_firsts();
 
   for (int i = ntokens; i < nsyms; ++i)
     for (int j = ntokens; j < nsyms; ++j)
@@ -30,18 +35,12 @@ void set_fderives() {
           fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
 }
 
-void set_firsts(out bool[][] firsts) {
-  import std.range.primitives;
+void set_firsts() {
+  import std.array;
+  import std.range;
 
   bool[] buffer = new bool[nnterms * nnterms];
-  firsts = new bool[][nnterms];
-  {
-    size_t j;
-    for (size_t i = 0; i < nnterms; i++) {
-      j = i + 1;
-      firsts[i] = buffer[i * nnterms..j * nnterms];
-    }
-  }
+  firsts = buffer.chunks(nnterms).array;
   
   for (int i = ntokens; i < nsyms; ++i)
     for (int j = 0; derives[i - ntokens][j]; ++j) {
@@ -53,8 +52,7 @@ void set_firsts(out bool[][] firsts) {
   for (size_t i = 0; i < firsts.length; i++)
     for (size_t j = 0; j < firsts.length; j++)
       if (firsts[j][i])
-        for (size_t k = 0; k < firsts[j].length; k++)
-          firsts[j][k] = firsts[j][k] || firsts[i][k];
+        firsts[j][] = firsts[j][] || firsts[i][];
 
   for (size_t i = 0; i < firsts.length; i++)
     firsts[i][i] = true;
@@ -95,4 +93,32 @@ void print_fderives() {
   }
 
   write("\n\n");
+}
+
+void closure(const item_index[] core) {
+  ruleset[] = 0;
+
+  foreach (c; core)
+    if (ritem[c] >= ntokens)
+      ruleset[] = ruleset[] || fderives[ritem[c] - ntokens][];
+
+  nitemset = 0;
+  size_t c = 0;
+
+  foreach (ruleno, rul; ruleset) {
+    size_t itemno = ritem.length - rules[ruleno].rhs.length;
+    while (c < core.length && core[c] < itemno) {
+      itemset[nitemset] = core[c];
+      nitemset++;
+      c++;
+    }
+    itemset[nitemset] = itemno;
+    nitemset++;
+  }
+
+  while (c < core.length) {
+    itemset[nitemset] = core[c];
+    nitemset++;
+    c++;
+  }
 }
