@@ -72,6 +72,8 @@ void generate_states() {
     import std.algorithm.searching;
     s.state_transitions_set = shiftset[0..shift_symbol.count(1)];
   }
+
+  set_states;
 }
 
 state state_list_append(symbol_number sym, item_index[] core) {
@@ -175,4 +177,20 @@ void state_transitions_set(state s, state[] dst) {
   s.transitions = dst.dup;
   if (TRACE_AUTOMATON)
     state_transitions_print(s);
+}
+
+
+void set_states() {
+  states = new state[nstates];
+
+  while (first_state) {
+    state_list self = first_state;
+
+    state s = self.state_;
+    states[s.number] = s;
+    
+    first_state = self.next;
+  }
+  first_state = null;
+  last_state = null;
 }

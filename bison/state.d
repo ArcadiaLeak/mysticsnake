@@ -2,7 +2,10 @@ module bison.state;
 import bison;
 
 state final_state;
+
+state[] states;
 state_number nstates;
+
 state[item_index[]] state_table;
 
 struct state_number {
