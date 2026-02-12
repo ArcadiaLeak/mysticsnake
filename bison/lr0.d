@@ -22,6 +22,7 @@ item_index[] kernel_items;
 void allocate_storage() {
   allocate_itemsets();
 
+  shiftset = new state[nsyms];
   redset = new rule[][nrules];
   shift_symbol = new bool[nsyms];
 }
@@ -67,6 +68,9 @@ void generate_states() {
     s.save_reductions;
     s.new_itemsets;
     s.append_states;
+
+    import std.algorithm.searching;
+    s.state_transitions_set = shiftset[0..shift_symbol.count(1)];
   }
 }
 
@@ -165,4 +169,10 @@ void append_states(state s) {
 
   if (TRACE_AUTOMATON) 
     writef("append_states: end: state = %d\n", s.number);
+}
+
+void state_transitions_set(state s, state[] dst) {
+  s.transitions = dst.dup;
+  if (TRACE_AUTOMATON)
+    state_transitions_print(s);
 }
