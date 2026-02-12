@@ -12,6 +12,7 @@ state_list last_state;
 bool[] shift_symbol;
 
 rule[][] redset;
+state[] shiftset;
 
 item_index[][] kernel_base;
 int[] kernel_size;
@@ -65,12 +66,13 @@ void generate_states() {
     s.closure;
     s.save_reductions;
     s.new_itemsets;
+    s.append_states;
   }
 }
 
 state state_list_append(symbol_number sym, item_index[] core) {
   state_list node = new state_list;
-  state res = new state(sym, core);
+  state res = new state(sym, core.idup);
 
   node.next = null;
   node.state_ = res;
@@ -136,4 +138,31 @@ void kernel_print() {
       writef("kernel[%s] =\n", symbols[i].tag);
       core_print(kernel_base[i][0..kernel_size[i]]);
     }
+}
+
+state get_state(symbol_number sym, item_index[] core) {
+  if (core !in state_table)
+    state_list_append(sym, core);
+
+  return state_table[core];
+}
+
+void append_states(state s) {
+  import std.stdio;
+
+  if (TRACE_AUTOMATON) 
+    writef("append_states: begin: state = %d\n", s.number);
+
+  int i = 0;
+  foreach(sym, flag; shift_symbol)
+    if (flag) {
+      shiftset[i] = get_state(
+        symbol_number(cast(int) sym),
+        kernel_base[sym][0..kernel_size[sym]]
+      );
+      ++i;
+    }
+
+  if (TRACE_AUTOMATON) 
+    writef("append_states: end: state = %d\n", s.number);
 }
