@@ -19,6 +19,8 @@ class state {
   rule[][] reductions;
   state[] transitions;
   state_number number;
+  bool consistent;
+  bool[][] lookaheads;
 
   this(symbol_number sym, immutable item_index[] core) {
     accessing_symbol = sym;

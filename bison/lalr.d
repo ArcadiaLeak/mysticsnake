@@ -1,0 +1,46 @@
+module bison.lalr;
+import bison;
+
+bool[][] LA;
+size_t nLA;
+
+void lalr() {
+  initialize_LA();
+}
+
+void initialize_LA() {
+  nLA = 0;
+  foreach (cur_state; states)
+    nLA += state_lookaheads_count(cur_state);
+
+  if (!nLA)
+    nLA = 1;
+
+  import std.array;
+  import std.range;
+
+  bool[][] pLA = LA = new bool[nLA * ntokens]
+    .chunks(ntokens)
+    .array;
+
+  foreach (cur_state; states) {
+    int count = state_lookaheads_count(cur_state);
+
+    if (count) {
+      cur_state.lookaheads = pLA;
+      pLA = pLA[count..$];
+    }
+  }
+}
+
+int state_lookaheads_count(state s) {
+  auto reds = s.reductions;
+  auto trans = s.transitions;
+
+  s.consistent = !(
+    reds.length > 1 ||
+    (reds.length == 1 && trans.length && (trans[0].accessing_symbol < ntokens))
+  );
+
+  return s.consistent ? 0 : cast(int) reds.length;
+}

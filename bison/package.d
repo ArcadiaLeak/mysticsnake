@@ -9,17 +9,19 @@ package import bison.reader;
 package import bison.state;
 package import bison.symlist;
 package import bison.symtab;
+package import bison.lalr;
 
 enum bool TRACE_SETS = 0;
 enum bool TRACE_CLOSURE = 0;
 enum bool TRACE_AUTOMATON = 0;
 
 void main() {
-  gram_init_pre();
-  glslgram();
-  gram_init_post();
-  derives_compute();
-  generate_states();
+  gram_init_pre;
+  glslgram;
+  gram_init_post;
+  derives_compute;
+  generate_states;
+  lalr;
 
   {
     import std.stdio;
