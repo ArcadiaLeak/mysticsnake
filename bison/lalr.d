@@ -47,8 +47,8 @@ void initialize_LA() {
 }
 
 int state_lookaheads_count(state s) {
-  auto reds = s.reductions;
-  auto trans = s.transitions;
+  rule[][] reds = s.reductions;
+  state[] trans = s.transitions;
 
   s.consistent = !(
     reds.length > 1 ||
@@ -114,7 +114,7 @@ void set_goto_map() {
   }
 }
 
-void goto_print(goto_number i) {
+void goto_print(size_t i) {
   import std.stdio;
   state_number src = from_state[i];
   state_number dst = to_state[i];
@@ -133,19 +133,68 @@ void initialize_goto_follows() {
   foreach (size_t i; 0..ngotos) {
     state_number dst = to_state[i];
   
-    foreach (trans; states[dst].transitions) {
-      if (trans is null)
+    state[] trans = states[dst].transitions;
+    while (trans.length > 0) {
+      if (trans[0] is null)
         continue;
-      if (trans.accessing_symbol >= ntokens)
+      if (trans[0].accessing_symbol >= ntokens)
         break;
 
-      goto_follows[i][trans.accessing_symbol] = true;
+      goto_follows[i][trans[0].accessing_symbol] = true;
+      trans = trans[1..$];
     }
       
     goto_number nedges = goto_number(0);
-    foreach (trans; states[dst].transitions) {
-      symbol_number sym = trans.accessing_symbol;
+    while (trans.length > 0) {
+      symbol_number sym = trans[0].accessing_symbol;
+      if (nullable[sym - ntokens])
+        edge[nedges++] = map_goto(dst, sym);
+      trans = trans[1..$];
+    }
 
+    if (nedges == 0)
+      reads[i] = null;
+    else {
+      reads[i] = edge[0..nedges];
+      reads[i].length++;
+      reads[i][nedges] = goto_number(-1);
     }
   }
+
+  if (TRACE_AUTOMATON) {
+    follows_print("follows after shifts");
+    relation_print!goto_print("reads", reads);
+  }
+}
+
+goto_number map_goto(state_number src, symbol_number sym) {
+  goto_number low = goto_map[sym - ntokens];
+  goto_number high = goto_map[sym - ntokens + 1];
+  high -= 1;
+
+  while (true) {
+    goto_number middle = goto_number((low + high) / 2);
+    state_number s = from_state[middle];
+    if (s == src)
+      return middle;
+    else if (s < src)
+      low = middle + 1;
+    else
+      high = middle - 1;
+  }
+}
+
+void follows_print(string title) {
+  import std.stdio;
+  writef("%s:\n", title);
+  foreach (i; 0..ngotos) {
+    write("    FOLLOWS[");
+    goto_print(i.goto_number);
+    write("] =");
+    foreach (sym, flag; goto_follows[i])
+      if (flag)
+        writef(" %s", symbols[sym].tag);
+    write("\n");
+  }
+  write("\n");
 }
