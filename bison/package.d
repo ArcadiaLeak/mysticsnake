@@ -25,13 +25,4 @@ void main() {
   nullable_compute;
   generate_states;
   lalr;
-
-  {
-    import std.stdio;
-
-    writeln(ntokens);
-    writeln(nnterms);
-    writeln(nrules);
-    writeln(nritems);
-  }
 }

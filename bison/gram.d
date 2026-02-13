@@ -62,3 +62,21 @@ void rule_lhs_print(in rule r) {
   writef("  %3d ", r.number);
   writef("%s:", r.lhs.symbol_.tag);
 }
+
+size_t ritem_longest_rhs() {
+  size_t max = 0;
+  foreach (r; 0..nrules) {
+    size_t length = rule_rhs_length(rules[r..$]);
+    if (length > max)
+      max = length;
+  }
+
+  return max;
+}
+
+size_t rule_rhs_length(const rule[] r) {
+  size_t res = 0;
+  for (size_t i = 0; r[0].rhs[i] >= 0; ++i)
+    ++res;
+  return res;
+}

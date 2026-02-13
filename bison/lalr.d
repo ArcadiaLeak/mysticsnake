@@ -12,13 +12,28 @@ state_number[] from_state;
 state_number[] to_state;
 bool[][] goto_follows;
 
+class goto_list {
+  goto_list next;
+  goto_number value;
+
+  this(goto_number v, goto_list n) {
+    next = n;
+    value = v;
+  }
+}
+
 bool[][] LA;
 size_t nLA;
+
+goto_number[][] includes;
+goto_list[] lookback;
 
 void lalr() {
   initialize_LA;
   set_goto_map;
   initialize_goto_follows;
+  lookback = new goto_list[nLA];
+  build_relations;
 }
 
 void initialize_LA() {
@@ -167,7 +182,7 @@ void initialize_goto_follows() {
   }
 
   relation_digraph(reads, goto_follows);
-  if (true)
+  if (TRACE_AUTOMATON)
     follows_print("follows after read");
 }
 
@@ -201,4 +216,77 @@ void follows_print(string title) {
     write("\n");
   }
   write("\n");
+}
+
+void build_relations() {
+  goto_number[] edge = new goto_number[ngotos];
+  state_number[] path = new state_number[ritem_longest_rhs + 1];
+
+  includes = new goto_number[][ngotos];
+
+  foreach (i; 0..ngotos) {
+    state_number src = from_state[i];
+    state_number dst = to_state[i];
+    symbol_number var = states[dst].accessing_symbol;
+
+    int nedges = 0;
+    foreach (r; derives[var - ntokens]) {
+      if (r is null)
+        break;
+      state s = states[src];
+      path[0] = s.number;
+
+      int length = 1;
+      for (int rp = 0; r[0].rhs[rp] >= 0; rp++) {
+        symbol_number sym = symbol_number(r[0].rhs[rp]);
+        s = transitions_to(s, sym);
+        path[length++] = s.number;
+      }
+
+      if (!s.consistent)
+        add_lookback_edge(s, r, i.goto_number);
+
+      foreach_reverse (p; 0..length - 1) {
+        if (r[0].rhs[p] < ntokens)
+          break;
+        symbol_number sym = symbol_number(r[0].rhs[p]);
+        goto_number g = map_goto(path[p], sym);
+        {
+          bool found = false;
+          foreach (j; 0..nedges)
+            found = edge[j] == g;
+          if (!found)
+            edge[nedges++] = g;
+        }
+        if (!nullable[sym - ntokens])
+          break;
+      }
+    }
+
+    if (true) {
+      import std.stdio;
+      i.goto_print;
+      write(" edges = ");
+      foreach (j; 0..nedges) {
+        write(" ");
+        edge[j].goto_print;
+      }
+      write("\n");
+    }
+
+    if (nedges == 0)
+      includes[i] = null;
+    else {
+      includes[i] = new goto_number[nedges + 1];
+      foreach (j; 0..nedges)
+        includes[i][j] = edge[j];
+      includes[i][nedges] = -1;
+    }
+  }
+}
+
+void add_lookback_edge(state s, rule[] r, goto_number gotono) {
+  int ri = state_reduction_find(s, r);
+  int idx = cast(int) (LA.length - s.lookaheads.length) + ri;
+  lookback[idx] = new goto_list(gotono, lookback[idx]);
 }
