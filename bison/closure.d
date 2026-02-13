@@ -28,8 +28,8 @@ void set_fderives() {
 
   set_firsts();
 
-  for (int i = ntokens; i < nsyms; ++i)
-    for (int j = ntokens; j < nsyms; ++j)
+  foreach (i; ntokens..nsyms)
+    foreach (j; ntokens..nsyms)
       if (firsts[i - ntokens][j - ntokens])
         for (int k = 0; derives[j - ntokens][k]; ++k)
           fderives[i - ntokens][derives[j - ntokens][k].front.number] = true;
@@ -45,19 +45,19 @@ void set_firsts() {
   bool[] buffer = new bool[nnterms * nnterms];
   firsts = buffer.chunks(nnterms).array;
   
-  for (int i = ntokens; i < nsyms; ++i)
+  foreach (i; ntokens..nsyms)
     for (int j = 0; derives[i - ntokens][j]; ++j) {
       item_number sym = derives[i - ntokens][j].front.rhs.front;
       if(sym >= ntokens)
         firsts[i - ntokens][sym - ntokens] = true;
     }
   
-  for (size_t i = 0; i < firsts.length; i++)
-    for (size_t j = 0; j < firsts.length; j++)
+  foreach (i; 0..nnterms)
+    foreach (j; 0..nnterms)
       if (firsts[j][i])
         firsts[j][] |= firsts[i][];
 
-  for (size_t i = 0; i < firsts.length; i++)
+  foreach (i; 0..nnterms)
     firsts[i][i] = true;
 
   if (TRACE_SETS)
@@ -69,7 +69,7 @@ void print_firsts() {
 
   write("FIRSTS\n");
 
-  for (int i = ntokens; i < nsyms; ++i) {
+  foreach (i; ntokens..nsyms) {
     writef("  %s firsts\n", symbols[i].tag);
     foreach (j, flag; firsts[i - ntokens])
       if (flag) writef("    %s\n", symbols[j + ntokens].tag);
@@ -83,7 +83,7 @@ void print_fderives() {
 
   write("FDERIVES\n");
 
-  for (int i = ntokens; i < nsyms; ++i) {
+  foreach (i; ntokens..nsyms) {
     writef("  %s derives\n", symbols[i].tag);
     foreach (r, flag; fderives[i - ntokens])
       if (flag) {

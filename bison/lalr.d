@@ -64,7 +64,7 @@ void set_goto_map() {
 
   foreach (s; states) {
     import std.range;
-    foreach (trans; s.transitions.retro) {
+    foreach_reverse (trans; s.transitions) {
       if (trans.accessing_symbol < ntokens) break;
       ngotos++;
       goto_map[trans.accessing_symbol - ntokens]++;
@@ -91,7 +91,7 @@ void set_goto_map() {
 
   foreach (s_idx, s; states) {
     import std.range;
-    foreach (trans; s.transitions.retro) {
+    foreach_reverse (trans; s.transitions) {
       if (trans.accessing_symbol < ntokens) break;
       goto_number k = temp_map[trans.accessing_symbol - ntokens]++;
       from_state[k] = state_number(s_idx);

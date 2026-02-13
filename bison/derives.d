@@ -12,7 +12,7 @@ void derives_compute() {
   rule_list[][] dset = new rule_list[][nnterms];
   rule_list[] delts = new rule_list[nrules];
 
-  for (int r = nrules - 1; r >= 0; --r) {
+  foreach_reverse (r; 0..nrules) {
     symbol_number lhs = rules[r].lhs.number;
     rule_list[] p = delts[r..$];
 
@@ -25,7 +25,7 @@ void derives_compute() {
   derives = new rule[][][nnterms];
   rule[][] dvs_storage = new rule[][nnterms + nrules];
 
-  for (int i = ntokens; i < nsyms; ++i) {
+  foreach (i; ntokens..nsyms) {
     rule_list[] p = dset[i - ntokens];
     derives[i - ntokens] = dvs_storage;
 
@@ -49,7 +49,7 @@ void print_derives() {
 
   write("DERIVES\n");
 
-  for (int i = ntokens; i < nsyms; ++i) {
+  foreach (i; ntokens..nsyms) {
     writef("  %s derives\n", symbols[i].tag);
     for (rule[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
       writef("    %3d ", rp.front.front.number);
