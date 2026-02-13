@@ -165,6 +165,10 @@ void initialize_goto_follows() {
     follows_print("follows after shifts");
     relation_print!goto_print("reads", reads);
   }
+
+  relation_digraph(reads, goto_follows);
+  if (true)
+    follows_print("follows after read");
 }
 
 goto_number map_goto(state_number src, symbol_number sym) {
