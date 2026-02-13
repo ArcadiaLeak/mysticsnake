@@ -9,7 +9,7 @@ state_number nstates;
 state[item_index[]] state_table;
 
 struct state_number {
-  int _;
+  size_t _;
   alias _ this;
 }
 
