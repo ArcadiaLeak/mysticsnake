@@ -10,6 +10,7 @@ goto_number[] goto_map;
 goto_number ngotos;
 state_number[] from_state;
 state_number[] to_state;
+bool[][] goto_follows;
 
 bool[][] LA;
 size_t nLA;
@@ -17,6 +18,7 @@ size_t nLA;
 void lalr() {
   initialize_LA;
   set_goto_map;
+  initialize_goto_follows;
 }
 
 void initialize_LA() {
@@ -118,4 +120,32 @@ void goto_print(goto_number i) {
   state_number dst = to_state[i];
   symbol_number var = states[dst].accessing_symbol;
   writef("goto[%d] = (%d, %s, %d)", i, src, symbols[var].tag, dst);
+}
+
+void initialize_goto_follows() {
+  goto_number[][] reads = new goto_number[][ngotos];
+  goto_number[] edge = new goto_number[ngotos];
+  
+  import std.array;
+  import std.range;
+  goto_follows = new bool[ngotos * ntokens].chunks(ntokens).array;
+
+  foreach (size_t i; 0..ngotos) {
+    state_number dst = to_state[i];
+  
+    foreach (trans; states[dst].transitions) {
+      if (trans is null)
+        continue;
+      if (trans.accessing_symbol >= ntokens)
+        break;
+
+      goto_follows[i][trans.accessing_symbol] = true;
+    }
+      
+    goto_number nedges = goto_number(0);
+    foreach (trans; states[dst].transitions) {
+      symbol_number sym = trans.accessing_symbol;
+
+    }
+  }
 }
