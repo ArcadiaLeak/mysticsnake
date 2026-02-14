@@ -123,7 +123,7 @@ void set_goto_map() {
         goto_map[i], cast(int) goto_map[i + 1] - 1
       );
     for (size_t i = 0; i < ngotos; ++i) {
-      goto_print(i.goto_number);
+      i.goto_print;
       write("\n");
     }
   }
@@ -263,7 +263,7 @@ void build_relations() {
       }
     }
 
-    if (true) {
+    if (TRACE_AUTOMATON) {
       import std.stdio;
       i.goto_print;
       write(" edges = ");
@@ -283,6 +283,10 @@ void build_relations() {
       includes[i][nedges] = -1;
     }
   }
+
+  includes.relation_transpose;
+  if (TRACE_AUTOMATON)
+    relation_print!goto_print("includes", includes);
 }
 
 void add_lookback_edge(state s, rule[] r, goto_number gotono) {

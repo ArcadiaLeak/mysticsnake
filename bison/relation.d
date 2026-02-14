@@ -1,6 +1,11 @@
 module bison.relation;
 import bison;
 
+void relation_print_default(size_t i) {
+  import std.stdio;
+  writef("%3d", i);
+}
+
 void relation_print(alias Print, Relation)(string title, Relation r) {
   import std.stdio;
   writef("%s:\n", title);
@@ -57,4 +62,9 @@ void relation_digraph(Relation)(Relation r, bool[][] function_) {
   foreach (k; 0..r.length)
     if (indexes[k] == 0 && R[k])
       traverse(k);
+}
+
+void relation_transpose(Relation)(Relation r) {
+  if (TRACE_SETS)
+    relation_print!relation_print_default("relation_transpose", r);
 }
