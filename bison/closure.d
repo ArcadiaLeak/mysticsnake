@@ -88,11 +88,7 @@ void print_fderives() {
     foreach (r, flag; fderives[i - ntokens])
       if (flag) {
         writef("    %3d ", r);
-        if (rules[r].rhs[0] >= 0)
-          for (int k = 0; rules[r].rhs[k] >= 0; k++)
-            writef(" %s", symbols[rules[r].rhs[k]].tag);
-        else
-          writef(" %s", cast(dchar) 0x03b5);
+        rules[r].rule_rhs_print;
         write("\n");
       }
   }

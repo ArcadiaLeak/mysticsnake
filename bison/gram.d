@@ -35,7 +35,7 @@ struct rule {
 
 void item_print(item_number[] item) {
   const ref rule r = item_rule(item);
-  rule_lhs_print(r);
+  r.rule_lhs_print;
 
   import std.stdio;
   if (r.rhs[0] >= 0) {
@@ -61,6 +61,15 @@ void rule_lhs_print(in rule r) {
   import std.stdio;
   writef("  %3d ", r.number);
   writef("%s:", r.lhs.symbol_.tag);
+}
+
+void rule_rhs_print(in rule r) {
+  import std.stdio;
+  if (r.rhs[0] >= 0)
+    for (int k = 0; r.rhs[k] >= 0; k++)
+      writef(" %s", symbols[r.rhs[k]].tag);
+  else
+    writef(" %s", cast(dchar) 0x03b5);
 }
 
 size_t ritem_longest_rhs() {

@@ -53,11 +53,7 @@ void print_derives() {
     writef("  %s derives\n", symbols[i].tag);
     for (rule[][] rp = derives[i - ntokens]; rp.front; rp.popFront) {
       writef("    %3d ", rp.front.front.number);
-      if (rp.front.front.rhs.front >= 0)
-        for (item_number[] rhsp = rp.front.front.rhs; rhsp.front >= 0; rhsp.popFront)
-          writef(" %s", symbols[rhsp.front].tag);
-      else
-        writef(" %s", cast(dchar) 0x03b5);
+      rp.front.front.rule_rhs_print;
       write("\n");
     }
   }
