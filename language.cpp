@@ -409,6 +409,7 @@ public:
   std::pmr::indirect<AnyExpression> right;
 };
 
+template <Operator, typename T>
 class LogicalExpression final : public Expression {
 public:
   LogicalExpression(std::pmr::memory_resource *resource_ptr)
@@ -416,7 +417,6 @@ public:
         right{std::allocator_arg, resource_ptr} {}
   std::pmr::indirect<AnyExpression> left;
   std::pmr::indirect<AnyExpression> right;
-  Operator op;
 };
 
 template <char32_t, typename T>
@@ -502,11 +502,12 @@ struct AnyExpression {
   using Alternative = std::variant<
       NumericLiteral, AsciiLiteral, UnicodeLiteral, AliasedFunctionCall,
       DirectFunctionCall<NumberType>, MemberExpression, AssignExpression,
-      LogicalExpression, BinaryExpression<'+', NumberType>,
-      BinaryExpression<'-', NumberType>, BinaryExpression<'+', DynamicType>,
-      BinaryExpression<'-', DynamicType>, VariableAccessor,
-      ScopeAccessor<StringType>, ScopeAccessor<NumberType>, IntrinsicAccessor,
-      LambdaExpression, ConsoleCall, LengthIntrinsic, StringifyIntrinsic>;
+      LogicalExpression<Operator::LOGICAL_DISJUNCT, DynamicType>,
+      BinaryExpression<'+', NumberType>, BinaryExpression<'-', NumberType>,
+      BinaryExpression<'+', DynamicType>, BinaryExpression<'-', DynamicType>,
+      VariableAccessor, ScopeAccessor<StringType>, ScopeAccessor<NumberType>,
+      ScopeAccessor<DynamicType>, IntrinsicAccessor, LambdaExpression,
+      ConsoleCall, LengthIntrinsic, StringifyIntrinsic>;
   std::optional<Alternative> alt;
   AnyExpression() = default;
   AnyExpression(Alternative a) : alt{std::move(a)} {};
@@ -1041,6 +1042,14 @@ std::expected<AnyExpression, LanguageError *> Parser<T>::parse_expression() {
 template <typename T>
 std::expected<AnyExpression, LanguageError *>
 Parser<T>::parse_logical_disjunct() {
+  auto compose = [this]<Operator E>(AnyExpression &lhs_expression,
+                                    AnyExpression &rhs_expression) {
+    auto &program = *boundary.tape->all_programs[boundary.program_idx];
+    LogicalExpression<E, DynamicType> logical_expression(&program.resource);
+    logical_expression.left = std::move(lhs_expression);
+    logical_expression.right = std::move(rhs_expression);
+    return AnyExpression{std::move(logical_expression)};
+  };
   auto left_expression = parse_additive_expression();
   if (not left_expression)
     return std::unexpected(left_expression.error());
@@ -1050,17 +1059,16 @@ right_expression: {
   Operator logical_op{std::get<Operator>(tokenizer.last_token)};
   if (auto token_result = tokenizer.tokenize(); not token_result)
     return std::unexpected(token_result.error());
-  if (auto expression_result = parse_additive_expression();
-      not expression_result)
+  auto expression_result = parse_additive_expression();
+  if (not expression_result)
     return std::unexpected(expression_result.error());
-  else {
-    LogicalExpression expression{
-        &boundary.tape->all_programs[boundary.program_idx]->resource};
-    expression.left = std::move(*left_expression);
-    expression.right = std::move(*expression_result);
-    expression.op = logical_op;
-    left_expression->alt.template emplace<LogicalExpression>(
-        std::move(expression));
+  switch (logical_op) {
+  case Operator::LOGICAL_DISJUNCT:
+    left_expression = compose.template operator()<Operator::LOGICAL_DISJUNCT>(
+        *left_expression, *expression_result);
+    break;
+  default:
+    std::unreachable();
   }
   goto right_expression;
 }
@@ -1141,8 +1149,8 @@ Parser<T>::parse_postfix_expression() {
 template <typename T>
 std::expected<AnyExpression, LanguageError *>
 Parser<T>::parse_additive_expression() {
-  auto make_expression = [this]<char32_t C>(AnyExpression &lhs_expression,
-                                            AnyExpression &rhs_expression) {
+  auto compose = [this]<char32_t C>(AnyExpression &lhs_expression,
+                                    AnyExpression &rhs_expression) {
     auto &program = *boundary.tape->all_programs[boundary.program_idx];
     BinaryExpression<C, DynamicType> binary_expression(&program.resource);
     binary_expression.left = std::move(lhs_expression);
@@ -1166,11 +1174,9 @@ Parser<T>::parse_additive_expression() {
     return std::unexpected(rhs_expression.error());
   switch (binary_op) {
   case '+':
-    return make_expression.template operator()<'+'>(*lhs_expression,
-                                                    *rhs_expression);
+    return compose.template operator()<'+'>(*lhs_expression, *rhs_expression);
   case '-':
-    return make_expression.template operator()<'-'>(*lhs_expression,
-                                                    *rhs_expression);
+    return compose.template operator()<'-'>(*lhs_expression, *rhs_expression);
   }
   std::unreachable();
 }
@@ -1346,6 +1352,9 @@ struct RvalueAnalyzer {
   operator()(const BinaryExpression<C, DynamicType> &expression);
   std::expected<AnyExpression, LanguageError *>
   operator()(const MemberExpression &expression);
+  template <Operator E>
+  std::expected<AnyExpression, LanguageError *>
+  operator()(const LogicalExpression<E, DynamicType> &expression);
   template <std::derived_from<Expression> T>
   std::expected<AnyExpression, LanguageError *>
   operator()(const T &expression) {
@@ -1418,6 +1427,49 @@ PropertyFinder::operator()(StringType) {
     std::breakpoint();
     return std::unexpected(new InvalidPropertyAccess{});
   }
+}
+
+template <Operator> struct LogicalExpressionAnalyzer {
+  template <typename T, typename U>
+  AnyExpression operator()(T lhs_datatype, U rhs_datatype) {
+    std::unreachable();
+  }
+  AnyExpression operator()(DynamicType, NumberType);
+  AnyExpression lhs_analyzed;
+  AnyExpression rhs_analyzed;
+
+  LogicalExpressionAnalyzer(LexicalBoundary &b) : boundary{b} {}
+  LexicalBoundary &boundary;
+};
+
+template <Operator E>
+AnyExpression LogicalExpressionAnalyzer<E>::operator()(DynamicType,
+                                                       NumberType) {
+  Program &program = *boundary.tape->all_programs[boundary.program_idx];
+  LogicalExpression<E, DynamicType> output_expression(&program.resource);
+  output_expression.left = std::move(lhs_analyzed);
+  output_expression.right = std::move(rhs_analyzed);
+  return AnyExpression{std::move(output_expression)};
+}
+
+template <Operator E>
+std::expected<AnyExpression, LanguageError *> RvalueAnalyzer::operator()(
+    const LogicalExpression<E, DynamicType> &expression) {
+  DatatypeAnalyzer datatype_visitor{boundary};
+  std::expected<AnyExpression, LanguageError *> lhs_analyzed{
+      expression.left->alt->visit(*this)};
+  if (not lhs_analyzed)
+    return std::unexpected(lhs_analyzed.error());
+  VariantType lhs_datatype{lhs_analyzed->alt->visit(datatype_visitor)};
+  std::expected<AnyExpression, LanguageError *> rhs_analyzed{
+      expression.right->alt->visit(*this)};
+  if (not rhs_analyzed)
+    return std::unexpected(rhs_analyzed.error());
+  VariantType rhs_datatype{rhs_analyzed->alt->visit(datatype_visitor)};
+  LogicalExpressionAnalyzer<E> operand_visitor{boundary};
+  operand_visitor.lhs_analyzed = std::move(*lhs_analyzed);
+  operand_visitor.rhs_analyzed = std::move(*rhs_analyzed);
+  return std::visit(operand_visitor, *lhs_datatype.alt, *rhs_datatype.alt);
 }
 
 std::expected<AnyExpression, LanguageError *>
@@ -1572,7 +1624,6 @@ VariableAccessor::find_function_linkedly(LexicalBoundary *boundary) const {
 struct ScopeAccessorAnalyzer {
   template <typename T> AnyExpression operator()(T);
   AnyExpression operator()(LambdaType datatype) { std::unreachable(); }
-  AnyExpression operator()(DynamicType datatype) { std::unreachable(); }
   std::size_t scope_offset;
   std::size_t local_offset;
 };
@@ -1582,6 +1633,7 @@ AnyExpression ScopeAccessorAnalyzer::operator()(T datatype) {
   ScopeAccessor<T> scope_accessor{};
   scope_accessor.scope_offset = scope_offset;
   scope_accessor.local_offset = local_offset;
+  scope_accessor.local_type = datatype;
   return AnyExpression{std::move(scope_accessor)};
 }
 
