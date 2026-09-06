@@ -524,17 +524,17 @@ protected:
   Statement() = default;
 };
 
-class InitializeVariable final : public Statement {
+class InitializeName final : public Statement {
 public:
-  InitializeVariable(std::pmr::memory_resource *resource_ptr)
+  InitializeName(std::pmr::memory_resource *resource_ptr)
       : rvalue{std::allocator_arg, resource_ptr} {};
   Identifier variable_name;
   std::pmr::indirect<AnyExpression> rvalue;
 };
 
-template <typename T> class InitializeScope final : public Statement {
+template <typename T> class InitializeOffset final : public Statement {
 public:
-  InitializeScope(std::pmr::memory_resource *resource_ptr)
+  InitializeOffset(std::pmr::memory_resource *resource_ptr)
       : rvalue{std::allocator_arg, resource_ptr} {};
   std::size_t local_offset;
   std::pmr::indirect<AnyExpression> rvalue;
@@ -557,8 +557,8 @@ public:
 
 struct AnyStatement {
   using Alternative =
-      std::variant<InitializeVariable, InitializeScope<NumberType>,
-                   InitializeScope<StringType>, ReturnStatement<void>,
+      std::variant<InitializeName, InitializeOffset<NumberType>,
+                   InitializeOffset<StringType>, ReturnStatement<void>,
                    ReturnStatement<NumberType>, ExpressionStatement>;
   std::optional<Alternative> alt;
   AnyStatement() = default;
@@ -1014,10 +1014,9 @@ std::expected<void, LanguageError *> Parser<T>::parse_variable_decl() {
   else {
     auto &program = *boundary.tape->all_programs[boundary.program_idx];
     auto &any_statement = program.statements.emplace_back();
-    any_statement.alt.emplace(std::in_place_type<InitializeVariable>,
+    any_statement.alt.emplace(std::in_place_type<InitializeName>,
                               &program.resource);
-    auto &initialize_variable =
-        std::get<InitializeVariable>(*any_statement.alt);
+    auto &initialize_variable = std::get<InitializeName>(*any_statement.alt);
     initialize_variable.variable_name = variable_name;
     initialize_variable.rvalue = std::move(*expression_result);
   }
@@ -1401,6 +1400,10 @@ struct DatatypeAnalyzer {
   VariantType operator()(const BinaryExpression<C, T> &expression) {
     return VariantType{T{}};
   }
+  template <Operator E, typename T>
+  VariantType operator()(const LogicalExpression<E, T> &expression) {
+    return VariantType{T{}};
+  }
   template <typename T>
   VariantType operator()(const DirectFunctionCall<T> &direct_call) {
     return VariantType{direct_call.return_type};
@@ -1652,7 +1655,7 @@ VariableAccessor::find_local_linkedly(const LexicalBoundary *boundary,
     return find_local_linkedly(boundary->parent_boundary, scope_offset + 1);
 }
 
-struct InitializeScopeAnalyzer {
+struct InitializeOffsetAnalyzer {
   template <typename T>
   std::expected<AnyStatement, LanguageError *> operator()(T datatype);
   std::expected<AnyStatement, LanguageError *>
@@ -1663,7 +1666,7 @@ struct InitializeScopeAnalyzer {
     std::unreachable();
   }
 
-  InitializeScopeAnalyzer(LexicalBoundary &b) : boundary{b} {}
+  InitializeOffsetAnalyzer(LexicalBoundary &b) : boundary{b} {}
   LexicalBoundary &boundary;
   AnyExpression rvalue_analyzed;
   Identifier variable_name;
@@ -1673,7 +1676,7 @@ struct StatementAnalyzer {
   std::expected<AnyStatement, LanguageError *>
   operator()(const ExpressionStatement &statement);
   std::expected<AnyStatement, LanguageError *>
-  operator()(const InitializeVariable &statement);
+  operator()(const InitializeName &statement);
   std::expected<AnyStatement, LanguageError *>
   operator()(const ReturnStatement<void> &statement);
   std::expected<AnyStatement, LanguageError *>
@@ -1682,7 +1685,7 @@ struct StatementAnalyzer {
   }
   template <typename T>
   std::expected<AnyStatement, LanguageError *>
-  operator()(const InitializeScope<T> &statement) {
+  operator()(const InitializeOffset<T> &statement) {
     std::unreachable();
   }
 
@@ -1703,14 +1706,14 @@ StatementAnalyzer::operator()(const ExpressionStatement &statement) {
 }
 
 std::expected<AnyStatement, LanguageError *>
-StatementAnalyzer::operator()(const InitializeVariable &statement) {
+StatementAnalyzer::operator()(const InitializeName &statement) {
   std::expected<AnyExpression, LanguageError *> rvalue_analyzed{
       statement.rvalue->alt->visit(RvalueAnalyzer{boundary})};
   if (not rvalue_analyzed)
     return std::unexpected(rvalue_analyzed.error());
   VariantType datatype_analyzed{
       rvalue_analyzed->alt->visit(DatatypeAnalyzer{boundary})};
-  InitializeScopeAnalyzer initialize_scope_analyzer{boundary};
+  InitializeOffsetAnalyzer initialize_scope_analyzer{boundary};
   initialize_scope_analyzer.rvalue_analyzed = std::move(*rvalue_analyzed);
   initialize_scope_analyzer.variable_name = statement.variable_name;
   return datatype_analyzed.alt->visit(initialize_scope_analyzer);
@@ -1718,8 +1721,8 @@ StatementAnalyzer::operator()(const InitializeVariable &statement) {
 
 template <typename T>
 std::expected<AnyStatement, LanguageError *>
-InitializeScopeAnalyzer::operator()(T datatype) {
-  InitializeScope<T> initialize_scope{
+InitializeOffsetAnalyzer::operator()(T datatype) {
+  InitializeOffset<T> initialize_scope{
       &boundary.tape->all_programs[boundary.program_idx]->resource};
   initialize_scope.rvalue = std::move(rvalue_analyzed);
   initialize_scope.datatype = datatype;
@@ -1843,7 +1846,7 @@ std::expected<void, LanguageError *> ModuleDefinition::analyze() {
 
 struct StatementEvaluator {
   template <typename T>
-  std::expected<void, LanguageError *> operator()(const InitializeScope<T> &);
+  std::expected<void, LanguageError *> operator()(const InitializeOffset<T> &);
   template <typename T>
   std::expected<void, LanguageError *> operator()(const T &s) {
     std::unreachable();
@@ -2030,7 +2033,7 @@ StatementEvaluator::operator()(const ReturnStatement<NumberType> &statement) {
 
 template <typename T>
 std::expected<void, LanguageError *>
-StatementEvaluator::operator()(const InitializeScope<T> &statement) {
+StatementEvaluator::operator()(const InitializeOffset<T> &statement) {
   char *destination = static_cast<char *>(self_frame.local_memory.get()) +
                       statement.local_offset;
   using R = T::Representation;
